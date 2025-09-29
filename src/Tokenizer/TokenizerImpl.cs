@@ -1,5 +1,7 @@
 
-using Microsoft.VisualBasic;
+
+
+using System.Text;
 
 
 /**
@@ -13,31 +15,70 @@ using Microsoft.VisualBasic;
 namespace Tokenizer
 {
     public class TokenizerImpl
-    {
+    { 
         private List<Token> Tokenize(string str)
         {
             var lst = new List<Token>();
+            // watch out for multiple-char ops
+            string multChar = "";
             foreach (char e in str)
             {
                 if (!IsWhiteSpace(e))
                 {
-                    
+                    if (multChar.Length != 0)
+                    {
+                        // if (multChar == ":=") HandleAssignment();
+                        // else if (multChar == "//") HandleIntDiv();
+                        // else if (multChar == "**") HandleExponent();
+
+
+                        lst.Append(HandleMultiOp(multChar += e));
+
+                        multChar = "";
+                    }
+
+                    // if a letter, handle variable
+                    // if (IsLetter(e)) lst.Append(HandleVariable());
+
+                    // if number, handle int/float
+                    // else if (IsDigit(e)) lst.Append(HandleNumber());
+
+                    // if keyword, handle return???
+
+                    // if ()/{}, handle grouping
+                    // else if (IsGrouper(e)) lst.Append(HandleGrouping());
+
+                    // if :=
+                    else if (e == ':' | e == '/' | e == '*')
+                    {
+                        // int idx = str.IndexOf(e);
+                        // if (str[idx + 1] == '=') HandleAssignment();
+                        // else throw new Exception();
+                        multChar += e;
+                    }
+
+
+
+                    // if neither, handle operator
+
                 }
             }
 
 
             return lst;
         }
-
-        private void HandleAssignment(string s)
+      
+        #region Handlers 
+        private Token HandleAssignment(string s)
         {
-            //var token = new Token();
+            if (s.Length != 2) throw new ArgumentException($"Invalid Assignment Operator: {s}");
+
+            throw new NotImplementedException();
+            // return;
 
         }
 
-
-        //TODO: Return a token.
-        private void HandleSingleOp(string s)
+        private Token HandleSingleOp(char c)
         {
             List<string> ops = new List<string> { "+", "-", "*", "/", "%" };
             //Create a new token based on if input contains one of the operators
@@ -52,10 +93,59 @@ namespace Tokenizer
             }
         }
 
-        private void HandleMultiOp()
+        private Token HandleMultiOp(string s)
+        {
+            throw new NotImplementedException();
+            if (s.StartsWith("*") | s.StartsWith("/"))
+            {
+                if (s == "**")
+                {
+                    // create exponentiation token
+                    // return;
+                }
+                if (s == "//")
+                {
+                    // create exponentiation token
+                    // return;
+                }
+                // create multiplication token
+                else return HandleSingleOp(s[0]);
+            }
+            else
+            {
+                return HandleAssignment(s);
+            }
+        }
+
+        private Token HandleVariable(string s)
         {
             throw new NotImplementedException();
         }
+
+        private Token HandleNumber(string s)
+        {
+            // determines float or long string of ints
+            throw new NotImplementedException();
+        }
+
+        private Token HandleInt(string s)
+        {
+            throw new NotImplementedException();
+        }
+
+        private Token HandleFloat(string s)
+        {
+            throw new NotImplementedException();
+        }
+
+        private Token HandleGrouping(char c)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region Identifiers
 
         private bool IsWhiteSpace(char c)
         {
@@ -73,5 +163,13 @@ namespace Tokenizer
         {
             return IsLetter(c);
         }
+
+        private bool IsGrouper(char c)
+        {
+            string s = c.ToString();
+            return s == "(" | s == ")" | s == "{" | s == "}";
+        }
+        
+        #endregion
     }
 }
