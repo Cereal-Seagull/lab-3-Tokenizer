@@ -24,19 +24,16 @@ namespace Tokenizer
     // TokenConstants static class
     static class TokenConstants
     {
-        // +
-        // public static int PLUS(int a, int b)
-        // {
-        //     return a + b;
-        // }
+        const string PLUS = "+";
+        const string ASSIGNMENT = ":=";
 
-        // (
+        const string LEFT_PAREN = "(";
 
-        // {
+        const string RIGHT_PAREN = ")";
 
-        // :=
+        const string LEFT_CURLY = "{";
 
-        // .
+        const string DECIMAL_POINT = ".";
 
     }
 
@@ -68,8 +65,8 @@ namespace Tokenizer
         {
             throw new NotImplementedException();
         }
-        
-        
+
+
 
         // etc.
     }

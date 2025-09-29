@@ -30,7 +30,7 @@ namespace Tokenizer
             throw new NotImplementedException();
         }
 
-        private bool IsWhiteSpace()
+        private bool IsWhiteSpace() 
         {
             throw new NotImplementedException();
         }
