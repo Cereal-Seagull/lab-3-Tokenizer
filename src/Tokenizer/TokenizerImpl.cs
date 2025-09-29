@@ -10,9 +10,19 @@ namespace Tokenizer
 {
     public class TokenizerImpl
     {
-        private List<Token> Tokenize()
+        private List<Token> Tokenize(string str)
         {
-            throw new NotImplementedException();
+            var lst = new List<Token>();
+            foreach (char e in str)
+            {
+                if (!IsWhiteSpace(e))
+                {
+                    
+                }
+            }
+
+
+            return lst;
         }
 
         private void HandleAssignment()
@@ -30,19 +40,19 @@ namespace Tokenizer
             throw new NotImplementedException();
         }
 
-        private bool IsWhiteSpace()
+        private bool IsWhiteSpace(char c)
         {
-            throw new NotImplementedException();
+            return c.Equals(" ");
         }
 
-        private bool IsDigit()
+        private bool IsDigit(char c)
         {
-            throw new NotImplementedException();
+            return IsDigit(c);
         }
 
-        private bool IsLetter()
+        private bool IsLetter(char c)
         {
-            throw new NotImplementedException();
+            return IsLetter(c);
         }
     }
 }

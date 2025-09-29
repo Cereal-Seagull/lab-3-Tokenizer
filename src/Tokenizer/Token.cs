@@ -8,6 +8,7 @@
 */
 using System;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace Tokenizer
 {
@@ -60,17 +61,35 @@ namespace Tokenizer
         // ToString
         public override string ToString()
         {
-            throw new NotImplementedException();
+            // var sb = new StringBuilder();
+            // sb.Append($"[{_value}, {_type}]");
+            // return sb.ToString();
+            return new StringBuilder().Append($"[{_value}, {_type}]").ToString();
         }
 
         // Equals
-        public bool Equals()
+        public bool Equals(Token other)
         {
-            throw new NotImplementedException();
+            if (other == null) throw new ArgumentNullException();
+            return _value == other._value;
         }
-        
-        
+
+
 
         // etc.
+    }
+
+    enum TokenType
+    {
+        VARIABLE,
+        RETURN,
+        INTEGER,
+        FLOAT,
+        OPERATOR,
+        ASSIGNMENT,
+        LEFT_PAREN,
+        RIGHT_PAREN,
+        LEFT_CURLY,
+        RIGHT_CURLY        
     }
 }
