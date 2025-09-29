@@ -64,7 +64,7 @@ namespace Tokenizer
 
             return lst;
         }
-
+      
         #region Handlers 
         private Token HandleAssignment(string s)
         {
@@ -77,7 +77,17 @@ namespace Tokenizer
 
         private Token HandleSingleOp(char c)
         {
-            throw new NotImplementedException();
+            List<string> ops = new List<string> { "+", "-", "*", "/", "%" };
+            //Create a new token based on if input contains one of the operators
+            int idx = ops.IndexOf(s);
+            if (idx != -1)
+            {
+                var singleOp = ops[idx];
+            }
+            else
+            {
+                throw new ArgumentException($"Invalid single operator{s}");
+            }
         }
 
         private Token HandleMultiOp(string s)
@@ -137,6 +147,8 @@ namespace Tokenizer
         private bool IsWhiteSpace(char c)
         {
             return c.Equals(" ");
+            
+
         }
 
         private bool IsDigit(char c)
