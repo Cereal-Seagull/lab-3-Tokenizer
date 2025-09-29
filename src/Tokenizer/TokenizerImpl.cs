@@ -1,3 +1,7 @@
+
+using Microsoft.VisualBasic;
+
+
 /**
 * Summary: 
 *
@@ -25,24 +29,39 @@ namespace Tokenizer
             return lst;
         }
 
-        private void HandleAssignment()
+        private void HandleAssignment(string s)
         {
-            throw new NotImplementedException();
+            //var token = new Token();
+
         }
 
-        private void HandleSingleOp()
+
+        //TODO: Return a token.
+        private void HandleSingleOp(string s)
         {
-            throw new NotImplementedException();
+            List<string> ops = new List<string> { "+", "-", "*", "/", "%" };
+            //Create a new token based on if input contains one of the operators
+            int idx = ops.IndexOf(s);
+            if (idx != -1)
+            {
+                var singleOp = ops[idx];
+            }
+            else
+            {
+                throw new ArgumentException($"Invalid single operator{s}");
+            }
         }
 
         private void HandleMultiOp()
         {
             throw new NotImplementedException();
         }
-      
+
         private bool IsWhiteSpace(char c)
         {
             return c.Equals(" ");
+            
+
         }
 
         private bool IsDigit(char c)
