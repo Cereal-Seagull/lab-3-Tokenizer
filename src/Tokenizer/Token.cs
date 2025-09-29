@@ -35,6 +35,12 @@ namespace Tokenizer
         const string LEFT_CURLY = "{";
 
         const string DECIMAL_POINT = ".";
+        const string TIMES = "*";
+        const string SUBTRACTION = "-";
+        const string FLOAT_DIVISION = "/";
+        const string INT_DIVISION = "//";
+        const string MODULUS = "%";
+        const string EXPONENTIATE = "**";
 
     }
 
@@ -49,11 +55,18 @@ namespace Tokenizer
         // private int _col;
         // private int _len;
 
+        Token()
+        {
+            _value = null;
+            _type = null;
+        }
         Token(string val, string T)
         {
             _value = val;
             _type = T;
         }
+
+        
 
         // ToString
         public override string ToString()
