@@ -1,4 +1,3 @@
-
 using System.Text;
 
 /**
@@ -75,8 +74,9 @@ namespace Tokenizer
 
         }
 
-        private Token HandleSingleOp(char c)
+        private Token HandleSingleOp(string s)
         {
+            throw new NotImplementedException();
             List<string> ops = new List<string> { "+", "-", "*", "/", "%" };
             //Create a new token based on if input contains one of the operators
             int idx = ops.IndexOf(s);
@@ -106,7 +106,7 @@ namespace Tokenizer
                     // return;
                 }
                 // create multiplication token
-                else return HandleSingleOp(s[0]);
+                // else return HandleSingleOp(s[0]);
             }
             else
             {
