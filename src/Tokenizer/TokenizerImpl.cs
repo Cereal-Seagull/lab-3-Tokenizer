@@ -39,7 +39,7 @@ namespace Tokenizer
         {
             throw new NotImplementedException();
         }
-
+      
         private bool IsWhiteSpace(char c)
         {
             return c.Equals(" ");
