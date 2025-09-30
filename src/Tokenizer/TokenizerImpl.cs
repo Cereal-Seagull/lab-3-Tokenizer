@@ -63,6 +63,7 @@ namespace Tokenizer
         #region Handlers 
         private Token HandleAssignment(string s, ref int idx)
         {
+            if (idx  == s.Length-1) throw new ArgumentException($"Invalid Assignment Operator: {idx}");
             string code = String.Concat(s[idx], s[idx + 1]);
             if (code != ":=") throw new ArgumentException($"Invalid Assignment Operator: {code}");
 
@@ -89,13 +90,15 @@ namespace Tokenizer
         
         private Token HandleMultiOp(string s, ref int idx)
         {
+            if (idx  == s.Length-1) return HandleSingleOp(s, ref idx);
+
             string code = String.Concat(s[idx], s[idx + 1]);
             Token token;
             if (code == TokenConstants.EXPONENTIATE || code == TokenConstants.INT_DIVISION)
             {
                 // create exponentiation token
                 token = new Token(code, TokenType.OPERATOR);
-                idx += 1;
+                idx += 2;
                 return token;
             }
             else if (s[idx].ToString() == TokenConstants.TIMES || s[idx].ToString() == TokenConstants.FLOAT_DIVISION)
@@ -116,14 +119,14 @@ namespace Tokenizer
                 code += s[idx];
                 idx += 1;
             }
-            idx -= 1;
+            //idx -= 1;
             return new Token(code, TokenType.VARIABLE);
         }
 
         // TODO
         private Token HandleNumber(string s, ref int idx)
         {
-            string numbers = s[idx].ToString();
+            string numbers = "";
             // char e = s[idx];
             // determines float or long string of ints
             while (idx < s.Length && IsDigit(s[idx]))
@@ -133,22 +136,20 @@ namespace Tokenizer
                 // if (s[idx + 1] == '.') return
                 idx += 1;
             }
-            if (s[idx].ToString() == TokenConstants.DECIMAL_POINT)
+
+            if (idx < s.Length && s[idx].ToString() == TokenConstants.DECIMAL_POINT)
             {
                 numbers += s[idx];
+                idx += 1;
                 numbers += HandleAfterDecimalPoint(s, ref idx);
                 return new Token(numbers, TokenType.FLOAT);
             }
-            idx -= 1;
+            //idx -= 1;
             return new Token(numbers, TokenType.INTEGER);
 
         }
 
-        // // TODO
-        // private Token HandleInt(string s, ref int idx)
-        // {
-        //     throw new NotImplementedException();
-        // }
+ 
 
         // TODO
         private string HandleAfterDecimalPoint(string s, ref int idx)
@@ -161,7 +162,7 @@ namespace Tokenizer
                 decNums += s[idx];
                 idx += 1;
             }
-            idx -= 1;
+            //idx -= 1;
             return decNums;
         }
 
