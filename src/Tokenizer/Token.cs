@@ -12,61 +12,48 @@ using System.Text;
 
 namespace Tokenizer
 {
-    // enum and class definitions
-    /// <summary>
-    /// </summary>
-    /// <typeparam name="">The type of keys in the symbol table</typeparam>
-    /// <typeparam name="">The type of values in the symbol table</typeparam>
-    // public class SymbolTable<TKey, TValue> : IDictionary<TKey, TValue>
-    // {
-
-    // }
-    // TokenType enumeration
-    // TokenConstants static class
     static class TokenConstants
     {
-        const string PLUS = "+";
-        const string ASSIGNMENT = ":=";
+        // single ops
+        public const string PLUS = "+";
+        public const string SUBTRACTION = "-";
+        public const string TIMES = "*";
+        public const string MODULUS = "%";
+        public const string FLOAT_DIVISION = "/";
+        public const string EQUALS = "=";
 
-        const string LEFT_PAREN = "(";
+        // multiops
+        public const string INT_DIVISION = "//";
+        public const string EXPONENTIATE = "**";
+        public const string ASSIGNMENT = ":=";
 
-        const string RIGHT_PAREN = ")";
+        // for floats
+        public const string DECIMAL_POINT = ".";
 
-        const string LEFT_CURLY = "{";
-
-        const string DECIMAL_POINT = ".";
-        const string TIMES = "*";
-        const string SUBTRACTION = "-";
-        const string FLOAT_DIVISION = "/";
-        const string INT_DIVISION = "//";
-        const string MODULUS = "%";
-        const string EXPONENTIATE = "**";
+        // group chars
+        public const string LEFT_PAREN = "(";
+        public const string RIGHT_PAREN = ")";
+        public const string LEFT_CURLY = "{";
+        public const string RIGHT_CURLY = "}";
 
     }
 
     // Token class - should not be complex
-    class Token
+    public class Token
     {
         protected string _value;
-        protected string _type;
+        protected TokenType _type;
 
         // Should these be properties?
         // private int _line;
         // private int _col;
         // private int _len;
 
-        Token()
-        {
-            _value = null;
-            _type = null;
-        }
-        Token(string val, string T)
+        public Token(string val, TokenType T)
         {
             _value = val;
             _type = T;
         }
-
-        
 
         // ToString
         public override string ToString()
@@ -84,12 +71,10 @@ namespace Tokenizer
             return _value == other._value;
         }
 
-
-
-        // etc.
+        
     }
 
-    enum TokenType
+    public enum TokenType
     {
         VARIABLE,
         RETURN,
