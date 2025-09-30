@@ -12,17 +12,6 @@ using System.Text;
 
 namespace Tokenizer
 {
-    // enum and class definitions
-    /// <summary>
-    /// </summary>
-    /// <typeparam name="">The type of keys in the symbol table</typeparam>
-    /// <typeparam name="">The type of values in the symbol table</typeparam>
-    // public class SymbolTable<TKey, TValue> : IDictionary<TKey, TValue>
-    // {
-
-    // }
-    // TokenType enumeration
-    // TokenConstants static class
     static class TokenConstants
     {
         // single ops
@@ -50,7 +39,7 @@ namespace Tokenizer
     }
 
     // Token class - should not be complex
-    class Token
+    public class Token
     {
         protected string _value;
         protected TokenType _type;
@@ -82,9 +71,7 @@ namespace Tokenizer
             return _value == other._value;
         }
 
-
-
-        // etc.
+        
     }
 
     public enum TokenType

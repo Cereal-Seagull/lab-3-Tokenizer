@@ -12,32 +12,21 @@ namespace Tokenizer
 {
     public class TokenizerImpl
     { 
-        private List<Token> Tokenize(string str)
+        public List<Token> Tokenize(string str)
         {
             var lst = new List<Token>();
             // watch out for multiple-char ops
             // string multChar = "";
             int idx = 0;
-            while (idx <str.Length)
+            while (idx < str.Length)
             {
                 if (!IsWhiteSpace(str[idx]))
                 {
-                    // if (multChar.Length != 0)
-                    // {
-                    //     // if (multChar == ":=") HandleAssignment();
-                    //     // else if (multChar == "//") HandleIntDiv();
-                    //     // else if (multChar == "**") HandleExponent();
-
-
-                    //     lst.Append(HandleMultiOp(multChar += str[idx]));
-
-                    //     multChar = "";
-                    // }
                     // if assignment
                     if (str[idx] == ':') lst.Add(HandleAssignment(str, ref idx));
 
                     // if a letter, handle variable
-                    if (IsLetter(str[idx])) lst.Add(HandleVariable(str, ref idx));
+                    else if (IsLetter(str[idx])) lst.Add(HandleVariable(str, ref idx));
 
                     // if number, handle int/float
                     else if (IsDigit(str[idx])) lst.Add(HandleNumber(str, ref idx));
@@ -63,6 +52,7 @@ namespace Tokenizer
                     // if neither, handle operator
 
                 }
+                idx += 1;
             }
 
             return lst;
@@ -72,7 +62,7 @@ namespace Tokenizer
         private Token HandleAssignment(string s, ref int idx)
         {
             string code = String.Concat(s[idx], s[idx + 1]);
-            if (code != "!=") throw new ArgumentException($"Invalid Assignment Operator: {code}");
+            if (code != ":=") throw new ArgumentException($"Invalid Assignment Operator: {code}");
 
             idx += 1;
             return new Token(code, TokenType.ASSIGNMENT);
@@ -166,19 +156,17 @@ namespace Tokenizer
 
         private bool IsWhiteSpace(char c)
         {
-            return c.Equals(" ");
-            
-
+            return String.IsNullOrWhiteSpace(c.ToString());
         }
 
         private bool IsDigit(char c)
         {
-            return IsDigit(c);
+            return Char.IsDigit(c);
         }
 
         private bool IsLetter(char c)
         {
-            return IsLetter(c);
+            return Char.IsLetter(c);
         }
 
         private bool IsGrouper(char c)
