@@ -69,9 +69,7 @@ namespace Tokenizer
         {
             if (other == null) throw new ArgumentNullException();
             return _value == other._value;
-        }
-
-        
+        }     
     }
 
     public enum TokenType

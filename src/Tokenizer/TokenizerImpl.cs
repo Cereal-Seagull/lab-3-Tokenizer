@@ -17,13 +17,13 @@ namespace Tokenizer
         {
             var lst = new List<Token>();
             // watch out for multiple-char ops
-            // string multChar = "";
+            // string fmultChar = "";
             int idx = 0;
             while (idx < str.Length)
             {
+                char e = str[idx];
                 if (!IsWhiteSpace(str[idx]))
                 {
-                    char e = str[idx];
                     // if assignment
                     if (e == ':') lst.Add(HandleAssignment(str, ref idx));
 
@@ -39,13 +39,13 @@ namespace Tokenizer
                     else if (IsGrouper(e)) lst.Add(HandleGrouping(str, ref idx));
 
                     // if +, -, %
-                    else if (e == '+' | e == '-' | e == '%' | e == '=')
+                    else if (e == '+' || e == '-' || e == '%' || e == '=')
                     {
                         lst.Add(HandleSingleOp(str, ref idx));
                     }
 
                     // if *, **, /, //
-                    else if (e == '/' | e == '*')
+                    else if (e == '/' || e == '*')
                     {
                         // MultiOp calls Single Op if there's only 1 * or 1 /
                         lst.Add(HandleMultiOp(str, ref idx));
@@ -54,7 +54,7 @@ namespace Tokenizer
                     // if neither, handle operator
 
                 }
-                idx += 1;
+                else idx += 1;
             }
 
             return lst;
@@ -66,7 +66,7 @@ namespace Tokenizer
             string code = String.Concat(s[idx], s[idx + 1]);
             if (code != ":=") throw new ArgumentException($"Invalid Assignment Operator: {code}");
 
-            idx += 1;
+            idx += 2;
             return new Token(code, TokenType.ASSIGNMENT);
 
         }
@@ -81,6 +81,7 @@ namespace Tokenizer
             {
                 string singleOp = ops[index];
                 var token = new Token(singleOp, TokenType.OPERATOR);
+                idx += 1;
                 return token;
             }
             else throw new ArgumentException($"Invalid single operator{s[idx]}");
@@ -90,14 +91,14 @@ namespace Tokenizer
         {
             string code = String.Concat(s[idx], s[idx + 1]);
             Token token;
-            if (code == TokenConstants.EXPONENTIATE | code == TokenConstants.INT_DIVISION)
+            if (code == TokenConstants.EXPONENTIATE || code == TokenConstants.INT_DIVISION)
             {
                 // create exponentiation token
                 token = new Token(code, TokenType.OPERATOR);
                 idx += 1;
                 return token;
             }
-            else if (s[idx].ToString() == TokenConstants.TIMES | s[idx].ToString() == TokenConstants.FLOAT_DIVISION)
+            else if (s[idx].ToString() == TokenConstants.TIMES || s[idx].ToString() == TokenConstants.FLOAT_DIVISION)
             {
                 return HandleSingleOp(s, ref idx);
             }
@@ -110,7 +111,7 @@ namespace Tokenizer
         private Token HandleVariable(string s, ref int idx)
         {
             string code = "";
-            while (idx < s.Length & IsLetter(s[idx]))
+            while (idx < s.Length && IsLetter(s[idx]))
             {
                 code += s[idx];
                 idx += 1;
@@ -122,10 +123,12 @@ namespace Tokenizer
         // TODO
         private Token HandleNumber(string s, ref int idx)
         {
-            string numbers = "";
+            string numbers = s[idx].ToString();
+            // char e = s[idx];
             // determines float or long string of ints
-            while (idx < s.Length & IsDigit(s[idx]))
+            while (idx < s.Length && IsDigit(s[idx]))
             {
+                // e = s[idx];
                 numbers += s[idx];
                 // if (s[idx + 1] == '.') return
                 idx += 1;
@@ -153,7 +156,7 @@ namespace Tokenizer
             // throw new NotImplementedException();
             string decNums = "";
             // determines float or long string of ints
-            while (idx < s.Length & IsDigit(s[idx]))
+            while (idx < s.Length && IsDigit(s[idx]))
             {
                 decNums += s[idx];
                 idx += 1;
@@ -172,7 +175,7 @@ namespace Tokenizer
             else if (code == TokenConstants.RIGHT_CURLY) tkType = TokenType.RIGHT_CURLY;
 
             else throw new ArgumentException($"Unrecognized Grouping character: {code}");
-
+            idx += 1;
             return new Token(code, tkType);
         }
 
@@ -192,7 +195,7 @@ namespace Tokenizer
 
         private bool IsFloat(char c)
         {
-            return Char.IsDigit(c) | c == '.';
+            return Char.IsDigit(c) || c == '.';
         }
 
         private bool IsLetter(char c)
@@ -203,7 +206,7 @@ namespace Tokenizer
         private bool IsGrouper(char c)
         {
             string s = c.ToString();
-            return s == "(" | s == ")" | s == "{" | s == "}";
+            return s == "(" || s == ")" || s == "{" || s == "}";
         }
         
         #endregion
