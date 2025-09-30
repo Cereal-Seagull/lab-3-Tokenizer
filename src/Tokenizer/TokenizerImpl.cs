@@ -1,3 +1,4 @@
+using System.Reflection.Metadata;
 using System.Text;
 
 /**
@@ -22,28 +23,29 @@ namespace Tokenizer
             {
                 if (!IsWhiteSpace(str[idx]))
                 {
+                    char e = str[idx];
                     // if assignment
-                    if (str[idx] == ':') lst.Add(HandleAssignment(str, ref idx));
+                    if (e == ':') lst.Add(HandleAssignment(str, ref idx));
 
                     // if a letter, handle variable
-                    else if (IsLetter(str[idx])) lst.Add(HandleVariable(str, ref idx));
+                    else if (IsLetter(e)) lst.Add(HandleVariable(str, ref idx));
 
                     // if number, handle int/float
-                    else if (IsDigit(str[idx])) lst.Add(HandleNumber(str, ref idx));
+                    else if (IsDigit(e)) lst.Add(HandleNumber(str, ref idx));
 
                     // if keyword, handle return???
 
                     // if ()/{}, handle grouping
-                    else if (IsGrouper(str[idx])) lst.Add(HandleGrouping(str, ref idx));
+                    else if (IsGrouper(e)) lst.Add(HandleGrouping(str, ref idx));
 
                     // if +, -, %
-                    else if (str[idx] == '+' | str[idx] == '-' | str[idx] == '%' | str[idx] == '=')
+                    else if (e == '+' | e == '-' | e == '%' | e == '=')
                     {
                         lst.Add(HandleSingleOp(str, ref idx));
                     }
 
                     // if *, **, /, //
-                    else if (str[idx] == '/' | str[idx] == '*')
+                    else if (e == '/' | e == '*')
                     {
                         // MultiOp calls Single Op if there's only 1 * or 1 /
                         lst.Add(HandleMultiOp(str, ref idx));
@@ -74,7 +76,7 @@ namespace Tokenizer
             // This is O(n), should be an O(1) soln
             List<string> ops = new List<string> { "+", "-", "*", "/", "%" , "="};
             //Create a new token based on if input contains one of the operators
-            int index = ops.IndexOf(s);
+            int index = ops.IndexOf(s[idx].ToString());
             if (index != -1)
             {
                 string singleOp = ops[index];
@@ -113,27 +115,51 @@ namespace Tokenizer
                 code += s[idx];
                 idx += 1;
             }
+            idx -= 1;
             return new Token(code, TokenType.VARIABLE);
         }
 
         // TODO
         private Token HandleNumber(string s, ref int idx)
         {
+            string numbers = "";
             // determines float or long string of ints
-            throw new NotImplementedException();
+            while (idx < s.Length & IsDigit(s[idx]))
+            {
+                numbers += s[idx];
+                // if (s[idx + 1] == '.') return
+                idx += 1;
+            }
+            if (s[idx].ToString() == TokenConstants.DECIMAL_POINT)
+            {
+                numbers += s[idx];
+                numbers += HandleAfterDecimalPoint(s, ref idx);
+                return new Token(numbers, TokenType.FLOAT);
+            }
+            idx -= 1;
+            return new Token(numbers, TokenType.INTEGER);
 
         }
 
-        // TODO
-        private Token HandleInt(string s, ref int idx)
-        {
-            throw new NotImplementedException();
-        }
+        // // TODO
+        // private Token HandleInt(string s, ref int idx)
+        // {
+        //     throw new NotImplementedException();
+        // }
 
         // TODO
-        private Token HandleFloat(string s, ref int idx)
+        private string HandleAfterDecimalPoint(string s, ref int idx)
         {
-            throw new NotImplementedException();
+            // throw new NotImplementedException();
+            string decNums = "";
+            // determines float or long string of ints
+            while (idx < s.Length & IsDigit(s[idx]))
+            {
+                decNums += s[idx];
+                idx += 1;
+            }
+            idx -= 1;
+            return decNums;
         }
 
         private Token HandleGrouping(string s, ref int idx)
@@ -162,6 +188,11 @@ namespace Tokenizer
         private bool IsDigit(char c)
         {
             return Char.IsDigit(c);
+        }
+
+        private bool IsFloat(char c)
+        {
+            return Char.IsDigit(c) | c == '.';
         }
 
         private bool IsLetter(char c)
