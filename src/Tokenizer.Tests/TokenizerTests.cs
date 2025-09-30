@@ -166,7 +166,7 @@ namespace Tokenizer.Tests
         }
 
         #endregion
-
+        
         #region Multi-Character Operator Tests
 
         /// <summary>
