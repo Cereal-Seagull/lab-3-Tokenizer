@@ -10,8 +10,8 @@ using System;
 using Tokenizer;
 using Xunit;
 
-namespace TokenizerTests
-{
+// namespace TokenizerTests
+// {
     // public class TokenizerTests
     // {
     //     [Theory]
@@ -166,7 +166,7 @@ namespace Tokenizer.Tests
         }
 
         #endregion
-        
+
         #region Multi-Character Operator Tests
 
         /// <summary>
@@ -577,6 +577,280 @@ namespace Tokenizer.Tests
         }
 
         #endregion
+
+        #region Return Tests
+        /// <summary>
+        /// Tests that lowercase 'return' is correctly identified as the RETURN keyword token.
+        /// </summary>
+        [Fact]
+        public void Tokenize_LowercaseReturn_ReturnsReturnToken()
+        {
+            // Arrange
+            var input = "return";
+            
+            // Act
+            var result = _tokenizer.Tokenize(input);
+            
+            // Assert
+            Assert.Single(result);
+            Assert.Contains("return", result[0].ToString());
+            Assert.Contains("RETURN", result[0].ToString());
+        }
+
+        /// <summary>
+        /// Tests that uppercase, mixed case, or capitalized 'return'
+        /// are treated as variables, not the return keyword.
+        /// Only lowercase 'return' should be recognized as the keyword.
+        /// </summary>
+        /// <param name="input">Non-lowercase variant of 'return'</param>
+        /// <param name="description">Description of test case</param>
+        [Theory]
+        [InlineData("RETURN", "Uppercase return")]
+        [InlineData("Return", "Capitalized return")]
+        [InlineData("ReTuRn", "Mixed case return")]
+        [InlineData("rETURN", "Mixed case variant")]
+        [InlineData("retURN", "Partial uppercase")]
+        [InlineData("reTurn", "Camel case")]
+        public void Tokenize_NonLowercaseReturn_ReturnsVariableToken(string input, string description)
+        {
+            // Arrange & Act
+            var result = _tokenizer.Tokenize(input);
+            
+            // Assert
+            Assert.Single(result);
+            Assert.Contains("VARIABLE", result[0].ToString());
+        }
+
+        /// <summary>
+        /// Tests that strings similar to 'return' but not exact matches
+        /// are correctly identified as variables.
+        /// </summary>
+        /// <param name="input">Input string that looks like but isn't 'return'</param>
+        /// <param name="description">Description of test case</param>
+        [Theory]
+        [InlineData("retur", "Missing last character")]
+        [InlineData("ret", "Prefix only")]
+        [InlineData("r", "Single character")]
+        [InlineData("re", "Two characters")]
+        [InlineData("retu", "Four characters")]
+        public void Tokenize_PartialReturn_ReturnsVariableToken(string input, string description)
+        {
+            // Arrange & Act
+            var result = _tokenizer.Tokenize(input);
+            
+            // Assert
+            Assert.Single(result);
+            Assert.Contains("VARIABLE", result[0].ToString());
+        }
+
+        /// <summary>
+        /// Tests that strings containing 'return' but with additional characters
+        /// are handled as variables (not as return keyword).
+        /// </summary>
+        /// <param name="input">Input with return embedded or extended</param>
+        [Theory]
+        [InlineData("returnValue")]
+        [InlineData("myreturn")]
+        [InlineData("returns")]
+        [InlineData("returned")]
+        [InlineData("returning")]
+        public void Tokenize_ReturnWithExtraChars_ReturnsVariableToken(string input)
+        {
+            // Arrange & Act
+            var result = _tokenizer.Tokenize(input);
+            
+            // Assert
+            Assert.NotEmpty(result);
+            // First token should be a variable (or could be multiple tokens depending on implementation)
+            Assert.Contains("VARIABLE", result[0].ToString());
+        }
+
+        /// <summary>
+        /// Tests return keyword in the context of expressions with values.
+        /// </summary>
+        [Fact]
+        public void Tokenize_ReturnWithInteger_ReturnsCorrectTokens()
+        {
+            // Arrange
+            var input = "return 42";
+            
+            // Act
+            var result = _tokenizer.Tokenize(input);
+            
+            // Assert
+            Assert.Equal(2, result.Count);
+            Assert.Contains("return", result[0].ToString());
+            Assert.Contains("RETURN", result[0].ToString());
+            Assert.Contains("42", result[1].ToString());
+            Assert.Contains("INTEGER", result[1].ToString());
+        }
+
+        /// <summary>
+        /// Tests return keyword with a variable.
+        /// </summary>
+        [Fact]
+        public void Tokenize_ReturnWithVariable_ReturnsCorrectTokens()
+        {
+            // Arrange
+            var input = "return x";
+            
+            // Act
+            var result = _tokenizer.Tokenize(input);
+            
+            // Assert
+            Assert.Equal(2, result.Count);
+            Assert.Contains("return", result[0].ToString());
+            Assert.Contains("RETURN", result[0].ToString());
+            Assert.Contains("x", result[1].ToString());
+            Assert.Contains("VARIABLE", result[1].ToString());
+        }
+
+        /// <summary>
+        /// Tests return keyword with assignment expression.
+        /// </summary>
+        [Fact]
+        public void Tokenize_ReturnWithAssignment_ReturnsCorrectTokens()
+        {
+            // Arrange
+            var input = "return x := 5";
+            
+            // Act
+            var result = _tokenizer.Tokenize(input);
+            
+            // Assert
+            Assert.Equal(4, result.Count);
+            Assert.Contains("return", result[0].ToString());
+            Assert.Contains("RETURN", result[0].ToString());
+        }
+
+        /// <summary>
+        /// Tests return keyword with arithmetic expressions.
+        /// </summary>
+        /// <param name="input">Expression with return keyword</param>
+        /// <param name="expectedTokenCount">Expected number of tokens</param>
+        [Theory]
+        [InlineData("return 1 + 2", 4)]
+        [InlineData("return (x)", 4)]
+        [InlineData("return x * y", 4)]
+        [InlineData("return 3.14", 2)]
+        public void Tokenize_ReturnWithExpression_ReturnsCorrectTokenCount(string input, int expectedTokenCount)
+        {
+            // Arrange & Act
+            var result = _tokenizer.Tokenize(input);
+
+            // Assert
+            Assert.Equal(expectedTokenCount, result.Count);
+            Assert.Contains("return", result[0].ToString());
+            Assert.Contains("RETURN", result[0].ToString());
+        }
+
+        /// <summary>
+        /// Tests that misspelled variations of return are treated as variables.
+        /// </summary>
+        /// <param name="input">Misspelled variable name similar to return</param>
+        [Theory]
+        [InlineData("retrun")]
+        [InlineData("retrn")]
+        [InlineData("rturn")]
+        [InlineData("eturn")]
+        [InlineData("returm")]
+        public void Tokenize_MisspelledReturn_ReturnsVariableToken(string input)
+        {
+            // Arrange & Act
+            var result = _tokenizer.Tokenize(input);
+            
+            // Assert
+            Assert.Single(result);
+            Assert.Contains("VARIABLE", result[0].ToString());
+        }
+
+        /// <summary>
+        /// Tests return keyword at the end of a string (boundary condition).
+        /// Ensures no IndexOutOfRangeException occurs.
+        /// </summary>
+        [Fact]
+        public void Tokenize_ReturnAtEndOfString_NoIndexError()
+        {
+            // Arrange
+            var input = "x := return";
+            
+            // Act
+            var result = _tokenizer.Tokenize(input);
+            
+            // Assert
+            Assert.Equal(3, result.Count);
+            Assert.Contains("return", result[2].ToString());
+        }
+
+        /// <summary>
+        /// Tests multiple return keywords in one expression.
+        /// </summary>
+        [Fact]
+        public void Tokenize_MultipleReturns_ReturnsMultipleReturnTokens()
+        {
+            // Arrange
+            var input = "return return";
+            
+            // Act
+            var result = _tokenizer.Tokenize(input);
+            
+            // Assert
+            Assert.Equal(2, result.Count);
+            Assert.Contains("return", result[0].ToString());
+            Assert.Contains("return", result[1].ToString());
+        }
+
+        /// <summary>
+        /// Tests return keyword at the beginning of a string.
+        /// </summary>
+        [Fact]
+        public void Tokenize_ReturnAtStart_ReturnsReturnToken()
+        {
+            // Arrange
+            var input = "return";
+            
+            // Act
+            var result = _tokenizer.Tokenize(input);
+            
+            // Assert
+            Assert.Single(result);
+            Assert.Contains("return", result[0].ToString());
+        }
+
+        /// <summary>
+        /// Tests return keyword with complex nested expressions.
+        /// </summary>
+        [Fact]
+        public void Tokenize_ReturnWithComplexExpression_ReturnsCorrectTokens()
+        {
+            // Arrange
+            var input = "return (a + b) * 2";
+            
+            // Act
+            var result = _tokenizer.Tokenize(input);
+            
+            // Assert
+            Assert.Equal(8, result.Count);
+            Assert.Contains("return", result[0].ToString());
+        }
+
+        /// <summary>
+        /// Tests return keyword followed immediately by operator (no space).
+        /// </summary>
+        [Fact]
+        public void Tokenize_ReturnNoSpace_HandledCorrectly()
+        {
+            // Arrange
+            var input = "return(x)";
+            
+            // Act
+            var result = _tokenizer.Tokenize(input);
+            
+            // Assert
+            Assert.NotEmpty(result);
+            Assert.Contains("return", result[0].ToString());
+        }    
+        #endregion
+            
     }
-}
 }

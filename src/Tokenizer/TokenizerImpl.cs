@@ -77,14 +77,14 @@ namespace Tokenizer
 
         private Token HandleReturn(string s, ref int idx)
         {
-            if (idx < s.Length - 6) return HandleVariable(s, ref idx);
-            List<char> letters = new List<char> { 'R', 'E', 'T', 'U', 'R', 'N' };
+            if (s.Length - idx < 6) return HandleVariable(s, ref idx);
+            List<char> letters = new List<char> { 'r', 'e', 't', 'u', 'r', 'n' };
             int lIdx = 0;
             string expected = "";
             string actual = "";
             while (lIdx < 6)
             {
-                actual += Char.ToUpper(s[idx]);
+                actual += (s[idx]);
                 expected += letters[lIdx];
 
                 if (actual != expected)
@@ -94,14 +94,22 @@ namespace Tokenizer
                 }
                 idx += 1;
                 lIdx += 1;
-                // if (s[idx] != letters[lIdx])
-                // {
-                //     idx -= letters.IndexOf(l);
-                //     return HandleVariable(s, ref idx);
-                // }
-
             }
-            return new Token(actual, TokenType.RETURN);
+            if (idx == s.Length || IsWhiteSpace(s[idx]) || IsGrouper(s[idx]))
+            {
+                return new Token(actual, TokenType.RETURN);
+            }
+
+            // else if (IsWhiteSpace(s[idx]))
+            // {
+            //     return new Token(actual, TokenType.RETURN);
+            // }
+
+            else
+            {
+                idx -= lIdx;
+                return HandleVariable(s, ref idx);
+            }
 
 
         }
