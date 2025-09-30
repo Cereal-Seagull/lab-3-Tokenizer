@@ -7,6 +7,7 @@
 * @date 9/28/25
 */
 using System;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -35,6 +36,7 @@ namespace Tokenizer
         public const string RIGHT_PAREN = ")";
         public const string LEFT_CURLY = "{";
         public const string RIGHT_CURLY = "}";
+        public const string RETURN = "return";
 
     }
 
@@ -83,6 +85,6 @@ namespace Tokenizer
         LEFT_PAREN,
         RIGHT_PAREN,
         LEFT_CURLY,
-        RIGHT_CURLY        
+        RIGHT_CURLY
     }
 }

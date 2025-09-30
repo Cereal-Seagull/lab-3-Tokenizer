@@ -27,13 +27,14 @@ namespace Tokenizer
                     // if assignment
                     if (e == ':') lst.Add(HandleAssignment(str, ref idx));
 
+                    // if keyword, handle return???
+                    else if (e == 'r') lst.Add(HandleReturn(str, ref idx));
+
                     // if a letter, handle variable
                     else if (IsLetter(e)) lst.Add(HandleVariable(str, ref idx));
 
                     // if number, handle int/float
                     else if (IsDigit(e)) lst.Add(HandleNumber(str, ref idx));
-
-                    // if keyword, handle return???
 
                     // if ()/{}, handle grouping
                     else if (IsGrouper(e)) lst.Add(HandleGrouping(str, ref idx));
@@ -59,11 +60,13 @@ namespace Tokenizer
 
             return lst;
         }
-      
+
         #region Handlers 
+        
+
         private Token HandleAssignment(string s, ref int idx)
         {
-            if (idx  == s.Length-1) throw new ArgumentException($"Invalid Assignment Operator: {idx}");
+            if (idx == s.Length - 1) throw new ArgumentException($"Invalid Assignment Operator: {idx}");
             string code = String.Concat(s[idx], s[idx + 1]);
             if (code != ":=") throw new ArgumentException($"Invalid Assignment Operator: {code}");
 
@@ -72,10 +75,41 @@ namespace Tokenizer
 
         }
 
+        private Token HandleReturn(string s, ref int idx)
+        {
+            if (idx < s.Length - 6) return HandleVariable(s, ref idx);
+            List<char> letters = new List<char> { 'R', 'E', 'T', 'U', 'R', 'N' };
+            int lIdx = 0;
+            string expected = "";
+            string actual = "";
+            while (lIdx < 6)
+            {
+                actual += Char.ToUpper(s[idx]);
+                expected += letters[lIdx];
+
+                if (actual != expected)
+                {
+                    idx -= lIdx;
+                    return HandleVariable(s, ref idx);
+                }
+                idx += 1;
+                lIdx += 1;
+                // if (s[idx] != letters[lIdx])
+                // {
+                //     idx -= letters.IndexOf(l);
+                //     return HandleVariable(s, ref idx);
+                // }
+
+            }
+            return new Token(actual, TokenType.RETURN);
+
+
+        }
+
         private Token HandleSingleOp(string s, ref int idx)
         {
             // This is O(n), should be an O(1) soln
-            List<string> ops = new List<string> { "+", "-", "*", "/", "%" , "="};
+            List<string> ops = new List<string> { "+", "-", "*", "/", "%", "=" };
             //Create a new token based on if input contains one of the operators
             int index = ops.IndexOf(s[idx].ToString());
             if (index != -1)
@@ -123,7 +157,7 @@ namespace Tokenizer
             return new Token(code, TokenType.VARIABLE);
         }
 
-        // TODO
+      
         private Token HandleNumber(string s, ref int idx)
         {
             string numbers = "";
