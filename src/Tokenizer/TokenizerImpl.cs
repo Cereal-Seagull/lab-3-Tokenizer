@@ -2,10 +2,6 @@
 * Tokenizer that converts a string into a list of tokens, to be used in later labs.
 * Filled with multiple private helper functions to facilitate tokenizing.
 *
-* Implements IDictionary<TKey, TValue> and ICollection Interfaces.
-* 
-* Test cases written by LLM Claude Sonnet 4 but reviewed
-* and confirmed by authors.
 *
 * Bugs: 
 *
