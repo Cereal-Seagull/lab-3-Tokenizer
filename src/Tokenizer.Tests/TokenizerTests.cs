@@ -1,7 +1,8 @@
 /**
-* Summary: 
+* Test cases for all methods in Tokenizer.Token and Tokenizer.TokenizerImpl
 *
-* Bugs: 
+* Test cases written by LLM Claude Sonnet 4 but reviewed
+* and confirmed by authors.
 *
 * @author Reza Naqvi and Will Zoeller
 * @date 9/28/25
@@ -9,23 +10,6 @@
 using System;
 using Tokenizer;
 using Xunit;
-
-// namespace TokenizerTests
-// {
-    // public class TokenizerTests
-    // {
-    //     [Theory]
-    //     [InlineData("x := (2 + 11) * 3", """[["x", VARIABLE], [":=", ASSIGNMENT], ["(", LEFT_PAREN], ["2", INTEGER], ["+", ADD], ["11", INTEGER], [")", RIGHT_PAREN], ["*", TIMES], ["3", INTEGER]]""")]
-    //     public void TestFor_TokenizeFunc(string str, string expectedStr)
-    //     {
-    //         var tkimp = new TokenizerImpl();
-    //         var lst = tkimp.Tokenize(str);
-    //         // Assert.Equal(lst.ToString(), expectedStr);
-    //         Assert.Equal(9, lst.Count);
-    //     }
-    // }
-using Xunit;
-using Tokenizer;
 
 namespace Tokenizer.Tests
 {
@@ -77,23 +61,6 @@ namespace Tokenizer.Tests
             // Assert
             Assert.Equal(expected, result);
         }
-
-        // /// <summary>
-        // /// Verifies that two tokens with the same value are considered equal.
-        // /// </summary>
-        // [Fact]
-        // public void Equals_WithSameValue_ReturnsTrue()
-        // {
-        //     // Arrange
-        //     var token1 = new Token("test", TokenType.VARIABLE);
-        //     var token2 = new Token("test", TokenType.OPERATOR);
-
-        //     // Act
-        //     var result = token1.Equals(token2);
-
-        //     // Assert
-        //     Assert.True(result);
-        // }
 
         /// <summary>
         /// Verifies that two tokens with different values are not considered equal.
@@ -212,7 +179,7 @@ namespace Tokenizer.Tests
 
             // Assert
             Assert.Single(result);
-            Assert.Contains(expectedValue, result[0].ToString());
+            Assert.Contains(expectedValue, result[0].ToString().Split(", ")[0].TrimStart('['));
             Assert.Contains("INTEGER", result[0].ToString());
         }
 
@@ -237,7 +204,7 @@ namespace Tokenizer.Tests
 
             // Assert
             Assert.Single(result);
-            Assert.Contains(expectedValue, result[0].ToString());
+            Assert.Equal(expectedValue, result[0].ToString().Split(", ")[0].TrimStart('['));
             Assert.Contains("FLOAT", result[0].ToString());
         }
 
@@ -335,9 +302,9 @@ namespace Tokenizer.Tests
             Assert.Equal(3, result.Count);
             Assert.Contains("1", result[0].ToString());
             Assert.Contains("INTEGER", result[0].ToString());
-            Assert.Contains("+", result[1].ToString());
+            Assert.Contains("+", result[1].ToString().Split(", ")[0].TrimStart('['));
             Assert.Contains("OPERATOR", result[1].ToString());
-            Assert.Contains("2", result[2].ToString());
+            Assert.Contains("2", result[2].ToString().Split(", ")[0].TrimStart('['));
             Assert.Contains("INTEGER", result[2].ToString());
         }
 
@@ -355,11 +322,11 @@ namespace Tokenizer.Tests
 
             // Assert
             Assert.Equal(3, result.Count);
-            Assert.Contains("x", result[0].ToString());
+            Assert.Contains("x", result[0].ToString().Split(", ")[0].TrimStart('['));
             Assert.Contains("VARIABLE", result[0].ToString());
-            Assert.Contains(":=", result[1].ToString());
+            Assert.Contains(":=", result[1].ToString().Split(", ")[0].TrimStart('['));
             Assert.Contains("ASSIGNMENT", result[1].ToString());
-            Assert.Contains("42", result[2].ToString());
+            Assert.Contains("42", result[2].ToString().Split(", ")[0].TrimStart('['));
             Assert.Contains("INTEGER", result[2].ToString());
         }
 
@@ -550,12 +517,15 @@ namespace Tokenizer.Tests
         {
             // Arrange
             var input = "x:=5+3";
+            var input2 = "x := 5 + 3";
 
             // Act
             var result = _tokenizer.Tokenize(input);
+            var result2 = _tokenizer.Tokenize(input2);
 
             // Assert
             Assert.Equal(5, result.Count);
+            Assert.Equal(5, result2.Count);
         }
 
         #endregion
@@ -593,55 +563,43 @@ namespace Tokenizer.Tests
             
             // Assert
             Assert.Single(result);
-            Assert.Contains("return", result[0].ToString());
+            Assert.Equal("return", result[0].ToString().Split(", ")[0].TrimStart('['));
             Assert.Contains("RETURN", result[0].ToString());
         }
 
         /// <summary>
-        /// Tests that uppercase, mixed case, or capitalized 'return'
+        /// Tests strings that are similar to, i.e. uppercase, mixed case, or capitalized 'return'
         /// are treated as variables, not the return keyword.
         /// Only lowercase 'return' should be recognized as the keyword.
         /// </summary>
         /// <param name="input">Non-lowercase variant of 'return'</param>
         /// <param name="description">Description of test case</param>
         [Theory]
-        [InlineData("RETURN", "Uppercase return")]
-        [InlineData("Return", "Capitalized return")]
-        [InlineData("ReTuRn", "Mixed case return")]
-        [InlineData("rETURN", "Mixed case variant")]
-        [InlineData("retURN", "Partial uppercase")]
-        [InlineData("reTurn", "Camel case")]
-        public void Tokenize_NonLowercaseReturn_ReturnsVariableToken(string input, string description)
+        [InlineData("RETURN")]  // "Uppercase return"
+        [InlineData("Return")]  // "Capitalized return"
+        [InlineData("ReTuRn")]  // "Mixed case return"
+        [InlineData("rETURN")]  // "Mixed case variant"
+        [InlineData("retURN")]  // "Partial uppercase" 
+        [InlineData("reTurn")]  // "Camel case"
+        [InlineData("retur")]   // "Missing last character"
+        [InlineData("ret")]     // "Prefix only"
+        [InlineData("r")]       // "Single character"
+        [InlineData("re")]      // "Two characters"
+        [InlineData("retu")]    // "Four characters"
+        [InlineData("retrun")]
+        [InlineData("retrn")]
+        [InlineData("rturn")]
+        [InlineData("eturn")]
+        [InlineData("returm")]
+        public void Tokenize_NonReturnCases_ReturnsVariableToken(string input)
         {
             // Arrange & Act
             var result = _tokenizer.Tokenize(input);
-            
-            // Assert
-            Assert.Single(result);
-            Assert.Contains("VARIABLE", result[0].ToString());
-        }
 
-        /// <summary>
-        /// Tests that strings similar to 'return' but not exact matches
-        /// are correctly identified as variables.
-        /// </summary>
-        /// <param name="input">Input string that looks like but isn't 'return'</param>
-        /// <param name="description">Description of test case</param>
-        [Theory]
-        [InlineData("retur", "Missing last character")]
-        [InlineData("ret", "Prefix only")]
-        [InlineData("r", "Single character")]
-        [InlineData("re", "Two characters")]
-        [InlineData("retu", "Four characters")]
-        public void Tokenize_PartialReturn_ReturnsVariableToken(string input, string description)
-        {
-            // Arrange & Act
-            var result = _tokenizer.Tokenize(input);
-            
             // Assert
             Assert.Single(result);
             Assert.Contains("VARIABLE", result[0].ToString());
-        }
+        }       
 
         /// <summary>
         /// Tests that strings containing 'return' but with additional characters
@@ -661,7 +619,7 @@ namespace Tokenizer.Tests
             
             // Assert
             Assert.NotEmpty(result);
-            // First token should be a variable (or could be multiple tokens depending on implementation)
+            // First token should be a variable 
             Assert.Contains("VARIABLE", result[0].ToString());
         }
 
@@ -669,7 +627,7 @@ namespace Tokenizer.Tests
         /// Tests return keyword in the context of expressions with values.
         /// </summary>
         [Fact]
-        public void Tokenize_ReturnWithInteger_ReturnsCorrectTokens()
+        public void Tokenize_ProperReturnWithInteger_ReturnsCorrectTokens()
         {
             // Arrange
             var input = "return 42";
@@ -679,9 +637,9 @@ namespace Tokenizer.Tests
             
             // Assert
             Assert.Equal(2, result.Count);
-            Assert.Contains("return", result[0].ToString());
+            Assert.Contains("return", result[0].ToString().Split(", ")[0].TrimStart('['));
             Assert.Contains("RETURN", result[0].ToString());
-            Assert.Contains("42", result[1].ToString());
+            Assert.Contains("42", result[1].ToString().Split(", ")[0].TrimStart('['));
             Assert.Contains("INTEGER", result[1].ToString());
         }
 
@@ -699,9 +657,9 @@ namespace Tokenizer.Tests
             
             // Assert
             Assert.Equal(2, result.Count);
-            Assert.Contains("return", result[0].ToString());
+            Assert.Contains("return", result[0].ToString().Split(", ")[0].TrimStart('['));
             Assert.Contains("RETURN", result[0].ToString());
-            Assert.Contains("x", result[1].ToString());
+            Assert.Contains("x", result[1].ToString().Split(", ")[0].TrimStart('['));
             Assert.Contains("VARIABLE", result[1].ToString());
         }
 
@@ -719,7 +677,7 @@ namespace Tokenizer.Tests
             
             // Assert
             Assert.Equal(4, result.Count);
-            Assert.Contains("return", result[0].ToString());
+            Assert.Contains("return", result[0].ToString().Split(", ")[0].TrimStart('['));
             Assert.Contains("RETURN", result[0].ToString());
         }
 
@@ -740,28 +698,8 @@ namespace Tokenizer.Tests
 
             // Assert
             Assert.Equal(expectedTokenCount, result.Count);
-            Assert.Contains("return", result[0].ToString());
+            Assert.Contains("return", result[0].ToString().Split(", ")[0].TrimStart('['));
             Assert.Contains("RETURN", result[0].ToString());
-        }
-
-        /// <summary>
-        /// Tests that misspelled variations of return are treated as variables.
-        /// </summary>
-        /// <param name="input">Misspelled variable name similar to return</param>
-        [Theory]
-        [InlineData("retrun")]
-        [InlineData("retrn")]
-        [InlineData("rturn")]
-        [InlineData("eturn")]
-        [InlineData("returm")]
-        public void Tokenize_MisspelledReturn_ReturnsVariableToken(string input)
-        {
-            // Arrange & Act
-            var result = _tokenizer.Tokenize(input);
-            
-            // Assert
-            Assert.Single(result);
-            Assert.Contains("VARIABLE", result[0].ToString());
         }
 
         /// <summary>
@@ -796,8 +734,10 @@ namespace Tokenizer.Tests
             
             // Assert
             Assert.Equal(2, result.Count);
-            Assert.Contains("return", result[0].ToString());
-            Assert.Contains("return", result[1].ToString());
+            Assert.Contains("return", result[0].ToString().Split(", ")[0].TrimStart('['));
+            Assert.Contains("RETURN", result[0].ToString());
+            Assert.Contains("return", result[1].ToString().Split(", ")[0].TrimStart('['));
+            Assert.Contains("RETURN", result[1].ToString());
         }
 
         /// <summary>
@@ -851,6 +791,5 @@ namespace Tokenizer.Tests
             Assert.Contains("return", result[0].ToString());
         }    
         #endregion
-            
     }
 }

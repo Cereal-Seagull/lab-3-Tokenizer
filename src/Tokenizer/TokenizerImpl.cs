@@ -1,18 +1,22 @@
-using System.Reflection.Metadata;
-using System.Text;
-
 /**
-* Summary: 
+* Tokenizer that converts a string into a list of tokens, to be used in later labs.
+* Filled with multiple private helper functions to facilitate tokenizing.
+*
+* Implements IDictionary<TKey, TValue> and ICollection Interfaces.
+* 
+* Test cases written by LLM Claude Sonnet 4 but reviewed
+* and confirmed by authors.
 *
 * Bugs: 
 *
 * @author Reza Naqvi and Will Zoeller
 * @date 9/28/25
 */
+using System.Text;
 namespace Tokenizer
 {
     public class TokenizerImpl
-    { 
+    {
         public List<Token> Tokenize(string str)
         {
             var lst = new List<Token>();
@@ -62,7 +66,7 @@ namespace Tokenizer
         }
 
         #region Handlers 
-        
+
 
         private Token HandleAssignment(string s, ref int idx)
         {
@@ -84,7 +88,7 @@ namespace Tokenizer
             string actual = "";
             while (lIdx < 6)
             {
-                actual += (s[idx]);
+                actual += s[idx];
                 expected += letters[lIdx];
 
                 if (actual != expected)
@@ -129,10 +133,10 @@ namespace Tokenizer
             }
             else throw new ArgumentException($"Invalid single operator{s[idx]}");
         }
-        
+
         private Token HandleMultiOp(string s, ref int idx)
         {
-            if (idx  == s.Length-1) return HandleSingleOp(s, ref idx);
+            if (idx == s.Length - 1) return HandleSingleOp(s, ref idx);
 
             string code = String.Concat(s[idx], s[idx + 1]);
             Token token;
@@ -165,15 +169,13 @@ namespace Tokenizer
             return new Token(code, TokenType.VARIABLE);
         }
 
-      
+
         private Token HandleNumber(string s, ref int idx)
         {
             string numbers = "";
-            // char e = s[idx];
             // determines float or long string of ints
             while (idx < s.Length && IsDigit(s[idx]))
             {
-                // e = s[idx];
                 numbers += s[idx];
                 // if (s[idx + 1] == '.') return
                 idx += 1;
@@ -191,9 +193,6 @@ namespace Tokenizer
 
         }
 
- 
-
-        // TODO
         private string HandleAfterDecimalPoint(string s, ref int idx)
         {
             // throw new NotImplementedException();
@@ -251,7 +250,7 @@ namespace Tokenizer
             string s = c.ToString();
             return s == "(" || s == ")" || s == "{" || s == "}";
         }
-        
+
         #endregion
     }
 }

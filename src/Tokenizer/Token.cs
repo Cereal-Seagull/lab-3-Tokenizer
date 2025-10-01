@@ -1,14 +1,14 @@
 /**
-* Summary: 
+* Token class that is to be used in the Tokenizer implementation. In practice,
+* converts a string value (int, float, operator, etc.) into a token with properties 
+* _value (the string itself) and _type (variable, int, float, operator, assignment, keyword)
+* 
 *
 * Bugs: 
 *
 * @author Reza Naqvi and Will Zoeller
 * @date 9/28/25
 */
-using System;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Tokenizer
@@ -23,6 +23,9 @@ namespace Tokenizer
         public const string FLOAT_DIVISION = "/";
         public const string EQUALS = "=";
 
+        // keywords
+        public const string RETURN = "return";
+
         // multiops
         public const string INT_DIVISION = "//";
         public const string EXPONENTIATE = "**";
@@ -36,7 +39,6 @@ namespace Tokenizer
         public const string RIGHT_PAREN = ")";
         public const string LEFT_CURLY = "{";
         public const string RIGHT_CURLY = "}";
-        public const string RETURN = "return";
 
     }
 
@@ -70,7 +72,7 @@ namespace Tokenizer
         public bool Equals(Token other)
         {
             if (other == null) throw new ArgumentNullException();
-            return _value == other._value;
+            return _value == other._value && _type == other._type;
         }     
     }
 
