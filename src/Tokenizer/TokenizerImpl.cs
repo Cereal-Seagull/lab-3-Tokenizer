@@ -1,59 +1,76 @@
 /**
-* Tokenizer that converts a string into a list of tokens, to be used in later labs.
-* Filled with multiple private helper functions to facilitate tokenizing.
+* Tokenizer implementation that converts a string into a list of tokens
+* for the DEC language. Uses private helper methods to handle different
+* categories of tokens such as variables, numbers, operators, keywords,
+* and grouping symbols.
 *
+* Bugs: None known
 *
-* Bugs: 
-*
-* @author Reza Naqvi and Will Zoeller
+* @author Reza Naqvi
+* @author Will Zoeller
 * @date 9/28/25
 */
 using System.Text;
+
 namespace Tokenizer
 {
+    /// <summary>
+    /// Implements lexical analysis for the DEC language.
+    /// The tokenizer scans character by character and produces
+    /// a list of tokens, delegating parsing to helper methods
+    /// for assignment, operators, numbers, keywords, and grouping.
+    /// </summary>
     public class TokenizerImpl
     {
+        /// <summary>
+        /// Converts the input string into a list of tokens by checking each
+        /// character and calling the appropriate handler based on its type.
+        /// Whitespace is ignored.
+        /// </summary>
+        /// <param name="str">The input string to tokenize.</param>
+        /// <returns>A list of tokens extracted from the input string.</returns>
         public List<Token> Tokenize(string str)
         {
             var lst = new List<Token>();
-            // watch out for multiple-char ops
-            // string fmultChar = "";
             int idx = 0;
+
+            // Main loop scans each character until the end of the string
             while (idx < str.Length)
             {
                 char e = str[idx];
+
+                // Skip whitespace, handle meaningful characters
                 if (!IsWhiteSpace(str[idx]))
                 {
-                    // if assignment
+                    // Handle assignment operator (":=")
                     if (e == ':') lst.Add(HandleAssignment(str, ref idx));
 
-                    // if keyword, handle return???
+                    // Handle "return" keyword (or fallback to variable)
                     else if (e == 'r') lst.Add(HandleReturn(str, ref idx));
 
-                    // if a letter, handle variable
+                    // Handle variable (sequence of letters)
                     else if (IsLetter(e)) lst.Add(HandleVariable(str, ref idx));
 
-                    // if number, handle int/float
+                    // Handle numbers (integer or float)
                     else if (IsDigit(e)) lst.Add(HandleNumber(str, ref idx));
 
-                    // if ()/{}, handle grouping
+                    // Handle grouping symbols: (), {}
                     else if (IsGrouper(e)) lst.Add(HandleGrouping(str, ref idx));
 
-                    // if +, -, %
+                    // Handle single-character operators: +, -, %, =
                     else if (e == '+' || e == '-' || e == '%' || e == '=')
                     {
                         lst.Add(HandleSingleOp(str, ref idx));
                     }
 
-                    // if *, **, /, //
+                    // Handle multi-character operators: **, //
                     else if (e == '/' || e == '*')
                     {
-                        // MultiOp calls Single Op if there's only 1 * or 1 /
+                        // Delegates to HandleSingleOp if only one symbol
                         lst.Add(HandleMultiOp(str, ref idx));
                     }
 
-                    // if neither, handle operator
-
+                    // Unrecognized characters are skipped or would raise exceptions
                 }
                 else idx += 1;
             }
@@ -61,9 +78,16 @@ namespace Tokenizer
             return lst;
         }
 
-        #region Handlers 
+        #region Handlers
+        // Methods that extract specific token types from the input
 
-
+        /// <summary>
+        /// Handles assignment operator ":=".
+        /// </summary>
+        /// <param name="s">The input string being tokenized.</param>
+        /// <param name="idx">Reference to the current index in the string.</param>
+        /// <returns>A token of type ASSIGNMENT.</returns>
+        /// <exception cref="ArgumentException">Thrown if the operator is incomplete or invalid.</exception>
         private Token HandleAssignment(string s, ref int idx)
         {
             if (idx == s.Length - 1) throw new ArgumentException($"Invalid Assignment Operator: {idx}");
@@ -72,21 +96,29 @@ namespace Tokenizer
 
             idx += 2;
             return new Token(code, TokenType.ASSIGNMENT);
-
         }
 
+        /// <summary>
+        /// Handles detection of the "return" keyword.
+        /// Falls back to variable handling if characters do not exactly match.
+        /// </summary>
         private Token HandleReturn(string s, ref int idx)
         {
+            // If remaining string is too short, treat as variable
             if (s.Length - idx < 6) return HandleVariable(s, ref idx);
+
             List<char> letters = new List<char> { 'r', 'e', 't', 'u', 'r', 'n' };
             int lIdx = 0;
             string expected = "";
             string actual = "";
+
+            // Build actual vs. expected letter by letter
             while (lIdx < 6)
             {
                 actual += s[idx];
                 expected += letters[lIdx];
 
+                // If mismatch occurs, reset and treat as variable
                 if (actual != expected)
                 {
                     idx -= lIdx;
@@ -95,31 +127,29 @@ namespace Tokenizer
                 idx += 1;
                 lIdx += 1;
             }
+
+            // Confirm keyword if at end, or followed by whitespace/grouper
             if (idx == s.Length || IsWhiteSpace(s[idx]) || IsGrouper(s[idx]))
             {
                 return new Token(actual, TokenType.RETURN);
             }
-
-            // else if (IsWhiteSpace(s[idx]))
-            // {
-            //     return new Token(actual, TokenType.RETURN);
-            // }
-
             else
             {
+                // Otherwise revert and treat as variable
                 idx -= lIdx;
                 return HandleVariable(s, ref idx);
             }
-
-
         }
 
+        /// <summary>
+        /// Handles single-character operators such as +, -, *, /, %, =.
+        /// </summary>
         private Token HandleSingleOp(string s, ref int idx)
         {
-            // This is O(n), should be an O(1) soln
+            // Search for operator in predefined list
             List<string> ops = new List<string> { "+", "-", "*", "/", "%", "=" };
-            //Create a new token based on if input contains one of the operators
             int index = ops.IndexOf(s[idx].ToString());
+
             if (index != -1)
             {
                 string singleOp = ops[index];
@@ -127,19 +157,22 @@ namespace Tokenizer
                 idx += 1;
                 return token;
             }
-            else throw new ArgumentException($"Invalid single operator{s[idx]}");
+            else throw new ArgumentException($"Invalid single operator {s[idx]}");
         }
 
+        /// <summary>
+        /// Handles multi-character operators (** for exponentiation, // for integer division).
+        /// Falls back to HandleSingleOp if only one symbol.
+        /// </summary>
         private Token HandleMultiOp(string s, ref int idx)
         {
             if (idx == s.Length - 1) return HandleSingleOp(s, ref idx);
 
             string code = String.Concat(s[idx], s[idx + 1]);
-            Token token;
+
             if (code == TokenConstants.EXPONENTIATE || code == TokenConstants.INT_DIVISION)
             {
-                // create exponentiation token
-                token = new Token(code, TokenType.OPERATOR);
+                var token = new Token(code, TokenType.OPERATOR);
                 idx += 2;
                 return token;
             }
@@ -147,12 +180,12 @@ namespace Tokenizer
             {
                 return HandleSingleOp(s, ref idx);
             }
-            // create multiplication token
-            // else return HandleSingleOp(s[0]);
             else throw new ArgumentException($"Invalid multi-operator: {code}");
-
         }
 
+        /// <summary>
+        /// Handles variables (identifiers), which are sequences of letters.
+        /// </summary>
         private Token HandleVariable(string s, ref int idx)
         {
             string code = "";
@@ -161,22 +194,24 @@ namespace Tokenizer
                 code += s[idx];
                 idx += 1;
             }
-            //idx -= 1;
             return new Token(code, TokenType.VARIABLE);
         }
 
-
+        /// <summary>
+        /// Handles numbers and determines whether they are integers or floats.
+        /// </summary>
         private Token HandleNumber(string s, ref int idx)
         {
             string numbers = "";
-            // determines float or long string of ints
+
+            // Collect digits before decimal point
             while (idx < s.Length && IsDigit(s[idx]))
             {
                 numbers += s[idx];
-                // if (s[idx + 1] == '.') return
                 idx += 1;
             }
 
+            // Check for decimal point to classify as float
             if (idx < s.Length && s[idx].ToString() == TokenConstants.DECIMAL_POINT)
             {
                 numbers += s[idx];
@@ -184,35 +219,38 @@ namespace Tokenizer
                 numbers += HandleAfterDecimalPoint(s, ref idx);
                 return new Token(numbers, TokenType.FLOAT);
             }
-            //idx -= 1;
-            return new Token(numbers, TokenType.INTEGER);
 
+            return new Token(numbers, TokenType.INTEGER);
         }
 
+        /// <summary>
+        /// Handles digits appearing after a decimal point in a float literal.
+        /// </summary>
         private string HandleAfterDecimalPoint(string s, ref int idx)
         {
-            // throw new NotImplementedException();
             string decNums = "";
-            // determines float or long string of ints
             while (idx < s.Length && IsDigit(s[idx]))
             {
                 decNums += s[idx];
                 idx += 1;
             }
-            //idx -= 1;
             return decNums;
         }
 
+        /// <summary>
+        /// Handles grouping symbols: ( ), { }.
+        /// </summary>
         private Token HandleGrouping(string s, ref int idx)
         {
             TokenType tkType;
             string code = s[idx].ToString();
+
             if (code == TokenConstants.LEFT_PAREN) tkType = TokenType.LEFT_PAREN;
             else if (code == TokenConstants.RIGHT_PAREN) tkType = TokenType.RIGHT_PAREN;
             else if (code == TokenConstants.LEFT_CURLY) tkType = TokenType.LEFT_CURLY;
             else if (code == TokenConstants.RIGHT_CURLY) tkType = TokenType.RIGHT_CURLY;
-
             else throw new ArgumentException($"Unrecognized Grouping character: {code}");
+
             idx += 1;
             return new Token(code, tkType);
         }
@@ -220,27 +258,44 @@ namespace Tokenizer
         #endregion
 
         #region Identifiers
+        // Helper methods to classify characters
 
+        /// <summary>
+        /// Determines if a character is whitespace.
+        /// </summary>
         private bool IsWhiteSpace(char c)
         {
             return String.IsNullOrWhiteSpace(c.ToString());
         }
 
+        /// <summary>
+        /// Determines if a character is a digit (0–9).
+        /// </summary>
         private bool IsDigit(char c)
         {
             return Char.IsDigit(c);
         }
 
+        /// <summary>
+        /// Determines if a character could be part of a float literal
+        /// (either digit or decimal point).
+        /// </summary>
         private bool IsFloat(char c)
         {
             return Char.IsDigit(c) || c == '.';
         }
 
+        /// <summary>
+        /// Determines if a character is an alphabetic letter.
+        /// </summary>
         private bool IsLetter(char c)
         {
             return Char.IsLetter(c);
         }
 
+        /// <summary>
+        /// Determines if a character is a grouping symbol (() or {}).
+        /// </summary>
         private bool IsGrouper(char c)
         {
             string s = c.ToString();
