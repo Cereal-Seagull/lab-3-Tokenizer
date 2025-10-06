@@ -34,6 +34,8 @@ namespace Tokenizer
             var lst = new List<Token>();
             int idx = 0;
 
+            // return keyword may be differnt, make all char in str lowercase for tests (assuming not case-sensitive)
+
             // Main loop scans each character until the end of the string
             while (idx < str.Length)
             {
@@ -72,6 +74,7 @@ namespace Tokenizer
 
                     // Unrecognized characters are skipped or would raise exceptions
                 }
+                // If whitespace, handle functions all increment index
                 else idx += 1;
             }
 
@@ -92,7 +95,7 @@ namespace Tokenizer
         {
             if (idx == s.Length - 1) throw new ArgumentException($"Invalid Assignment Operator: {idx}");
             string code = String.Concat(s[idx], s[idx + 1]);
-            if (code != ":=") throw new ArgumentException($"Invalid Assignment Operator: {code}");
+            if (code != TokenConstants.ASSIGNMENT) throw new ArgumentException($"Invalid Assignment Operator: {code}");
 
             idx += 2;
             return new Token(code, TokenType.ASSIGNMENT);
@@ -105,21 +108,22 @@ namespace Tokenizer
         private Token HandleReturn(string s, ref int idx)
         {
             // If remaining string is too short, treat as variable
-            if (s.Length - idx < 6) return HandleVariable(s, ref idx);
+            if (s.Length - idx < TokenConstants.RETURN.Length) return HandleVariable(s, ref idx);
 
-            List<char> letters = new List<char> { 'r', 'e', 't', 'u', 'r', 'n' };
+            // use string constant
+            // List<char> letters = new List<char> { 'r', 'e', 't', 'u', 'r', 'n' };
             int lIdx = 0;
-            string expected = "";
+            // string expected = "";
             string actual = "";
 
             // Build actual vs. expected letter by letter
             while (lIdx < 6)
             {
                 actual += s[idx];
-                expected += letters[lIdx];
+                // expected += letters[lIdx];
 
                 // If mismatch occurs, reset and treat as variable
-                if (actual != expected)
+                if (s[idx] != TokenConstants.RETURN[lIdx])
                 {
                     idx -= lIdx;
                     return HandleVariable(s, ref idx);
@@ -147,16 +151,18 @@ namespace Tokenizer
         private Token HandleSingleOp(string s, ref int idx)
         {
             // Search for operator in predefined list
-            List<string> ops = new List<string> { "+", "-", "*", "/", "%", "=" };
+            List<string> ops = new List<string> { TokenConstants.PLUS, TokenConstants.SUBTRACTION, TokenConstants.TIMES, TokenConstants.FLOAT_DIVISION, TokenConstants.MODULUS, TokenConstants.EQUALS };
             int index = ops.IndexOf(s[idx].ToString());
-
-            if (index != -1)
-            {
-                string singleOp = ops[index];
-                var token = new Token(singleOp, TokenType.OPERATOR);
-                idx += 1;
-                return token;
-            }
+            idx += 1;
+            // condense down
+            // if (index != -1)
+            // {
+            //     string singleOp = ops[index];
+            //     var token = new Token(singleOp, TokenType.OPERATOR);
+            //     idx += 1;
+            //     return token;
+            // }
+            if (index != -1) return new Token(ops[index], TokenType.OPERATOR);
             else throw new ArgumentException($"Invalid single operator {s[idx]}");
         }
 
@@ -166,6 +172,7 @@ namespace Tokenizer
         /// </summary>
         private Token HandleMultiOp(string s, ref int idx)
         {
+            // add comments plz
             if (idx == s.Length - 1) return HandleSingleOp(s, ref idx);
 
             string code = String.Concat(s[idx], s[idx + 1]);
@@ -198,25 +205,21 @@ namespace Tokenizer
         }
 
         /// <summary>
-        /// Handles numbers and determines whether they are integers or floats.
+        /// Handles numbers and determines whether they are integers or floats. If float, run HandleDigit again after decimal point.
         /// </summary>
         private Token HandleNumber(string s, ref int idx)
         {
             string numbers = "";
 
             // Collect digits before decimal point
-            while (idx < s.Length && IsDigit(s[idx]))
-            {
-                numbers += s[idx];
-                idx += 1;
-            }
+            numbers += HandleDigits(s, ref idx);
 
             // Check for decimal point to classify as float
             if (idx < s.Length && s[idx].ToString() == TokenConstants.DECIMAL_POINT)
             {
                 numbers += s[idx];
                 idx += 1;
-                numbers += HandleAfterDecimalPoint(s, ref idx);
+                numbers += HandleDigits(s, ref idx);
                 return new Token(numbers, TokenType.FLOAT);
             }
 
@@ -224,10 +227,11 @@ namespace Tokenizer
         }
 
         /// <summary>
-        /// Handles digits appearing after a decimal point in a float literal.
+        /// Handles digits.
         /// </summary>
-        private string HandleAfterDecimalPoint(string s, ref int idx)
+        private string HandleDigits(string s, ref int idx)
         {
+            // redundant - do handleInteger
             string decNums = "";
             while (idx < s.Length && IsDigit(s[idx]))
             {
