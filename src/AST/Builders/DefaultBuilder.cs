@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-
 namespace AST
 {
     /// <summary>
@@ -10,62 +6,62 @@ namespace AST
     public class DefaultBuilder
     {
         // Override all creation methods to return null
-        public PlusNode CreatePlusNode(ExpressionNode left, ExpressionNode right)
+        public virtual PlusNode CreatePlusNode(ExpressionNode left, ExpressionNode right)
         {
             throw new NotImplementedException();
         }
 
-        public MinusNode CreateMinusNode(ExpressionNode left, ExpressionNode right)
+        public virtual MinusNode CreateMinusNode(ExpressionNode left, ExpressionNode right)
         {
             throw new NotImplementedException();
         }
 
-        public TimesNode CreateTimesNode(ExpressionNode left, ExpressionNode right)
+        public virtual TimesNode CreateTimesNode(ExpressionNode left, ExpressionNode right)
         {
             throw new NotImplementedException();
         }
 
-        public FloatDivNode CreateFloatDivNode(ExpressionNode left, ExpressionNode right)
+        public virtual FloatDivNode CreateFloatDivNode(ExpressionNode left, ExpressionNode right)
         {
             throw new NotImplementedException();
         }
 
-        public IntDivNode CreateIntDivNode(ExpressionNode left, ExpressionNode right)
+        public virtual IntDivNode CreateIntDivNode(ExpressionNode left, ExpressionNode right)
         {
             throw new NotImplementedException();
         }
 
-        public ModulusNode CreateModulusNode(ExpressionNode left, ExpressionNode right)
+        public virtual ModulusNode CreateModulusNode(ExpressionNode left, ExpressionNode right)
         {
             throw new NotImplementedException();
         }
 
-        public ExponentiationNode CreateExponentiationNode(ExpressionNode left, ExpressionNode right)
+        public virtual ExponentiationNode CreateExponentiationNode(ExpressionNode left, ExpressionNode right)
         {
             throw new NotImplementedException();
         }
 
-        public LiteralNode CreateLiteralNode(object value)
+        public virtual LiteralNode CreateLiteralNode(object value)
         {
             throw new NotImplementedException();
         }
 
-        public VariableNode CreateVariableNode(string name)
+        public virtual VariableNode CreateVariableNode(string name)
         {
             throw new NotImplementedException();
         }
 
-        public AssignmentStmt CreateAssignmentStmt(VariableNode variable, ExpressionNode expression)
+        public virtual AssignmentStmt CreateAssignmentStmt(VariableNode variable, ExpressionNode expression)
         {
             throw new NotImplementedException();
         }
 
-        public ReturnStmt CreateReturnStmt(ExpressionNode expression)
+        public virtual ReturnStmt CreateReturnStmt(ExpressionNode expression)
         {
             throw new NotImplementedException();
         }
 
-        public BlockStmt CreateBlockStmt(SymbolTable<string, object> symbolTable)
+        public virtual BlockStmt CreateBlockStmt(SymbolTable<string, object> symbolTable)
         {
             throw new NotImplementedException();
         }
