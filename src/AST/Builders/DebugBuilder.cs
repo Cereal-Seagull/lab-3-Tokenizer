@@ -1,7 +1,7 @@
 namespace AST
 {
     /// <summary>
-    /// NullBuilder that does not create any objects; useful for assessing parsing problems
+    /// DebugBuilder that does not create any objects; useful for assessing parsing problems
     /// while avoiding object creation
     /// </summary>
     public class DebugBuilder : DefaultBuilder

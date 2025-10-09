@@ -5,65 +5,82 @@ namespace AST
     /// </summary>
     public class DefaultBuilder
     {
-        // Override all creation methods to return null
+        #region Operator Node Creation
         public virtual PlusNode CreatePlusNode(ExpressionNode left, ExpressionNode right)
         {
-            throw new NotImplementedException();
+            PlusNode pn = new PlusNode();
+            pn.SetChildren(left, right);
+            return pn;
         }
 
         public virtual MinusNode CreateMinusNode(ExpressionNode left, ExpressionNode right)
         {
-            throw new NotImplementedException();
+            MinusNode mn = new MinusNode();
+            mn.SetChildren(left, right);
+            return mn;
         }
 
         public virtual TimesNode CreateTimesNode(ExpressionNode left, ExpressionNode right)
         {
-            throw new NotImplementedException();
+            TimesNode tn = new TimesNode();
+            tn.SetChildren(left, right);
+            return tn;
         }
 
         public virtual FloatDivNode CreateFloatDivNode(ExpressionNode left, ExpressionNode right)
         {
-            throw new NotImplementedException();
+            FloatDivNode fdn = new FloatDivNode();
+            fdn.SetChildren(left, right);
+            return fdn;
         }
 
         public virtual IntDivNode CreateIntDivNode(ExpressionNode left, ExpressionNode right)
         {
-            throw new NotImplementedException();
+            IntDivNode idn = new IntDivNode();
+            idn.SetChildren(left, right);
+            return idn;
         }
 
         public virtual ModulusNode CreateModulusNode(ExpressionNode left, ExpressionNode right)
         {
-            throw new NotImplementedException();
+            ModulusNode mdn = new ModulusNode();
+            mdn.SetChildren(left, right);
+            return mdn;
         }
 
         public virtual ExponentiationNode CreateExponentiationNode(ExpressionNode left, ExpressionNode right)
         {
-            throw new NotImplementedException();
+            ExponentiationNode expn = new ExponentiationNode();
+            expn.SetChildren(left, right);
+            return expn;
         }
-
+        #endregion
+        #region Expression Creation
         public virtual LiteralNode CreateLiteralNode(object value)
         {
-            throw new NotImplementedException();
+            return new LiteralNode(value);
         }
 
         public virtual VariableNode CreateVariableNode(string name)
         {
-            throw new NotImplementedException();
+            return new VariableNode(name);
         }
-
+        #endregion
+        #region Statement Creation
         public virtual AssignmentStmt CreateAssignmentStmt(VariableNode variable, ExpressionNode expression)
         {
-            throw new NotImplementedException();
+            return new AssignmentStmt(variable, expression);
         }
 
         public virtual ReturnStmt CreateReturnStmt(ExpressionNode expression)
         {
-            throw new NotImplementedException();
+            return new ReturnStmt(expression);
         }
 
         public virtual BlockStmt CreateBlockStmt(SymbolTable<string, object> symbolTable)
         {
-            throw new NotImplementedException();
+            return new BlockStmt(symbolTable);
         }
+        #endregion
     }
 }
