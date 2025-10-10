@@ -9,62 +9,74 @@ namespace AST
         // Override all creation methods to return null
         public override PlusNode CreatePlusNode(ExpressionNode left, ExpressionNode right)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Plus node created");
+            return base.CreatePlusNode(left, right);
         }
 
         public override MinusNode CreateMinusNode(ExpressionNode left, ExpressionNode right)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Minus node created");
+            return base.CreateMinusNode(left, right);
         }
 
         public override TimesNode CreateTimesNode(ExpressionNode left, ExpressionNode right)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Times node created");
+            return base.CreateTimesNode(left, right);
         }
 
         public override FloatDivNode CreateFloatDivNode(ExpressionNode left, ExpressionNode right)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Float Division node created");
+            return base.CreateFloatDivNode(left, right);
         }
 
         public override IntDivNode CreateIntDivNode(ExpressionNode left, ExpressionNode right)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Integer Division Node created.");
+            return base.CreateIntDivNode(left, right);
         }
 
         public override ModulusNode CreateModulusNode(ExpressionNode left, ExpressionNode right)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Modulus node created.");
+            return base.CreateModulusNode(left, right);
         }
 
         public override ExponentiationNode CreateExponentiationNode(ExpressionNode left, ExpressionNode right)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Exponentiation Node created.");
+            return base.CreateExponentiationNode(left, right);
         }
 
         public override LiteralNode CreateLiteralNode(object value)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Literal Node created.");
+            return base.CreateLiteralNode(value);
         }
 
         public override VariableNode CreateVariableNode(string name)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Variable Node created.");
+            return base.CreateVariableNode(name);
         }
 
         public override AssignmentStmt CreateAssignmentStmt(VariableNode variable, ExpressionNode expression)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Assignment Node created.");
+            return base.CreateAssignmentStmt(variable, expression);
         }
 
         public override ReturnStmt CreateReturnStmt(ExpressionNode expression)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Return Statement Created.");
+            return base.CreateReturnStmt(expression);
         }
 
-        public override BlockStmt CreateBlockStmt(SymbolTable<string, object> symbolTable)
+        public override BlockStmt CreateBlockStmt(List<Statement> lst)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Block Statement Created.");
+            return base.CreateBlockStmt(lst);
         }
     }
 }
