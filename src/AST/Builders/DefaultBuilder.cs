@@ -77,9 +77,9 @@ namespace AST
             return new ReturnStmt(expression);
         }
 
-        public virtual BlockStmt CreateBlockStmt(SymbolTable<string, object> symbolTable)
+        public virtual BlockStmt CreateBlockStmt(List<Statement> lst)
         {
-            return new BlockStmt(symbolTable);
+            return new BlockStmt(lst);
         }
         #endregion
     }

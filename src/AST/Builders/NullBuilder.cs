@@ -65,7 +65,7 @@ namespace AST
             return null;
         }
 
-        public override BlockStmt CreateBlockStmt(SymbolTable<string, object> symbolTable)
+        public override BlockStmt CreateBlockStmt(List<Statement> lst)
         {
             return null;
         }
