@@ -5,30 +5,71 @@ namespace AST
 {
     #region Nodes
 
-
+    /// <summary>
+    /// Abstract base class for all expression nodes in the abstract syntax tree.
+    /// Expression nodes represent values that can be evaluated.
+    /// </summary>
     public abstract class ExpressionNode
     {
+        /// <summary>
+        /// Converts the expression node back into its source code representation.
+        /// </summary>
+        /// <param name="level">The indentation level for formatting. Default is 0.</param>
+        /// <returns>A string representation of the expression node.</returns>
         public abstract string Unparse(int level = 0);
     }
 
+    /// <summary>
+    /// Represents a literal value in the abstract syntax tree.
+    /// Literal values are constant values such as numbers, strings, or booleans.
+    /// </summary>
     public class LiteralNode : ExpressionNode
     {
+        /// <summary>
+        /// Gets the literal value stored in this node.
+        /// </summary>
         protected object Value { get; private set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LiteralNode"/> class.
+        /// </summary>
+        /// <param name="val">The literal value to store in this node.</param>
         public LiteralNode(object val) { Value = val; } // do we want Value to be object or int? 
                                                         //need ints and floats
 
+        /// <summary>
+        /// Converts the literal node back into its source code representation.
+        /// </summary>
+        /// <param name="level">The indentation level for formatting.</param>
+        /// <returns>A string representation of the literal value with appropriate indentation.</returns>
         public override string Unparse(int level)
         {
             return GeneralUtils.GetIndentation(level) + Value.ToString();
         }
     }
     
+    /// <summary>
+    /// Represents a variable reference in the abstract syntax tree.
+    /// Variable nodes store the name of a variable being referenced.
+    /// </summary>
     public class VariableNode : ExpressionNode
     {
+        /// <summary>
+        /// Gets the name of the variable.
+        /// </summary>
         protected string Name { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VariableNode"/> class.
+        /// </summary>
+        /// <param name="str">The name of the variable.</param>
         public VariableNode(string str) { Name = str; }
 
+        /// <summary>
+        /// Converts the variable node back into its source code representation.
+        /// </summary>
+        /// <param name="level">The indentation level for formatting.</param>
+        /// <returns>A string representation of the variable name with appropriate indentation.</returns>
         public override string Unparse(int level)
         {
             return GeneralUtils.GetIndentation(level) + Name;
@@ -38,15 +79,39 @@ namespace AST
     #endregion
     #region Operators
 
-
+    /// <summary>
+    /// Abstract base class for all operator nodes in the abstract syntax tree.
+    /// Operators are expressions that perform operations on other expressions.
+    /// </summary>
     public abstract class Operator : ExpressionNode { }
 
+    /// <summary>
+    /// Abstract base class for binary operators in the abstract syntax tree.
+    /// Binary operators take two operands (left and right) and produce a result.
+    /// </summary>
     public abstract class BinaryOperator : Operator
     {
+        /// <summary>
+        /// The left operand of the binary operation.
+        /// </summary>
         protected ExpressionNode Left;
+
+        /// <summary>
+        /// The operator symbol (e.g., "+", "-", "*").
+        /// </summary>
         protected string SIGN;
+
+        /// <summary>
+        /// The right operand of the binary operation.
+        /// </summary>
         protected ExpressionNode Right;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BinaryOperator"/> class.
+        /// </summary>
+        /// <param name="l">The left operand expression node.</param>
+        /// <param name="s">The operator symbol.</param>
+        /// <param name="r">The right operand expression node.</param>
         public BinaryOperator(ExpressionNode l, string s, ExpressionNode r)
         {
             Left = l;
@@ -54,12 +119,30 @@ namespace AST
             Right = r;
         }
 
+        /// <summary>
+        /// Sets the left operand of the binary operation.
+        /// </summary>
+        /// <param name="l">The left operand expression node.</param>
         public void SetLeft(ExpressionNode l) { Left = l; }
 
+        /// <summary>
+        /// Sets the right operand of the binary operation.
+        /// </summary>
+        /// <param name="r">The right operand expression node.</param>
         public void SetRight(ExpressionNode r) { Right = r; }
 
+        /// <summary>
+        /// Sets both the left and right operands of the binary operation.
+        /// </summary>
+        /// <param name="l">The left operand expression node.</param>
+        /// <param name="r">The right operand expression node.</param>
         public void SetChildren(ExpressionNode l, ExpressionNode r) { SetLeft(l); SetRight(r); }
 
+        /// <summary>
+        /// Converts the binary operator node back into its source code representation.
+        /// </summary>
+        /// <param name="level">The indentation level for formatting.</param>
+        /// <returns>A string representation of the binary operation in the format "left SIGN right".</returns>
         public override string Unparse(int level)
         {
             StringBuilder str = new StringBuilder();
@@ -75,66 +158,151 @@ namespace AST
 
     }
 
+    /// <summary>
+    /// Represents an addition operation in the abstract syntax tree.
+    /// Performs addition of two operands using the "+" operator.
+    /// </summary>
     // null likely is placeholder for null node to be implemented in NullBuilder
     public class PlusNode : BinaryOperator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlusNode"/> class.
+        /// Operands are initialized to null and should be set using SetChildren.
+        /// </summary>
         public PlusNode() : base(null, TokenConstants.PLUS, null) { }
     }
 
+    /// <summary>
+    /// Represents a subtraction operation in the abstract syntax tree.
+    /// Performs subtraction of two operands using the "-" operator.
+    /// </summary>
     public class MinusNode : BinaryOperator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MinusNode"/> class.
+        /// Operands are initialized to null and should be set using SetChildren.
+        /// </summary>
         public MinusNode() : base(null, TokenConstants.SUBTRACTION, null) { }
     }
 
+    /// <summary>
+    /// Represents a multiplication operation in the abstract syntax tree.
+    /// Performs multiplication of two operands using the "*" operator.
+    /// </summary>
     public class TimesNode : BinaryOperator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TimesNode"/> class.
+        /// Operands are initialized to null and should be set using SetChildren.
+        /// </summary>
         public TimesNode() : base(null, TokenConstants.TIMES, null) { }
     }
 
+    /// <summary>
+    /// Represents a floating-point division operation in the abstract syntax tree.
+    /// Performs division of two operands using the "/" operator, resulting in a floating-point value.
+    /// </summary>
     public class FloatDivNode : BinaryOperator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FloatDivNode"/> class.
+        /// Operands are initialized to null and should be set using SetChildren.
+        /// </summary>
         public FloatDivNode() : base(null, TokenConstants.FLOAT_DIVISION, null) { }
     }
 
+    /// <summary>
+    /// Represents an integer division operation in the abstract syntax tree.
+    /// Performs division of two operands using the "//" operator, resulting in an integer value.
+    /// </summary>
     public class IntDivNode : BinaryOperator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntDivNode"/> class.
+        /// Operands are initialized to null and should be set using SetChildren.
+        /// </summary>
         public IntDivNode() : base(null, TokenConstants.INT_DIVISION, null) { }
     }
 
+    /// <summary>
+    /// Represents a modulus operation in the abstract syntax tree.
+    /// Computes the remainder of division using the "%" operator.
+    /// </summary>
     public class ModulusNode : BinaryOperator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ModulusNode"/> class.
+        /// Operands are initialized to null and should be set using SetChildren.
+        /// </summary>
         public ModulusNode() : base(null, TokenConstants.MODULUS, null) { }
     }
 
+    /// <summary>
+    /// Represents an exponentiation operation in the abstract syntax tree.
+    /// Raises the left operand to the power of the right operand using the "**" operator.
+    /// </summary>
     public class ExponentiationNode : BinaryOperator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ExponentiationNode"/> class.
+        /// Operands are initialized to null and should be set using SetChildren.
+        /// </summary>
         public ExponentiationNode() : base(null, TokenConstants.EXPONENTIATE, null) { }
     }
 
     #endregion
     #region Statements
 
-
+    /// <summary>
+    /// Abstract base class for all statement nodes in the abstract syntax tree.
+    /// Statements represent executable actions or declarations in the program.
+    /// </summary>
     public abstract class Statement
     {
+        /// <summary>
+        /// Converts the statement node back into its source code representation.
+        /// </summary>
+        /// <param name="level">The indentation level for formatting. Default is 0.</param>
+        /// <returns>A string representation of the statement.</returns>
         public abstract string Unparse(int level = 0);
     }
 
+    /// <summary>
+    /// Represents a block of statements in the abstract syntax tree.
+    /// A block contains zero or more statements enclosed in curly braces.
+    /// </summary>
     public class BlockStmt : Statement
     {
+        /// <summary>
+        /// The list of statements contained within this block.
+        /// </summary>
         private List<Statement> Statements;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BlockStmt"/> class.
+        /// </summary>
+        /// <param name="lst">The list of statements to include in the block.</param>
         public BlockStmt(List<Statement> lst)
         {
             Statements = lst;
         }
 
+        /// <summary>
+        /// Adds a statement to the end of this block.
+        /// </summary>
+        /// <param name="obj">The statement to add to the block.</param>
         // Adds a statement to Block
         public void AddStmt(Statement obj)
         {
             Statements.Add(obj);
         }
 
+        /// <summary>
+        /// Converts the block statement back into its source code representation.
+        /// The block is formatted with opening and closing curly braces and each statement on its own line.
+        /// </summary>
+        /// <param name="level">The indentation level for formatting.</param>
+        /// <returns>A string representation of the block with all contained statements.</returns>
         public override string Unparse(int level)
         {
             StringBuilder str = new StringBuilder();
@@ -155,18 +323,43 @@ namespace AST
         }
     }
 
+    /// <summary>
+    /// Represents an assignment statement in the abstract syntax tree.
+    /// Assignment statements assign the value of an expression to a variable.
+    /// </summary>
     public class AssignmentStmt : Statement
     {
+        /// <summary>
+        /// The variable being assigned to.
+        /// </summary>
         protected VariableNode Var;
+
+        /// <summary>
+        /// The assignment operator symbol ("=").
+        /// </summary>
         protected const string SIGN = TokenConstants.ASSIGNMENT;
+
+        /// <summary>
+        /// The expression whose value is being assigned.
+        /// </summary>
         protected ExpressionNode Exp;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AssignmentStmt"/> class.
+        /// </summary>
+        /// <param name="v">The variable node representing the target of the assignment.</param>
+        /// <param name="x">The expression node representing the value to assign.</param>
         public AssignmentStmt(VariableNode v, ExpressionNode x)
         {
             Var = v;
             Exp = x;
         }
 
+        /// <summary>
+        /// Converts the assignment statement back into its source code representation.
+        /// </summary>
+        /// <param name="level">The indentation level for formatting.</param>
+        /// <returns>A string representation of the assignment in the format "variable = expression".</returns>
         public override string Unparse(int level)
         {
             return GeneralUtils.GetIndentation(level) + Var.Unparse(0) + " " + SIGN 
@@ -174,15 +367,36 @@ namespace AST
         }
     }
 
+    /// <summary>
+    /// Represents a return statement in the abstract syntax tree.
+    /// Return statements specify the value to return from a function or method.
+    /// </summary>
     public class ReturnStmt : Statement
     {
+        /// <summary>
+        /// The expression whose value is being returned.
+        /// </summary>
         protected ExpressionNode Exp;
+
+        /// <summary>
+        /// The return keyword.
+        /// </summary>
         protected const string SIGN = TokenConstants.RETURN;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReturnStmt"/> class.
+        /// </summary>
+        /// <param name="x">The expression node representing the value to return.</param>
         public ReturnStmt(ExpressionNode x)
         {
             Exp = x;
         }
 
+        /// <summary>
+        /// Converts the return statement back into its source code representation.
+        /// </summary>
+        /// <param name="level">The indentation level for formatting.</param>
+        /// <returns>A string representation of the return statement in the format "return expression".</returns>
         public override string Unparse(int level)
         {
             return GeneralUtils.GetIndentation(level) + SIGN + " " + Exp.Unparse(0);
