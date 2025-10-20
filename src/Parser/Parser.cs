@@ -94,21 +94,29 @@ namespace Parser
             else if (middle.Type.Equals(TokenType.OPERATOR))
             {
                 if (tokens.Count < 3) throw new ParseException($"Invalid Syntax: {left.Value + middle.Value}");
-                CreateBinaryOperatorNode(middle, left, tokens[2])
+                CreateBinaryOperatorNode(middle.Value, HandleSingleToken(left), HandleSingleToken(tokens[2]));
             }
             else
             {
-                HandleSingleToken(currTk);
+                HandleSingleToken(left);
                 ParseExpressionContent(tokens[1..tokens.Count]);
-                return;
+                // find out what tf to return
             }
+            throw new NotImplementedException();
         }
-
 
         // Handles a single token expression (variable or int / float literal).
         private static AST.ExpressionNode HandleSingleToken(Token token)
         {
-            throw new NotImplementedException();
+            // If variable, pass to ParseVariableNode
+            if (token.Type.Equals(TokenType.VARIABLE)) return ParseVariableNode(token.Value);
+
+            // If float or int, return Literal Node
+            else if (token.Type.Equals(TokenType.FLOAT) || token.Type.Equals(TokenType.INTEGER))
+                return new AST.LiteralNode(token.Value);
+
+            // None of these; invalid token
+            else throw new ParseException($"Invalid token: {token.Value}");
         }
 
 
@@ -122,7 +130,8 @@ namespace Parser
         // Validates and creates a variable node.
         private static AST.VariableNode ParseVariableNode(string v)
         {
-            throw new NotImplementedException();
+            if (GeneralUtils.IsValidOperator(v)) return new AST.VariableNode(v);
+            else throw new ParseException($"Variable name is invalid: {v}");
         }
     }
 }
