@@ -1,9 +1,19 @@
+using System.Text.RegularExpressions;
 using Tokenizer;
 
 namespace Parser
 {
+    public class ParseException : Exception
+    {
+        string E;
+        public ParseException(string err)
+        {
+            E = err;
+        }
+    }
     public static class Parser
     {
+        
         public static AST.BlockStmt Parse(string program)
         {
             throw new NotImplementedException();
@@ -37,7 +47,12 @@ namespace Parser
 
         private static AST.ExpressionNode ParseExpression(List<Token> tokens)
         {
-            throw new NotImplementedException();
+            // if (tokens[0].ToString() != TokenConstants.LEFT_PAREN &
+            //     tokens[tokens.Count - 1].ToString() != TokenConstants.RIGHT_PAREN)
+            //     throw new ParseException($"Expression syntax invalid. must begin with a ( and end with a ). \n {tokens}");
+
+            return ParseExpressionContent(tokens[1..(tokens.Count - 2)]);
+            // throw new NotImplementedException();
         }
 
         private static AST.ExpressionNode ParseExpressionContent(List<Token> tokens)
