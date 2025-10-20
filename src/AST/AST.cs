@@ -28,7 +28,7 @@ namespace AST
         /// <summary>
         /// Gets the literal value stored in this node.
         /// </summary>
-        protected object Value { get; private set; }
+        public object Value { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LiteralNode"/> class.
@@ -57,7 +57,7 @@ namespace AST
         /// <summary>
         /// Gets the name of the variable.
         /// </summary>
-        protected string Name { get; private set; }
+        public string Name { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VariableNode"/> class.
@@ -94,17 +94,17 @@ namespace AST
         /// <summary>
         /// The left operand of the binary operation.
         /// </summary>
-        protected ExpressionNode Left;
+        public ExpressionNode Left;
 
         /// <summary>
         /// The operator symbol (e.g., "+", "-", "*").
         /// </summary>
-        protected string SIGN;
+        public string SIGN;
 
         /// <summary>
         /// The right operand of the binary operation.
         /// </summary>
-        protected ExpressionNode Right;
+        public ExpressionNode Right;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BinaryOperator"/> class.
@@ -337,17 +337,17 @@ namespace AST
         /// <summary>
         /// The variable being assigned to.
         /// </summary>
-        protected VariableNode Var;
+        public VariableNode Var;
 
         /// <summary>
         /// The assignment operator symbol ("=").
         /// </summary>
-        protected const string SIGN = TokenConstants.ASSIGNMENT;
+        public const string SIGN = TokenConstants.ASSIGNMENT;
 
         /// <summary>
         /// The expression whose value is being assigned.
         /// </summary>
-        protected ExpressionNode Exp;
+        public ExpressionNode Exp;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AssignmentStmt"/> class.
@@ -381,12 +381,12 @@ namespace AST
         /// <summary>
         /// The expression whose value is being returned.
         /// </summary>
-        protected ExpressionNode Exp;
+        public ExpressionNode Exp;
 
         /// <summary>
         /// The return keyword.
         /// </summary>
-        protected const string SIGN = TokenConstants.RETURN;
+        public const string SIGN = TokenConstants.RETURN;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReturnStmt"/> class.
