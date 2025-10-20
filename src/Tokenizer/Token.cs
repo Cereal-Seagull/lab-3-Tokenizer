@@ -62,12 +62,12 @@ namespace Tokenizer
         /// <summary>
         /// The raw string value of the token (e.g., "42", "+", "return").
         /// </summary>
-        protected string _value;
+        public readonly string Value;
 
         /// <summary>
         /// The classification of the token (e.g., VARIABLE, INTEGER, OPERATOR).
         /// </summary>
-        protected TokenType _type;
+        public readonly TokenType Type;
 
         // Potential extension fields for tracking token location in source code.
         // private int _line;
@@ -81,8 +81,8 @@ namespace Tokenizer
         /// <param name="T">The token type, as defined by <see cref="TokenType"/>.</param>
         public Token(string val, TokenType T)
         {
-            _value = val;
-            _type = T;
+            Value = val;
+            Type = T;
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace Tokenizer
         /// <returns>A formatted string describing the token.</returns>
         public override string ToString()
         {
-            return new StringBuilder().Append($"[{_value}, {_type}]").ToString();
+            return new StringBuilder().Append($"[{Value}, {Type}]").ToString();
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace Tokenizer
         public bool Equals(Token other)
         {
             if (other == null) throw new ArgumentNullException();
-            return _value == other._value && _type == other._type;
+            return Value == other.Value && Type == other.Type;
         }
     }
 
