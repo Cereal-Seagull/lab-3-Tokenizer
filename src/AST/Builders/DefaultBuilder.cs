@@ -152,9 +152,9 @@ namespace AST
         /// </summary>
         /// <param name="lst">The list of statements to include in the block.</param>
         /// <returns>A <see cref="BlockStmt"/> containing the specified list of statements.</returns>
-        public virtual BlockStmt CreateBlockStmt(List<Statement> lst)
+        public virtual BlockStmt CreateBlockStmt(SymbolTable<string, object> st)
         {
-            return new BlockStmt(lst);
+            return new BlockStmt(st);
         }
 
         #endregion

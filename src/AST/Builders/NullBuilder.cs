@@ -145,7 +145,7 @@ namespace AST
         /// </summary>
         /// <param name="lst">The list of statements to include in the block (ignored).</param>
         /// <returns>Always returns null.</returns>
-        public override BlockStmt CreateBlockStmt(List<Statement> lst)
+        public override BlockStmt CreateBlockStmt(SymbolTable<string, object> st)
         {
             return null;
         }

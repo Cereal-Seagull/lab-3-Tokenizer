@@ -278,13 +278,16 @@ namespace AST
         /// </summary>
         private List<Statement> Statements;
 
+        private SymbolTable<string, object> symbolTable;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BlockStmt"/> class.
         /// </summary>
         /// <param name="lst">The list of statements to include in the block.</param>
-        public BlockStmt(List<Statement> lst)
+        public BlockStmt(SymbolTable<string, object> st)
         {
-            Statements = lst;
+            symbolTable = st;
+            Statements = new List<Statement>();
         }
 
         /// <summary>
@@ -307,16 +310,18 @@ namespace AST
         {
             StringBuilder str = new StringBuilder();
 
+            str.Append(GeneralUtils.GetIndentation(level));
             str.Append(TokenConstants.LEFT_CURLY);
             str.Append("\n");
 
             // Call Unparse() on child nodes
             for (int i = 0; i < Statements.Count(); i++)
             {
-                str.Append(Statements[i].Unparse(level));
+                str.Append(Statements[i].Unparse(level + 1));
                 str.Append("\n");
             }
-            
+
+            str.Append(GeneralUtils.GetIndentation(level));
             str.Append(TokenConstants.RIGHT_CURLY);
 
             return str.ToString();

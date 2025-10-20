@@ -141,10 +141,10 @@ namespace AST
         /// </summary>
         /// <param name="lst">The list of statements to include in the block.</param>
         /// <returns>A <see cref="BlockStmt"/> containing the specified statements.</returns>
-        public override BlockStmt CreateBlockStmt(List<Statement> lst)
+        public override BlockStmt CreateBlockStmt(SymbolTable<string, object> st)
         {
             Console.WriteLine("Block Statement Created.");
-            return base.CreateBlockStmt(lst);
+            return base.CreateBlockStmt(st);
         }
     }
 }
