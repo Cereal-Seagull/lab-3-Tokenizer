@@ -1,4 +1,4 @@
-using System.Text.RegularExpressions;
+using System.Reflection.Metadata;
 using Tokenizer;
 
 namespace Parser
@@ -71,14 +71,12 @@ namespace Parser
         // Consumes ( and eventually ).
         private static AST.ExpressionNode ParseExpression(List<Token> tokens)
         {
-            if (tokens[0].ToString() != TokenConstants.LEFT_PAREN &
-                tokens[tokens.Count - 1].ToString() != TokenConstants.RIGHT_PAREN)
-                throw new ParseException("Expression syntax invalid;" +
-                                        $" must begin with a ( and end with a ). \n {tokens}");
-
-
-            return ParseExpressionContent(tokens[1..(tokens.Count - 1)]);
-            throw new NotImplementedException();
+            if (!tokens[0].Type.Equals(TokenType.LEFT_PAREN))
+                throw new ParseException($"Expression syntax invalid. must begin with a (. \n {tokens}");
+            if (!tokens[tokens.Count - 1].Type.Equals(TokenType.RIGHT_PAREN))
+                throw new ParseException($"Expression syntax invalid. must end with a ). \n {tokens}");
+            
+            return ParseExpressionContent(tokens[1..tokens.Count]);
         }
 
 
@@ -86,9 +84,26 @@ namespace Parser
         // Consumes the expression one token at a time.
         private static AST.ExpressionNode ParseExpressionContent(List<Token> tokens)
         {
+            Token left = tokens[0];
+            Token middle;
+            if (tokens.Count > 1) middle = tokens[1];
+            else return HandleSingleToken(left);
+
+            if (left.Type.Equals(TokenType.UNKNOWN)) throw new ParseException($"Invalid Token: {left.Value}");
+            else if (left.Type.Equals(TokenType.LEFT_PAREN)) return ParseExpression(tokens);
+            else if (middle.Type.Equals(TokenType.OPERATOR))
+            {
+                if (tokens.Count < 3) throw new ParseException($"Invalid Syntax: {left.Value + middle.Value}");
+                CreateBinaryOperatorNode(middle.Value, HandleSingleToken(left), HandleSingleToken(tokens[2]));
+            }
+            else
+            {
+                HandleSingleToken(left);
+                ParseExpressionContent(tokens[1..tokens.Count]);
+                // find out what tf to return
+            }
             throw new NotImplementedException();
         }
-
 
         // Handles a single token expression (variable or int / float literal).
         private static AST.ExpressionNode HandleSingleToken(Token token)
@@ -116,7 +131,7 @@ namespace Parser
         // Returns ParseException if the variable name is invalid.
         private static AST.VariableNode ParseVariableNode(string v)
         {
-            if (GeneralUtils.IsValidVariable(v)) return new AST.VariableNode(v);
+            if (GeneralUtils.IsValidOperator(v)) return new AST.VariableNode(v);
             else throw new ParseException($"Variable name is invalid: {v}");
         }
     }

@@ -715,7 +715,7 @@ namespace Parser.Tests
                 new[] { 
                     TokenType.LEFT_PAREN, 
                     TokenType.INTEGER, TokenType.OPERATOR, TokenType.INTEGER, 
-                    TokenType.RIGHT_CURLY
+                    TokenType.RIGHT_CURLY 
                 }
             );
 
@@ -725,7 +725,7 @@ namespace Parser.Tests
             Assert.Contains("must end with a )", exception.InnerException.Message, StringComparison.OrdinalIgnoreCase);
         }
 
-        #region Single tokenValues
+        #region Single Token Values
 
         [Fact]
         public void ParseExpression_SingleIntegerLiteral_ReturnsLiteralNode()

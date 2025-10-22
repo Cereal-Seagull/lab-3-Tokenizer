@@ -123,7 +123,8 @@ namespace Tokenizer
         LEFT_PAREN,
         RIGHT_PAREN,
         LEFT_CURLY,
-        RIGHT_CURLY
+        RIGHT_CURLY,
+        UNKNOWN
     }
 }
 
