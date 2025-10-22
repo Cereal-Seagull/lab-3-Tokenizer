@@ -71,14 +71,14 @@ namespace Parser
         // Consumes ( and eventually ).
         private static AST.ExpressionNode ParseExpression(List<Token> tokens)
         {
+            if (tokens[0].ToString() != TokenConstants.LEFT_PAREN &
+                tokens[tokens.Count - 1].ToString() != TokenConstants.RIGHT_PAREN)
+                throw new ParseException("Expression syntax invalid;" +
+                                        $" must begin with a ( and end with a ). \n {tokens}");
 
 
-            // if (tokens[0].ToString() != TokenConstants.LEFT_PAREN &
-            //     tokens[tokens.Count - 1].ToString() != TokenConstants.RIGHT_PAREN)
-            //     throw new ParseException($"Expression syntax invalid. must begin with a ( and end with a ). \n {tokens}");
-
-            return ParseExpressionContent(tokens[1..(tokens.Count - 2)]);
-            // throw new NotImplementedException();
+            return ParseExpressionContent(tokens[1..(tokens.Count - 1)]);
+            throw new NotImplementedException();
         }
 
 
@@ -93,7 +93,15 @@ namespace Parser
         // Handles a single token expression (variable or int / float literal).
         private static AST.ExpressionNode HandleSingleToken(Token token)
         {
-            throw new NotImplementedException();
+            // If variable, pass to ParseVariableNode
+            if (token.Type.Equals(TokenType.VARIABLE)) return ParseVariableNode(token.Value);
+
+            // If float or int, return Literal Node
+            else if (token.Type.Equals(TokenType.FLOAT) || token.Type.Equals(TokenType.INTEGER))
+                return new AST.LiteralNode(token.Value);
+
+            // None of these; invalid token
+            else throw new ParseException($"Invalid token: {token.Value}");
         }
 
 
@@ -105,9 +113,11 @@ namespace Parser
         
 
         // Validates and creates a variable node.
+        // Returns ParseException if the variable name is invalid.
         private static AST.VariableNode ParseVariableNode(string v)
         {
-            throw new NotImplementedException();
+            if (GeneralUtils.IsValidVariable(v)) return new AST.VariableNode(v);
+            else throw new ParseException($"Variable name is invalid: {v}");
         }
     }
 }
