@@ -138,8 +138,7 @@ namespace AST.Tests
             // Arrange
             var left = new LiteralNode(5);
             var right = new LiteralNode(3);
-            var plusNode = new PlusNode();
-            plusNode.SetChildren(left, right);
+            var plusNode = new PlusNode(left, right);
 
             // Act
             string result = plusNode.Unparse(0);
@@ -153,8 +152,7 @@ namespace AST.Tests
         {
             var left = new LiteralNode(3);
             var right = new LiteralNode(4);
-            var plus = new PlusNode();
-            plus.SetChildren(left, right);
+            var plus = new PlusNode(left, right);
 
             Assert.Equal("3 + 4", plus.Unparse(0));
         }
@@ -170,8 +168,7 @@ namespace AST.Tests
             // Arrange
             var left = new LiteralNode(10);
             var right = new LiteralNode(4);
-            var minusNode = new MinusNode();
-            minusNode.SetChildren(left, right);
+            var minusNode = new MinusNode(left, right);
 
             // Act
             string result = minusNode.Unparse(0);
@@ -189,8 +186,7 @@ namespace AST.Tests
             // Arrange
             var left = new LiteralNode(6);
             var right = new LiteralNode(7);
-            var timesNode = new TimesNode();
-            timesNode.SetChildren(left, right);
+            var timesNode = new TimesNode(left, right);
 
             // Act
             string result = timesNode.Unparse(0);
@@ -208,8 +204,7 @@ namespace AST.Tests
             // Arrange
             var left = new LiteralNode(15);
             var right = new LiteralNode(3);
-            var divNode = new FloatDivNode();
-            divNode.SetChildren(left, right);
+            var divNode = new FloatDivNode(left, right);
 
             // Act
             string result = divNode.Unparse(0);
@@ -227,8 +222,7 @@ namespace AST.Tests
             // Arrange
             var left = new LiteralNode(17);
             var right = new LiteralNode(5);
-            var divNode = new IntDivNode();
-            divNode.SetChildren(left, right);
+            var divNode = new IntDivNode(left, right);
 
             // Act
             string result = divNode.Unparse(0);
@@ -246,8 +240,7 @@ namespace AST.Tests
             // Arrange
             var left = new LiteralNode(20);
             var right = new LiteralNode(6);
-            var modNode = new ModulusNode();
-            modNode.SetChildren(left, right);
+            var modNode = new ModulusNode(left, right);
 
             // Act
             string result = modNode.Unparse(0);
@@ -265,8 +258,7 @@ namespace AST.Tests
             // Arrange
             var left = new LiteralNode(2);
             var right = new LiteralNode(8);
-            var expNode = new ExponentiationNode();
-            expNode.SetChildren(left, right);
+            var expNode = new ExponentiationNode(left, right);
 
             // Act
             string result = expNode.Unparse(0);
@@ -284,8 +276,7 @@ namespace AST.Tests
             // Arrange
             var left = new VariableNode("x");
             var right = new VariableNode("y");
-            var plusNode = new PlusNode();
-            plusNode.SetChildren(left, right);
+            var plusNode = new PlusNode(left, right);
 
             // Act
             string result = plusNode.Unparse(0);
@@ -303,12 +294,10 @@ namespace AST.Tests
             // Arrange
             var innerLeft = new LiteralNode(2);
             var innerRight = new LiteralNode(3);
-            var innerPlus = new PlusNode();
-            innerPlus.SetChildren(innerLeft, innerRight);
+            var innerPlus = new PlusNode(innerLeft, innerRight);
 
             var outerRight = new LiteralNode(4);
-            var outerTimes = new TimesNode();
-            outerTimes.SetChildren(innerPlus, outerRight);
+            var outerTimes = new TimesNode(innerPlus, outerRight);
 
             // Act
             string result = outerTimes.Unparse(0);
@@ -349,8 +338,7 @@ namespace AST.Tests
             var variable = new VariableNode("result");
             var left = new LiteralNode(10);
             var right = new LiteralNode(5);
-            var plusNode = new PlusNode();
-            plusNode.SetChildren(left, right);
+            var plusNode = new PlusNode(left, right);
             var assignment = new AssignmentStmt(variable, plusNode);
 
             // Act
@@ -421,8 +409,7 @@ namespace AST.Tests
             // Arrange
             var left = new VariableNode("a");
             var right = new VariableNode("b");
-            var plusNode = new PlusNode();
-            plusNode.SetChildren(left, right);
+            var plusNode = new PlusNode(left, right);
             var returnStmt = new ReturnStmt(plusNode);
 
             // Act
@@ -1330,8 +1317,7 @@ namespace AST.Tests
             // Arrange
             var left = new LiteralNode(5);
             var right = new LiteralNode(10);
-            var plus = new PlusNode();
-            plus.SetChildren(left, right);
+            var plus = new PlusNode(left, right);
             
             // Act
             string unparsed = plus.Unparse(0);
@@ -1358,16 +1344,14 @@ namespace AST.Tests
             
             BinaryOperator op = nodeType switch
             {
-                "MinusNode" => new MinusNode(),
-                "TimesNode" => new TimesNode(),
-                "FloatDivNode" => new FloatDivNode(),
-                "IntDivNode" => new IntDivNode(),
-                "ModulusNode" => new ModulusNode(),
-                "ExponentiationNode" => new ExponentiationNode(),
+                "MinusNode" => new MinusNode(left, right),
+                "TimesNode" => new TimesNode(left, right),
+                "FloatDivNode" => new FloatDivNode(left, right),
+                "IntDivNode" => new IntDivNode(left, right),
+                "ModulusNode" => new ModulusNode(left, right),
+                "ExponentiationNode" => new ExponentiationNode(left, right),
                 _ => throw new ArgumentException("Unknown node type")
             };
-            
-            op.SetChildren(left, right);
             
             // Act
             string unparsed = op.Unparse(0);
@@ -1385,11 +1369,9 @@ namespace AST.Tests
         public void BinaryOperators_NestedOperations_UnparseCorrectly()
         {
             // Arrange - (5 + 10) * 2
-            var left = new PlusNode();
-            left.SetChildren(new LiteralNode(5), new LiteralNode(10));
+            var left = new PlusNode(new LiteralNode(5), new LiteralNode(10));
             
-            var times = new TimesNode();
-            times.SetChildren(left, new LiteralNode(2));
+            var times = new TimesNode(left, new LiteralNode(2));
             
             // Act
             string unparsed = times.Unparse(0);

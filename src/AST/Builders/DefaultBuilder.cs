@@ -17,8 +17,7 @@ namespace AST
         /// <returns>A <see cref="PlusNode"/> with the specified left and right operands.</returns>
         public virtual PlusNode CreatePlusNode(ExpressionNode left, ExpressionNode right)
         {
-            PlusNode pn = new PlusNode();
-            pn.SetChildren(left, right);
+            PlusNode pn = new PlusNode(left, right);
             return pn;
         }
 
@@ -30,8 +29,7 @@ namespace AST
         /// <returns>A <see cref="MinusNode"/> with the specified left and right operands.</returns>
         public virtual MinusNode CreateMinusNode(ExpressionNode left, ExpressionNode right)
         {
-            MinusNode mn = new MinusNode();
-            mn.SetChildren(left, right);
+            MinusNode mn = new MinusNode(left, right);
             return mn;
         }
 
@@ -43,8 +41,7 @@ namespace AST
         /// <returns>A <see cref="TimesNode"/> with the specified left and right operands.</returns>
         public virtual TimesNode CreateTimesNode(ExpressionNode left, ExpressionNode right)
         {
-            TimesNode tn = new TimesNode();
-            tn.SetChildren(left, right);
+            TimesNode tn = new TimesNode(left, right);
             return tn;
         }
 
@@ -56,8 +53,7 @@ namespace AST
         /// <returns>A <see cref="FloatDivNode"/> with the specified left and right operands.</returns>
         public virtual FloatDivNode CreateFloatDivNode(ExpressionNode left, ExpressionNode right)
         {
-            FloatDivNode fdn = new FloatDivNode();
-            fdn.SetChildren(left, right);
+            FloatDivNode fdn = new FloatDivNode(left, right);
             return fdn;
         }
 
@@ -69,8 +65,7 @@ namespace AST
         /// <returns>An <see cref="IntDivNode"/> with the specified left and right operands.</returns>
         public virtual IntDivNode CreateIntDivNode(ExpressionNode left, ExpressionNode right)
         {
-            IntDivNode idn = new IntDivNode();
-            idn.SetChildren(left, right);
+            IntDivNode idn = new IntDivNode(left, right);
             return idn;
         }
 
@@ -82,8 +77,7 @@ namespace AST
         /// <returns>A <see cref="ModulusNode"/> with the specified left and right operands.</returns>
         public virtual ModulusNode CreateModulusNode(ExpressionNode left, ExpressionNode right)
         {
-            ModulusNode mdn = new ModulusNode();
-            mdn.SetChildren(left, right);
+            ModulusNode mdn = new ModulusNode(left, right);
             return mdn;
         }
 
@@ -95,8 +89,7 @@ namespace AST
         /// <returns>An <see cref="ExponentiationNode"/> with the specified base and exponent operands.</returns>
         public virtual ExponentiationNode CreateExponentiationNode(ExpressionNode left, ExpressionNode right)
         {
-            ExponentiationNode expn = new ExponentiationNode();
-            expn.SetChildren(left, right);
+            ExponentiationNode expn = new ExponentiationNode(left, right);
             return expn;
         }
 

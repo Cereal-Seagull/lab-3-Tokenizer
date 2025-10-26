@@ -120,25 +120,6 @@ namespace AST
         }
 
         /// <summary>
-        /// Sets the left operand of the binary operation.
-        /// </summary>
-        /// <param name="l">The left operand expression node.</param>
-        public void SetLeft(ExpressionNode l) { Left = l; }
-
-        /// <summary>
-        /// Sets the right operand of the binary operation.
-        /// </summary>
-        /// <param name="r">The right operand expression node.</param>
-        public void SetRight(ExpressionNode r) { Right = r; }
-
-        /// <summary>
-        /// Sets both the left and right operands of the binary operation.
-        /// </summary>
-        /// <param name="l">The left operand expression node.</param>
-        /// <param name="r">The right operand expression node.</param>
-        public void SetChildren(ExpressionNode l, ExpressionNode r) { SetLeft(l); SetRight(r); }
-
-        /// <summary>
         /// Converts the binary operator node back into its source code representation.
         /// </summary>
         /// <param name="level">The indentation level for formatting.</param>
@@ -162,14 +143,13 @@ namespace AST
     /// Represents an addition operation in the abstract syntax tree.
     /// Performs addition of two operands using the "+" operator.
     /// </summary>
-    // null likely is placeholder for null node to be implemented in NullBuilder
     public class PlusNode : BinaryOperator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PlusNode"/> class.
-        /// Operands are initialized to null and should be set using SetChildren.
+        /// Operands initialized to given left and right expression nodes.
         /// </summary>
-        public PlusNode() : base(null, TokenConstants.PLUS, null) { }
+        public PlusNode(ExpressionNode l, ExpressionNode r) : base(l, TokenConstants.PLUS, r) { }
     }
 
     /// <summary>
@@ -180,9 +160,9 @@ namespace AST
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MinusNode"/> class.
-        /// Operands are initialized to null and should be set using SetChildren.
+        /// Operands initialized to given left and right expression nodes.
         /// </summary>
-        public MinusNode() : base(null, TokenConstants.SUBTRACTION, null) { }
+        public MinusNode(ExpressionNode l, ExpressionNode r) : base(l, TokenConstants.SUBTRACTION, r) { }
     }
 
     /// <summary>
@@ -193,9 +173,9 @@ namespace AST
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TimesNode"/> class.
-        /// Operands are initialized to null and should be set using SetChildren.
+        /// Operands initialized to given left and right expression nodes.
         /// </summary>
-        public TimesNode() : base(null, TokenConstants.TIMES, null) { }
+        public TimesNode(ExpressionNode l, ExpressionNode r) : base(l, TokenConstants.TIMES, r) { }
     }
 
     /// <summary>
@@ -206,9 +186,9 @@ namespace AST
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FloatDivNode"/> class.
-        /// Operands are initialized to null and should be set using SetChildren.
+        /// Operands initialized to given left and right expression nodes.
         /// </summary>
-        public FloatDivNode() : base(null, TokenConstants.FLOAT_DIVISION, null) { }
+        public FloatDivNode(ExpressionNode l, ExpressionNode r) : base(l, TokenConstants.FLOAT_DIVISION, r) { }
     }
 
     /// <summary>
@@ -219,9 +199,9 @@ namespace AST
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="IntDivNode"/> class.
-        /// Operands are initialized to null and should be set using SetChildren.
+        /// Operands initialized to given left and right expression nodes.
         /// </summary>
-        public IntDivNode() : base(null, TokenConstants.INT_DIVISION, null) { }
+        public IntDivNode(ExpressionNode l, ExpressionNode r) : base(l, TokenConstants.INT_DIVISION, r) { }
     }
 
     /// <summary>
@@ -232,9 +212,9 @@ namespace AST
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ModulusNode"/> class.
-        /// Operands are initialized to null and should be set using SetChildren.
+        /// Operands initialized to given left and right expression nodes.
         /// </summary>
-        public ModulusNode() : base(null, TokenConstants.MODULUS, null) { }
+        public ModulusNode(ExpressionNode l, ExpressionNode r) : base(l, TokenConstants.MODULUS, r) { }
     }
 
     /// <summary>
@@ -245,9 +225,9 @@ namespace AST
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ExponentiationNode"/> class.
-        /// Operands are initialized to null and should be set using SetChildren.
+        /// Operands initialized to given left and right expression nodes.
         /// </summary>
-        public ExponentiationNode() : base(null, TokenConstants.EXPONENTIATE, null) { }
+        public ExponentiationNode(ExpressionNode l, ExpressionNode r) : base(l, TokenConstants.EXPONENTIATE, r) { }
     }
 
     #endregion
