@@ -6,11 +6,9 @@ namespace Parser
 {
     public class ParseException : Exception
     {
-        string E;
-        public ParseException(string err)
-        {
-            E = err;
-        }
+        public ParseException() { }
+        public ParseException(string err) : base(err) { }
+        public ParseException(string err, Exception inner) : base(err, inner) { }
     }
 
     public static class Parser
@@ -86,17 +84,24 @@ namespace Parser
         {
             // First token is not "(", throw exception
             if (!tokens[0].Type.Equals(TokenType.LEFT_PAREN))
-                throw new ParseException($"Expression syntax invalid. must begin with a (. \n {tokens}");
+                throw new ParseException($"Expression syntax invalid; must begin with a (. \n {tokens}");
 
             // Last token is not ")", throw exception
             if (!tokens[tokens.Count - 1].Type.Equals(TokenType.RIGHT_PAREN))
-                throw new ParseException($"Expression syntax invalid. must end with a ). \n {tokens}");
+                throw new ParseException($"Expression syntax invalid; must end with a ). \n {tokens}");
 
             // Parse content
             return ParseExpressionContent(tokens[1..(tokens.Count - 1)]);
         }
 
-
+/*
+(x)
+((x))
+(x + 2) + y
+y + (z - 3)
+(x + 2) + (y + 2)
+((x+5) + 2) + y
+ */
         // Parses the content of an expression.
         // Consumes the expression one token at a time.
         //
@@ -106,22 +111,57 @@ namespace Parser
             // If just a variable or literal, hand off to HandleSingleToken
             if (tokens.Count == 1) return HandleSingleToken(tokens[0]);
 
-            // Throws exception for invalid syntax; must have 1 or at least 3 tokens
-            else if (tokens.Count == 2) throw new ParseException(
-                                                        $"Invalid syntax: invalid token count: {tokens}");
+            // Handle nested singletons
+            
 
             // Handles binary operators
             else
             {
-                int opIdx = 0;
+                int opIdx = -1;
                 // Find index of operator
-                for (int i = 1; i < tokens.Count; i++)
+                for (int i = 0; i < tokens.Count; i++)
                 {
-                    if (tokens[i].Type == TokenType.OPERATOR) opIdx = i;
+                    // Skip nested expressions
+                    if (tokens[i].Type == TokenType.LEFT_PAREN)
+                    {
+                        // Initialize parentheses counts for nested expressions
+                        int lp = 0;
+                        int rp = 0;
+                        int idx = 0;
+
+                        // Iterate through nested expression
+                        // Separate for loop to skip nested expression's operators
+                        for (int j = i; j < tokens.Count; j++)
+                        {
+                            // Add parentheses count appropriately
+                            if (tokens[j].Type == TokenType.LEFT_PAREN) lp++;
+                            else if (tokens[j].Type == TokenType.RIGHT_PAREN) rp++;
+                            idx++;
+
+                            // End of nested expression
+                            if (lp == rp) break;
+                        }
+                        i += idx - 1;
+                    }
+
+                    // Unknown operator found; throw exception
+                    if (tokens[i].Type == TokenType.UNKNOWN) throw new ParseException(
+                        $"Unknown token type in token list: {tokens}");
+
+                    // Found operator
+                    if (tokens[i].Type == TokenType.OPERATOR)
+                    {
+                        // If operator already found, throw exception
+                        if (opIdx != -1) throw new ParseException("Syntax error: " +
+                            "more than one operator in expression; missing parentheses?");
+                        // Set operator's index to current position
+                        else opIdx = i;
+                    }
                 }
                 // Operator not found, throw exception
-                if (opIdx == 0) throw new ParseException(
-                                            $"Invalid syntax: operator not found in token list: {tokens}");
+                if (opIdx == -1) throw new ParseException(
+                    $"Invalid syntax: operator not found in token list: {tokens}");
+
 
                 ExpressionNode l;
                 // Left operand is another expression
@@ -131,12 +171,12 @@ namespace Parser
 
                 ExpressionNode r;
                 // Right operand is another expression
-                if (tokens[opIdx + 1].Type == TokenType.LEFT_PAREN) 
+                if (tokens[opIdx + 1].Type == TokenType.LEFT_PAREN)
                     r = ParseExpression(tokens[(opIdx + 1)..tokens.Count]);
                 // Right operand is a variable or literal
                 else r = HandleSingleToken(tokens[opIdx + 1]);
 
-                // Return binary operator ndoe
+                // Return binary operator node
                 return CreateBinaryOperatorNode(tokens[opIdx].Value, l, r);
             }
         }
@@ -150,8 +190,10 @@ namespace Parser
             if (token.Type.Equals(TokenType.VARIABLE)) return ParseVariableNode(token.Value);
 
             // If float or int, return Literal Node
-            else if (token.Type.Equals(TokenType.FLOAT) || token.Type.Equals(TokenType.INTEGER))
-                return new AST.LiteralNode(token.Value);
+            else if (token.Type.Equals(TokenType.INTEGER))
+                return new AST.LiteralNode(int.Parse(token.Value));
+            else if (token.Type.Equals(TokenType.FLOAT))
+                return new AST.LiteralNode(float.Parse(token.Value));
 
             // None of these; invalid token
             else throw new ParseException($"Invalid token: {token.Value}");
@@ -171,7 +213,7 @@ namespace Parser
             else if (op == TokenConstants.INT_DIVISION) return new IntDivNode(l, r);
             else if (op == TokenConstants.MODULUS) return new ModulusNode(l, r);
             else if (op == TokenConstants.EXPONENTIATE) return new ExponentiationNode(l, r);
-            else throw new ParseException($"Operator invalid: {op}");
+            else throw new ParseException($"Invalid operator: {op}");
         }
         
 
@@ -180,7 +222,7 @@ namespace Parser
         // Returns ParseException if the variable name is invalid.
         private static AST.VariableNode ParseVariableNode(string v)
         {
-            if (GeneralUtils.IsValidOperator(v)) return new AST.VariableNode(v);
+            if (GeneralUtils.IsValidVariable(v)) return new AST.VariableNode(v);
             else throw new ParseException($"Variable name is invalid: {v}");
         }
     }
