@@ -63,9 +63,15 @@ namespace Parser
         // Parses an assignment statement and adds the variable 
         // as a key to the symbol table (with a null value).
         // ParseException if the assignment operator is invalid.
-        private static AST.AssignmentStmt ParseAssignmentStmt(List<Token> tokens, SymbolTable<string, object> st)
+        private static AST.AssignmentStmt ParseAssignmentStmt(List<Token> tokens,
+                                                                    SymbolTable<string, object> st)
         {
-            throw new NotImplementedException();
+            // Add variable to symbol table (first token)
+            st.Add(tokens[0].Value, null);
+            
+            // Parse the rest of the tokens
+            return new AST.AssignmentStmt(ParseVariableNode(tokens[0].Value),
+                                    ParseExpression(tokens[1..tokens.Count]));
         }
 
 
@@ -74,7 +80,7 @@ namespace Parser
         // ParseException if the return statement contains an empty expression.
         private static AST.ReturnStmt ParseReturnStatement(List<Token> tokens)
         {
-            throw new NotImplementedException();
+            return new AST.ReturnStmt(ParseExpression(tokens));
         }
 
         #endregion
