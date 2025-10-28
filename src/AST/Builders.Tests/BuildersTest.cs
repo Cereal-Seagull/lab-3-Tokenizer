@@ -464,7 +464,7 @@ namespace AST.Tests
             var value = new LiteralNode(5);
             var assignment = new AssignmentStmt(variable, value);
             var block = new BlockStmt(new SymbolTable<string, object>());
-            block.AddStmt(assignment);
+            block.AddStatement(assignment);
             string result = block.Unparse(0);
             Assert.Equal("{\n    x := 5\n}", result);
         }
@@ -479,8 +479,8 @@ namespace AST.Tests
             var assign2 = new AssignmentStmt(new VariableNode("y"), new LiteralNode(20));
 
             var block = new BlockStmt(new SymbolTable<string, object>());
-            block.AddStmt(assign1);
-            block.AddStmt(assign2);
+            block.AddStatement(assign1);
+            block.AddStatement(assign2);
 
             string result = block.Unparse(0);
             Assert.Equal("{\n    x := 10\n    y := 20\n}", result);
@@ -496,7 +496,7 @@ namespace AST.Tests
             var variable = new VariableNode("z");
             var value = new LiteralNode(30);
             var assignment = new AssignmentStmt(variable, value);
-            block.AddStmt(assignment);
+            block.AddStatement(assignment);
 
             string result = block.Unparse(0);
             Assert.Equal("{\n    z := 30\n}", result);
@@ -632,7 +632,7 @@ namespace AST.Tests
 
             var assign = new AssignmentStmt(new VariableNode("x"), new LiteralNode(1));
             var block = new BlockStmt(new SymbolTable<string, object>());
-            block.AddStmt(assign);
+            block.AddStatement(assign);
 
             Assert.NotNull(block);
             Assert.Contains(":=", block.Unparse(0));
@@ -1135,9 +1135,9 @@ namespace AST.Tests
             var returnStmt = new ReturnStmt(new VariableNode("x"));
             
             // Act
-            block.AddStmt(assign1);
-            block.AddStmt(assign2);
-            block.AddStmt(returnStmt);
+            block.AddStatement(assign1);
+            block.AddStatement(assign2);
+            block.AddStatement(returnStmt);
             
             string unparsed = block.Unparse(0);
             
@@ -1164,8 +1164,8 @@ namespace AST.Tests
             var innerScope = globalScope.CreateNewScope_GivenParent();
             var innerBlock = new BlockStmt(innerScope);
             
-            innerBlock.AddStmt(new ReturnStmt(new LiteralNode(42)));
-            outerBlock.AddStmt(innerBlock);
+            innerBlock.AddStatement(new ReturnStmt(new LiteralNode(42)));
+            outerBlock.AddStatement(innerBlock);
             
             // Act
             string unparsed = outerBlock.Unparse(0);
@@ -1208,7 +1208,7 @@ namespace AST.Tests
             var globalScope = new SymbolTable<string, object>();
             var outerBlock = new BlockStmt(globalScope);
             
-            outerBlock.AddStmt(new AssignmentStmt(
+            outerBlock.AddStatement(new AssignmentStmt(
                 new VariableNode("x"), 
                 new LiteralNode(20)
             ));
@@ -1216,13 +1216,13 @@ namespace AST.Tests
             var innerScope = globalScope.CreateNewScope_GivenParent();
             var innerBlock = new BlockStmt(innerScope);
             
-            innerBlock.AddStmt(new AssignmentStmt(
+            innerBlock.AddStatement(new AssignmentStmt(
                 new VariableNode("y"), 
                 new LiteralNode(40)
             ));
-            innerBlock.AddStmt(new ReturnStmt(new VariableNode("y")));
+            innerBlock.AddStatement(new ReturnStmt(new VariableNode("y")));
             
-            outerBlock.AddStmt(innerBlock);
+            outerBlock.AddStatement(innerBlock);
             
             // Act
             string unparsed = outerBlock.Unparse(0);
@@ -1249,8 +1249,8 @@ namespace AST.Tests
             var innerBlock = new BlockStmt(innerScope);
             
             var stmt = new ReturnStmt(new LiteralNode(42));
-            innerBlock.AddStmt(stmt);
-            outerBlock.AddStmt(innerBlock);
+            innerBlock.AddStatement(stmt);
+            outerBlock.AddStatement(innerBlock);
             
             // Act
             string unparsed = outerBlock.Unparse(0);

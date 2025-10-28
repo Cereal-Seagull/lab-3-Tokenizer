@@ -54,11 +54,10 @@ namespace Parser
         // to the appropriate parsing method: assignment or return.
         //
         // ParseException if an unknown statement is encountered.
-        private static AST.Statement ParseStatement(List<Token> tokens)
+        private static AST.Statement ParseStatement(List<Token> tokens, SymbolTable<string, object> symbolTable)
         {
-            var st = new SymbolTable<string, object>();
             if (tokens[0].Type.Equals(TokenType.RETURN)) return ParseReturnStatement(tokens);
-            else if (tokens[1].Type.Equals(TokenType.ASSIGNMENT)) return ParseAssignmentStmt(tokens, st);
+            else if (tokens[1].Type.Equals(TokenType.ASSIGNMENT)) return ParseAssignmentStmt(tokens[1..tokens.Count], symbolTable);
             else throw new ParseException($"Statement syntax invalid; must either be a return or assignment statement. \n {tokens}");
         }
 
