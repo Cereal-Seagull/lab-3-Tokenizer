@@ -256,9 +256,9 @@ namespace AST
         /// <summary>
         /// The list of statements contained within this block.
         /// </summary>
-        private List<Statement> Statements;
+        public List<Statement> Statements;
 
-        private SymbolTable<string, object> symbolTable;
+        public SymbolTable<string, object> SymbolTable;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BlockStmt"/> class.
@@ -266,7 +266,7 @@ namespace AST
         /// <param name="lst">The list of statements to include in the block.</param>
         public BlockStmt(SymbolTable<string, object> st)
         {
-            symbolTable = st;
+            SymbolTable = st;
             Statements = new List<Statement>();
         }
 
@@ -275,7 +275,7 @@ namespace AST
         /// </summary>
         /// <param name="obj">The statement to add to the block.</param>
         // Adds a statement to Block
-        public void AddStmt(Statement obj)
+        public void AddStatement(Statement obj)
         {
             Statements.Add(obj);
         }
@@ -317,7 +317,7 @@ namespace AST
         /// <summary>
         /// The variable being assigned to.
         /// </summary>
-        public VariableNode Var;
+        public VariableNode Variable;
 
         /// <summary>
         /// The assignment operator symbol ("=").
@@ -327,7 +327,7 @@ namespace AST
         /// <summary>
         /// The expression whose value is being assigned.
         /// </summary>
-        public ExpressionNode Exp;
+        public ExpressionNode Expression;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AssignmentStmt"/> class.
@@ -336,8 +336,8 @@ namespace AST
         /// <param name="x">The expression node representing the value to assign.</param>
         public AssignmentStmt(VariableNode v, ExpressionNode x)
         {
-            Var = v;
-            Exp = x;
+            Variable = v;
+            Expression = x;
         }
 
         /// <summary>
@@ -347,8 +347,8 @@ namespace AST
         /// <returns>A string representation of the assignment in the format "variable = expression".</returns>
         public override string Unparse(int level)
         {
-            return GeneralUtils.GetIndentation(level) + Var.Unparse(0) + " " + SIGN 
-                                                      + " " + Exp.Unparse(0);
+            return GeneralUtils.GetIndentation(level) + Variable.Unparse(0) + " " + SIGN 
+                                                      + " " + Expression.Unparse(0);
         }
     }
 
@@ -361,7 +361,7 @@ namespace AST
         /// <summary>
         /// The expression whose value is being returned.
         /// </summary>
-        public ExpressionNode Exp;
+        public ExpressionNode Expression;
 
         /// <summary>
         /// The return keyword.
@@ -374,7 +374,7 @@ namespace AST
         /// <param name="x">The expression node representing the value to return.</param>
         public ReturnStmt(ExpressionNode x)
         {
-            Exp = x;
+            Expression = x;
         }
 
         /// <summary>
@@ -384,7 +384,7 @@ namespace AST
         /// <returns>A string representation of the return statement in the format "return expression".</returns>
         public override string Unparse(int level)
         {
-            return GeneralUtils.GetIndentation(level) + SIGN + " " + Exp.Unparse(0);
+            return GeneralUtils.GetIndentation(level) + SIGN + " " + Expression.Unparse(0);
         }
     }
     
