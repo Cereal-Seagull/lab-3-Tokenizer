@@ -71,6 +71,7 @@ namespace Parser
         private static AST.AssignmentStmt ParseAssignmentStmt(List<Token> tokens,
                                                                     SymbolTable<string, object> st)
         {
+            if (tokens.Count <= 2) throw new ParseException($"Missing expression: {tokens}");
             if (!tokens[0].Type.Equals(TokenType.VARIABLE)) throw new ParseException($"Invalid variable name: {tokens[0]}");
             if (!tokens[1].Type.Equals(TokenType.ASSIGNMENT)) throw new ParseException($"Expected assignment operator; Got {tokens[1]}");
             
