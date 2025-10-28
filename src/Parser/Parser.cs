@@ -54,10 +54,12 @@ namespace Parser
         // to the appropriate parsing method: assignment or return.
         //
         // ParseException if an unknown statement is encountered.
-        private static AST.Statement ParseStatement(List<Token> tokens, SymbolTable<string, object> symbolTable)
+        private static AST.Statement ParseStatement(List<Token> tokens, SymbolTable<string,object> st)
         {
-            if (tokens[0].Type.Equals(TokenType.RETURN)) return ParseReturnStatement(tokens);
-            else if (tokens[1].Type.Equals(TokenType.ASSIGNMENT)) return ParseAssignmentStmt(tokens[1..tokens.Count], symbolTable);
+            if (tokens[0].Type.Equals(TokenType.RETURN)) 
+                return ParseReturnStatement(tokens[1..tokens.Count]);
+
+            else if (tokens[1].Type.Equals(TokenType.ASSIGNMENT)) return ParseAssignmentStmt(tokens, st);
             else throw new ParseException($"Statement syntax invalid; must either be a return or assignment statement. \n {tokens}");
         }
 
@@ -66,9 +68,15 @@ namespace Parser
         // as a key to the symbol table (with a null value).
         //
         // ParseException if the assignment operator is invalid.
-        private static AST.AssignmentStmt ParseAssignmentStmt(List<Token> tokens, SymbolTable<string, object> st)
+        private static AST.AssignmentStmt ParseAssignmentStmt(List<Token> tokens,
+                                                                    SymbolTable<string, object> st)
         {
-            throw new NotImplementedException();
+            // Add variable to symbol table (first token)
+            st.Add(tokens[0].Value, null);
+
+            // Parse the rest of the tokens
+            return new AST.AssignmentStmt(ParseVariableNode(tokens[0].Value),
+                                    ParseExpression(tokens[1..tokens.Count]));
         }
 
 
@@ -77,7 +85,9 @@ namespace Parser
         // ParseException if the return statement contains an empty expression.
         private static AST.ReturnStmt ParseReturnStatement(List<Token> tokens)
         {
-            throw new NotImplementedException();
+            if (tokens.Count == 0) throw new ParseException("Syntax error: " +
+                                "return statement cannot contain empty expression");
+            return new AST.ReturnStmt(ParseExpression(tokens));
         }
 
         #endregion
