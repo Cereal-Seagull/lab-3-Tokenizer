@@ -113,12 +113,17 @@ namespace Parser
                     int level = 0;
                     bool nested = true;
 
+                    // Make sure nesting is redundant 
                     for (int i = 0; i < tokens.Count; i++)
                     {
                         if (tokens[i].Type == TokenType.LEFT_PAREN) level++;
                         else if (tokens[i].Type == TokenType.RIGHT_PAREN) level--;
 
-                        if (level == 0) nested = false; break;
+                        if (level == 0 && i < tokens.Count - 1) 
+                        {
+                            nested = false; 
+                            break; 
+                        }
                     }
 
                     if (nested) return ParseExpression(tokens);
