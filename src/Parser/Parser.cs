@@ -94,29 +94,38 @@ namespace Parser
             return ParseExpressionContent(tokens[1..(tokens.Count - 1)]);
         }
 
-/*
-(x)
-((x))
-(x + 2) + y
-y + (z - 3)
-(x + 2) + (y + 2)
-((x+5) + 2) + y
- */
         // Parses the content of an expression.
         // Consumes the expression one token at a time.
         //
         // Throws ParseException if the expression syntax is invalid.
         private static AST.ExpressionNode ParseExpressionContent(List<Token> tokens)
         {
+            if (tokens.Count == 0) throw new ParseException("Syntax error: empty expression");
+
             // If just a variable or literal, hand off to HandleSingleToken
             if (tokens.Count == 1) return HandleSingleToken(tokens[0]);
 
-            // Handle nested singletons
-            
-
-            // Handles binary operators
             else
             {
+                // Handle redundant nesting (((x)))
+                if (tokens[0].Type == TokenType.LEFT_PAREN && tokens[^1].Type == TokenType.RIGHT_PAREN)
+                {
+                    int level = 0;
+                    bool nested = true;
+
+                    for (int i = 0; i < tokens.Count; i++)
+                    {
+                        if (tokens[i].Type == TokenType.LEFT_PAREN) level++;
+                        else if (tokens[i].Type == TokenType.RIGHT_PAREN) level--;
+
+                        if (level == 0) nested = false; break;
+                    }
+
+                    if (nested) return ParseExpression(tokens);
+                }
+
+                // Handles binary operators
+
                 int opIdx = -1;
                 // Find index of operator
                 for (int i = 0; i < tokens.Count; i++)
@@ -125,8 +134,7 @@ y + (z - 3)
                     if (tokens[i].Type == TokenType.LEFT_PAREN)
                     {
                         // Initialize parentheses counts for nested expressions
-                        int lp = 0;
-                        int rp = 0;
+                        int level = 0;
                         int idx = 0;
 
                         // Iterate through nested expression
@@ -134,12 +142,12 @@ y + (z - 3)
                         for (int j = i; j < tokens.Count; j++)
                         {
                             // Add parentheses count appropriately
-                            if (tokens[j].Type == TokenType.LEFT_PAREN) lp++;
-                            else if (tokens[j].Type == TokenType.RIGHT_PAREN) rp++;
+                            if (tokens[j].Type == TokenType.LEFT_PAREN) level++;
+                            else if (tokens[j].Type == TokenType.RIGHT_PAREN) level--;
                             idx++;
 
                             // End of nested expression
-                            if (lp == rp) break;
+                            if (level == 0) break;
                         }
                         i += idx - 1;
                     }
