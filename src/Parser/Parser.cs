@@ -56,7 +56,7 @@ namespace Parser
         // ParseException if an unknown statement is encountered.
         private static AST.Statement ParseStatement(List<Token> tokens, SymbolTable<string,object> st)
         {
-            if (tokens[0].Type.Equals(TokenType.RETURN))
+            if (tokens[0].Type.Equals(TokenType.RETURN)) 
                 return ParseReturnStatement(tokens);
 
             else if (tokens[1].Type.Equals(TokenType.ASSIGNMENT)) return ParseAssignmentStmt(tokens, st);
@@ -73,12 +73,16 @@ namespace Parser
         private static AST.AssignmentStmt ParseAssignmentStmt(List<Token> tokens,
                                                                     SymbolTable<string, object> st)
         {
+            if (tokens.Count <= 2) throw new ParseException($"Missing expression: {tokens}");
+            if (!tokens[0].Type.Equals(TokenType.VARIABLE)) throw new ParseException($"Invalid variable name: {tokens[0]}");
+            if (!tokens[1].Type.Equals(TokenType.ASSIGNMENT)) throw new ParseException($"Expected assignment operator; Got {tokens[1]}");
+            
             // Add variable to symbol table (first token)
             st.Add(tokens[0].Value, null);
 
             // Parse the rest of the tokens
             return new AST.AssignmentStmt(ParseVariableNode(tokens[0].Value),
-                                    ParseExpression(tokens[1..tokens.Count]));
+                                    ParseExpression(tokens[2..tokens.Count]));
         }
 
 
@@ -87,8 +91,8 @@ namespace Parser
         // ParseException if the return statement contains an empty expression.
         private static AST.ReturnStmt ParseReturnStatement(List<Token> tokens)
         {
-            if (tokens.Count == 0) throw new ParseException("Syntax error: " +
-                                "return statement cannot contain empty expression");
+            if (tokens.Count <= 1) throw new ParseException("Syntax error: " +
+                                "missing expression");
             return new AST.ReturnStmt(ParseExpression(tokens[1..tokens.Count]));
         }
 
