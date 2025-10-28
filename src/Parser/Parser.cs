@@ -73,7 +73,7 @@ namespace Parser
         {
             // Add variable to symbol table (first token)
             st.Add(tokens[0].Value, null);
-            
+
             // Parse the rest of the tokens
             return new AST.AssignmentStmt(ParseVariableNode(tokens[0].Value),
                                     ParseExpression(tokens[1..tokens.Count]));
