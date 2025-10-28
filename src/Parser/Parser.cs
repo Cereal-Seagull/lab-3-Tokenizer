@@ -13,6 +13,7 @@ namespace Parser
 
     public static class Parser
     {
+        #region Blocks
         public static AST.BlockStmt Parse(string program)
         {
             // Do something with "program" to make it a list of strings
@@ -46,7 +47,9 @@ namespace Parser
             throw new NotImplementedException();
         }
 
+        #endregion
 
+        #region Individual Statements
         // Determines the type of statement and delegates 
         // to the appropriate parsing method: assignment or return.
         //
@@ -59,7 +62,6 @@ namespace Parser
 
         // Parses an assignment statement and adds the variable 
         // as a key to the symbol table (with a null value).
-        //
         // ParseException if the assignment operator is invalid.
         private static AST.AssignmentStmt ParseAssignmentStmt(List<Token> tokens, SymbolTable<string, object> st)
         {
@@ -75,7 +77,9 @@ namespace Parser
             throw new NotImplementedException();
         }
 
+        #endregion
 
+        #region Expressions
         // Parses an expression enclosed in parentheses.
         // Consumes ( and eventually ).
         //
@@ -119,10 +123,10 @@ namespace Parser
                         if (tokens[i].Type == TokenType.LEFT_PAREN) level++;
                         else if (tokens[i].Type == TokenType.RIGHT_PAREN) level--;
 
-                        if (level == 0 && i < tokens.Count - 1) 
+                        if (level == 0 && i < tokens.Count - 1)
                         {
-                            nested = false; 
-                            break; 
+                            nested = false;
+                            break;
                         }
                     }
 
@@ -228,7 +232,7 @@ namespace Parser
             else if (op == TokenConstants.EXPONENTIATE) return new ExponentiationNode(l, r);
             else throw new ParseException($"Invalid operator: {op}");
         }
-        
+
 
         // Validates and creates a variable node.
         //
@@ -239,4 +243,6 @@ namespace Parser
             else throw new ParseException($"Variable name is invalid: {v}");
         }
     }
+    
+    #endregion
 }
