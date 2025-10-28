@@ -47,6 +47,16 @@ namespace Parser
         }
 
 
+        // Determines the type of statement and delegates 
+        // to the appropriate parsing method: assignment or return.
+        //
+        // ParseException if an unknown statement is encountered.
+        private static AST.Statement ParseStatement(List<Token> tokens)
+        {
+            throw new NotImplementedException();
+        }
+
+
         // Parses an assignment statement and adds the variable 
         // as a key to the symbol table (with a null value).
         //
@@ -61,16 +71,6 @@ namespace Parser
         // 
         // ParseException if the return statement contains an empty expression.
         private static AST.ReturnStmt ParseReturnStatement(List<Token> tokens)
-        {
-            throw new NotImplementedException();
-        }
-
-
-        // Determines the type of statement and delegates 
-        // to the appropriate parsing method: assignment or return.
-        //
-        // ParseException if an unknown statement is encountered.
-        private static AST.Statement ParseStatement(List<Token> tokens)
         {
             throw new NotImplementedException();
         }
