@@ -81,7 +81,7 @@ namespace Parser.Tests
             Assert.IsType<LiteralNode>(result.Expression);
             
             var literalNode = (LiteralNode)result.Expression;
-            Assert.Equal(3.14, literalNode.Value);
+            Assert.Equal((float)3.14, literalNode.Value);
         }
         
         [Fact]

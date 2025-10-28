@@ -32,7 +32,7 @@ namespace Parser
         {
             // Check if program starts with { and ends with }
             // Throw parse exception if it doesn't
-
+            
             throw new NotImplementedException();
         }
 
@@ -56,11 +56,13 @@ namespace Parser
         // ParseException if an unknown statement is encountered.
         private static AST.Statement ParseStatement(List<Token> tokens, SymbolTable<string,object> st)
         {
-            if (tokens[0].Type.Equals(TokenType.RETURN)) 
-                return ParseReturnStatement(tokens[1..tokens.Count]);
+            if (tokens[0].Type.Equals(TokenType.RETURN))
+                return ParseReturnStatement(tokens);
 
             else if (tokens[1].Type.Equals(TokenType.ASSIGNMENT)) return ParseAssignmentStmt(tokens, st);
-            else throw new ParseException($"Statement syntax invalid; must either be a return or assignment statement. \n {tokens}");
+
+            else throw new ParseException($"Statement syntax invalid;" + 
+                                "must either be a return or assignment statement. \n {tokens}");
         }
 
 
@@ -87,7 +89,7 @@ namespace Parser
         {
             if (tokens.Count == 0) throw new ParseException("Syntax error: " +
                                 "return statement cannot contain empty expression");
-            return new AST.ReturnStmt(ParseExpression(tokens));
+            return new AST.ReturnStmt(ParseExpression(tokens[1..tokens.Count]));
         }
 
         #endregion
