@@ -421,10 +421,12 @@ namespace Parser.Tests
         {
             // Arrange
             var globalScope = new SymbolTable<string, object>();
-            globalScope["global"] = "global_value";
-            
+            globalScope.Add(new KeyValuePair<string, object>("global", "global_value"));
+            // globalScope["global"] = "global_value";
+
             var functionScope = new SymbolTable<string, object>(globalScope);
-            functionScope["function"] = "function_value";
+            globalScope.Add(new KeyValuePair<string, object>("function", "function_value"));
+            // functionScope["function"] = "function_value";
             
             var blockScope = new SymbolTable<string, object>(functionScope);
             
@@ -454,7 +456,8 @@ namespace Parser.Tests
         {
             // Arrange
             var parentScope = new SymbolTable<string, object>();
-            parentScope["x"] = "parent_value";
+            parentScope.Add(new KeyValuePair<string, object>("x", "parent_value"));
+            // parentScope["x"] = "parent_value";
             
             var childScope = new SymbolTable<string, object>(parentScope);
             

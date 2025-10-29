@@ -20,6 +20,7 @@ namespace Parser
             var lines = new List<string>();
 
             var symbolTable = new SymbolTable<string, object>();
+            
             return ParseBlockStmt(lines, symbolTable);
         }
 
@@ -32,8 +33,16 @@ namespace Parser
         {
             // Check if program starts with { and ends with }
             // Throw parse exception if it doesn't
-            
-            throw new NotImplementedException();
+            if (lines[0] != "{") throw new ParseException("Syntax error: block doesn't begin with '{'");
+            if (lines[lines.Count - 1] != "}") throw new ParseException(
+                                "Syntax error: block doesn't end with '}'");
+        
+            // Create returning block statmenet
+            AST.BlockStmt Block = new AST.BlockStmt(st);
+            // Parse through lines of code (not including beginning & ending {} )
+            ParseStmtList(lines[1..(lines.Count - 1)], Block);
+
+            return Block;
         }
 
 
@@ -42,9 +51,46 @@ namespace Parser
         // Consumes all statements until an end to the block: }.
         // 
         // ParseException if the program ends unexpectedly or invalid character is encountered.
-        private static void ParseStmtList(List<string> lines, AST.BlockStmt block)
+        private static void ParseStmtList(List<string> lines, AST.BlockStmt Block)
         {
-            throw new NotImplementedException();
+            // Iterate through every line of code
+            for (int i = 0; i < lines.Count; i++)
+            {
+                // Handle nested block stmt
+                if (lines[i] == "{")
+                {
+                    int level = 0;
+                    int idx = 0;
+                    // Finds last "}" on same scope
+                    for (int j = i; j < lines.Count; j++)
+                    {
+                        if (lines[j] == "{") level++;
+                        else if (lines[j] == "}") level--;
+                        idx++;
+
+                        // Found "}" on same scope
+                        if (level == 0) break;
+                    }
+                    // "}" not found on same scope, missing '}'
+                    if (level != 0) throw new ParseException(
+                        "Invalid syntax: nested block stmt is missing '}'");
+
+                    // Add nested block to block stmt
+                    Block.AddStatement(ParseBlockStmt(lines[i..(i + idx)], Block.SymbolTable));
+                    i += idx - 1;
+
+                }
+                else
+                {
+                    // Tokenize current line of code
+                    var t = new TokenizerImpl();
+                    List<Token> line = t.Tokenize(lines[i]);
+                    
+                    // Add parsed statement to block stmt
+                    Block.AddStatement(ParseStatement(line, Block.SymbolTable));
+                }
+                
+            }
         }
 
         #endregion
@@ -56,12 +102,15 @@ namespace Parser
         // ParseException if an unknown statement is encountered.
         private static AST.Statement ParseStatement(List<Token> tokens, SymbolTable<string,object> st)
         {
-            if (tokens[0].Type.Equals(TokenType.RETURN)) 
+            // First token is 'return'; hand to ParseReturnStatement
+            if (tokens[0].Type.Equals(TokenType.RETURN))
                 return ParseReturnStatement(tokens);
 
+            // Second token is ':='; hand to ParseAssignmentStatement
             else if (tokens[1].Type.Equals(TokenType.ASSIGNMENT)) return ParseAssignmentStmt(tokens, st);
 
-            else throw new ParseException($"Statement syntax invalid;" + 
+            // No condititons met, throw exception
+            else throw new ParseException($"Statement syntax invalid;" +
                                 "must either be a return or assignment statement. \n {tokens}");
         }
 
@@ -73,14 +122,19 @@ namespace Parser
         private static AST.AssignmentStmt ParseAssignmentStmt(List<Token> tokens,
                                                                     SymbolTable<string, object> st)
         {
+            // Expression is missing after := ; throw exception
             if (tokens.Count <= 2) throw new ParseException($"Missing expression: {tokens}");
-            if (!tokens[0].Type.Equals(TokenType.VARIABLE)) throw new ParseException($"Invalid variable name: {tokens[0]}");
-            if (!tokens[1].Type.Equals(TokenType.ASSIGNMENT)) throw new ParseException($"Expected assignment operator; Got {tokens[1]}");
+            // Must have a variable before := ; throw exception
+            if (!tokens[0].Type.Equals(TokenType.VARIABLE))
+                throw new ParseException($"Invalid variable name: {tokens[0]}");
+            // Second token must be := ; throw exception
+            if (!tokens[1].Type.Equals(TokenType.ASSIGNMENT)) 
+                throw new ParseException($"Expected assignment operator; Got {tokens[1]}");
             
             // Add variable to symbol table (first token)
-            st.Add(tokens[0].Value, null);
+            st.Add(tokens[0].Value, null); // may add right side of assignment stmt instead of null
 
-            // Parse the rest of the tokens
+            // Create and return assignment node (variable, expr)
             return new AST.AssignmentStmt(ParseVariableNode(tokens[0].Value),
                                     ParseExpression(tokens[2..tokens.Count]));
         }
@@ -91,8 +145,10 @@ namespace Parser
         // ParseException if the return statement contains an empty expression.
         private static AST.ReturnStmt ParseReturnStatement(List<Token> tokens)
         {
+            // 'return' is the only token given; throw exception
             if (tokens.Count <= 1) throw new ParseException("Syntax error: " +
                                 "missing expression");
+            // Create and return a return statement (return, expr)
             return new AST.ReturnStmt(ParseExpression(tokens[1..tokens.Count]));
         }
 
