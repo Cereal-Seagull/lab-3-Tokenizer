@@ -33,9 +33,9 @@ namespace Parser
         {
             // Check if program starts with { and ends with }
             // Throw parse exception if it doesn't
-            if (lines[0] != "{") throw new ParseException("Syntax error: block doesn't begin with '{'");
+            if (lines[0] != "{") throw new ParseException("Syntax error: block must begin with single '{'");
             if (lines[lines.Count - 1] != "}") throw new ParseException(
-                                "Syntax error: block doesn't end with '}'");
+                                "Syntax error: block must end with single '}'");
         
             // Create returning block statmenet
             AST.BlockStmt Block = new AST.BlockStmt(st);
