@@ -66,7 +66,7 @@ namespace Parser.Tests
             var exception = Assert.Throws<TargetInvocationException>(() => 
                 InvokeParseBlockStmt(lines, symbolTable));
             Assert.IsType<ParseException>(exception.InnerException);
-            // Assert.Contains("Expected 1 token", exception.InnerException.Message, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("must begin with single '{'", exception.InnerException.Message, StringComparison.OrdinalIgnoreCase);
         }
         
         [Fact]
@@ -93,7 +93,7 @@ namespace Parser.Tests
             var exception = Assert.Throws<TargetInvocationException>(() => 
                 InvokeParseBlockStmt(lines, symbolTable));
             Assert.IsType<ParseException>(exception.InnerException);
-            // Assert.Contains("Invalid token", exception.InnerException.Message, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("must end with single '}'", exception.InnerException.Message, StringComparison.OrdinalIgnoreCase);
         }
         
         [Fact]
