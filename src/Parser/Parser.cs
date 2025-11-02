@@ -16,12 +16,26 @@ namespace Parser
         #region Blocks
         public static AST.BlockStmt Parse(string program)
         {
-            // Do something with "program" to make it a list of strings
-            var lines = new List<string>();
-
-            var symbolTable = new SymbolTable<string, object>();
             
-            return ParseBlockStmt(lines, symbolTable);
+            var lines = new List<string>();
+            var parentSymbolTable = new SymbolTable<string, object>();
+
+            // Iterate through program, adding line to string list every new line (\n)
+            int startIdx = 0;
+            for (int i = 0; i < program.Length; i++)
+            {
+                // If new line, add line of code (removing trailing whitespace)
+                if (program[i] == '\n')
+                {
+                    lines.Add(program[startIdx..i].Trim());
+                    startIdx = i;
+                }
+            }
+            // Add last line of code
+            lines.Add(program[startIdx..program.Length].Trim());
+            
+            // Parse parent block statement
+            return ParseBlockStmt(lines, parentSymbolTable);
         }
 
 
@@ -75,8 +89,9 @@ namespace Parser
                     if (level != 0) throw new ParseException(
                         "Invalid syntax: nested block stmt is missing '}'");
 
-                    // Add nested block to block stmt
-                    Block.AddStatement(ParseBlockStmt(lines[i..(i + idx)], Block.SymbolTable));
+                    // Add nested block to block stmt with its own symbol table
+                    Block.AddStatement(ParseBlockStmt(lines[i..(i + idx)],
+                                                    new SymbolTable<string, object>(Block.SymbolTable)));
                     i += idx - 1;
 
                 }

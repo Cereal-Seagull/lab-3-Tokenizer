@@ -385,7 +385,7 @@ namespace Parser.Tests
             InvokeParseStmtList(lines, blockStmt);
             
             // Assert
-            var unparseResult = blockStmt.Unparse(0); /////////// level(?)
+            var unparseResult = blockStmt.Unparse(); /////////// level(?)
             
             // Check that the unparsed result contains the expected elements
             Assert.Contains("x := 42", unparseResult);

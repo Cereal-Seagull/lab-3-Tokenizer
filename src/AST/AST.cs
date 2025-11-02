@@ -42,7 +42,7 @@ namespace AST
         /// </summary>
         /// <param name="level">The indentation level for formatting.</param>
         /// <returns>A string representation of the literal value with appropriate indentation.</returns>
-        public override string Unparse(int level)
+        public override string Unparse(int level = 0)
         {
             return GeneralUtils.GetIndentation(level) + Value.ToString();
         }
@@ -70,7 +70,7 @@ namespace AST
         /// </summary>
         /// <param name="level">The indentation level for formatting.</param>
         /// <returns>A string representation of the variable name with appropriate indentation.</returns>
-        public override string Unparse(int level)
+        public override string Unparse(int level = 0)
         {
             return GeneralUtils.GetIndentation(level) + Name;
         }
@@ -124,15 +124,17 @@ namespace AST
         /// </summary>
         /// <param name="level">The indentation level for formatting.</param>
         /// <returns>A string representation of the binary operation in the format "left SIGN right".</returns>
-        public override string Unparse(int level)
+        public override string Unparse(int level = 0)
         {
             StringBuilder str = new StringBuilder();
 
+            str.Append(TokenConstants.LEFT_PAREN);
             str.Append(Left.Unparse(level));
             str.Append(" ");
             str.Append(SIGN);
             str.Append(" ");
             str.Append(Right.Unparse(0));
+            str.Append(TokenConstants.RIGHT_PAREN);
 
             return str.ToString();
         }
@@ -286,7 +288,7 @@ namespace AST
         /// </summary>
         /// <param name="level">The indentation level for formatting.</param>
         /// <returns>A string representation of the block with all contained statements.</returns>
-        public override string Unparse(int level)
+        public override string Unparse(int level = 0)
         {
             StringBuilder str = new StringBuilder();
 
@@ -345,7 +347,7 @@ namespace AST
         /// </summary>
         /// <param name="level">The indentation level for formatting.</param>
         /// <returns>A string representation of the assignment in the format "variable = expression".</returns>
-        public override string Unparse(int level)
+        public override string Unparse(int level = 0)
         {
             return GeneralUtils.GetIndentation(level) + Variable.Unparse(0) + " " + SIGN 
                                                       + " " + Expression.Unparse(0);
@@ -382,7 +384,7 @@ namespace AST
         /// </summary>
         /// <param name="level">The indentation level for formatting.</param>
         /// <returns>A string representation of the return statement in the format "return expression".</returns>
-        public override string Unparse(int level)
+        public override string Unparse(int level = 0)
         {
             return GeneralUtils.GetIndentation(level) + SIGN + " " + Expression.Unparse(0);
         }
