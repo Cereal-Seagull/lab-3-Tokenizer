@@ -17,6 +17,8 @@ namespace AST
         /// <param name="level">The indentation level for formatting. Default is 0.</param>
         /// <returns>A string representation of the expression node.</returns>
         public abstract string Unparse(int level = 0);
+
+        public abstract TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param);
     }
 
     /// <summary>
@@ -46,6 +48,8 @@ namespace AST
         {
             return GeneralUtils.GetIndentation(level) + Value.ToString();
         }
+
+        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) { throw new NotImplementedException(); }
     }
     
     /// <summary>
@@ -74,6 +78,8 @@ namespace AST
         {
             return GeneralUtils.GetIndentation(level) + Name;
         }
+
+        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) { throw new NotImplementedException(); }
     }
 
     #endregion
@@ -139,6 +145,7 @@ namespace AST
             return str.ToString();
         }
 
+        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) { throw new NotImplementedException(); }
     }
 
     /// <summary>
@@ -152,6 +159,8 @@ namespace AST
         /// Operands initialized to given left and right expression nodes.
         /// </summary>
         public PlusNode(ExpressionNode l, ExpressionNode r) : base(l, TokenConstants.PLUS, r) { }
+
+        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) { throw new NotImplementedException(); }
     }
 
     /// <summary>
@@ -165,6 +174,8 @@ namespace AST
         /// Operands initialized to given left and right expression nodes.
         /// </summary>
         public MinusNode(ExpressionNode l, ExpressionNode r) : base(l, TokenConstants.SUBTRACTION, r) { }
+
+        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) { throw new NotImplementedException(); }
     }
 
     /// <summary>
@@ -178,6 +189,8 @@ namespace AST
         /// Operands initialized to given left and right expression nodes.
         /// </summary>
         public TimesNode(ExpressionNode l, ExpressionNode r) : base(l, TokenConstants.TIMES, r) { }
+
+        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) { throw new NotImplementedException(); }
     }
 
     /// <summary>
@@ -191,6 +204,8 @@ namespace AST
         /// Operands initialized to given left and right expression nodes.
         /// </summary>
         public FloatDivNode(ExpressionNode l, ExpressionNode r) : base(l, TokenConstants.FLOAT_DIVISION, r) { }
+
+        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) { throw new NotImplementedException(); }
     }
 
     /// <summary>
@@ -204,6 +219,8 @@ namespace AST
         /// Operands initialized to given left and right expression nodes.
         /// </summary>
         public IntDivNode(ExpressionNode l, ExpressionNode r) : base(l, TokenConstants.INT_DIVISION, r) { }
+
+        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) { throw new NotImplementedException(); }
     }
 
     /// <summary>
@@ -217,6 +234,7 @@ namespace AST
         /// Operands initialized to given left and right expression nodes.
         /// </summary>
         public ModulusNode(ExpressionNode l, ExpressionNode r) : base(l, TokenConstants.MODULUS, r) { }
+        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) { throw new NotImplementedException(); }
     }
 
     /// <summary>
@@ -230,6 +248,7 @@ namespace AST
         /// Operands initialized to given left and right expression nodes.
         /// </summary>
         public ExponentiationNode(ExpressionNode l, ExpressionNode r) : base(l, TokenConstants.EXPONENTIATE, r) { }
+        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) { throw new NotImplementedException(); }
     }
 
     #endregion
@@ -247,6 +266,7 @@ namespace AST
         /// <param name="level">The indentation level for formatting. Default is 0.</param>
         /// <returns>A string representation of the statement.</returns>
         public abstract string Unparse(int level = 0);
+        public abstract TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param);
     }
 
     /// <summary>
@@ -276,7 +296,7 @@ namespace AST
         /// Adds a statement to the end of this block.
         /// </summary>
         /// <param name="obj">The statement to add to the block.</param>
-        // Adds a statement to Block
+        /// Adds a statement to Block
         public void AddStatement(Statement obj)
         {
             Statements.Add(obj);
@@ -324,6 +344,8 @@ namespace AST
 
             return str.ToString();
         }
+    
+        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) { throw new NotImplementedException(); }
     }
 
     /// <summary>
@@ -365,9 +387,11 @@ namespace AST
         /// <returns>A string representation of the assignment in the format "variable = expression".</returns>
         public override string Unparse(int level = 0)
         {
-            return GeneralUtils.GetIndentation(level) + Variable.Unparse(0) + " " + SIGN 
+            return GeneralUtils.GetIndentation(level) + Variable.Unparse(0) + " " + SIGN
                                                       + " " + Expression.Unparse(0);
         }
+        
+        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) { throw new NotImplementedException(); }
     }
 
     /// <summary>
@@ -404,6 +428,8 @@ namespace AST
         {
             return GeneralUtils.GetIndentation(level) + SIGN + " " + Expression.Unparse(0);
         }
+
+        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) { throw new NotImplementedException(); }
     }
     
     #endregion    
