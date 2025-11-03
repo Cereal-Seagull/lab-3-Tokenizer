@@ -32,11 +32,13 @@ namespace SymbolTableTests
         public void Constructor_CreateSymbolTableWithParentReference()
         {
             // Arrange & Act
-            var symbolTable = new SymbolTable<string, int>();
+            var parentTable = new SymbolTable<string, int>();
+            var childTable = new SymbolTable<string, int>(parentTable);
 
             // Assert
-            Assert.NotNull(symbolTable);
-            Assert.NotNull(symbolTable.Parent);
+            Assert.NotNull(parentTable);
+            Assert.NotNull(childTable);
+            Assert.NotNull(childTable.Parent);
         }
 
         #endregion
