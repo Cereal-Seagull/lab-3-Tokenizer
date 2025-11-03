@@ -413,15 +413,9 @@ public class SymbolTable<TKey, TValue> : IDictionary<TKey, TValue>
     /// <returns>An IEnumerator&lt;KeyValuePair&lt;TKey, TValue&gt;&gt; that can be used to iterate through the symbol table</returns>
     public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
     {
-        // for (int i = 0; i < Count(); i++)
-        // {
-        //     // potentially find way for O(1)?
-        //     var kvp = new KeyValuePair<TKey, TValue>(_keys[i], _values[i]);
-        //     yield return kvp;
-        // }
-        foreach ((TKey key, TValue value) in this) {
+        foreach (TKey key in _keys) {
             // is this O(1)?
-            yield return new KeyValuePair<TKey, TValue>(key, value);
+            yield return new KeyValuePair<TKey, TValue>(key, this[key]);
         }
     }
 

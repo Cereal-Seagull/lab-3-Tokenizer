@@ -72,7 +72,8 @@ namespace Tokenizer
                         lst.Add(HandleMultiOp(str, ref idx));
                     }
 
-                    // Unrecognized characters are skipped or would raise exceptions
+                    // Unrecognized characters either raise exceptions or are tokenized as Unknown
+                    else lst.Add(HandleUnknown(str, ref idx));
                 }
                 // If whitespace, handle functions all increment index
                 else idx += 1;
@@ -202,6 +203,15 @@ namespace Tokenizer
                 idx += 1;
             }
             return new Token(code, TokenType.VARIABLE);
+        }
+
+        /// <summary>
+        /// Handles unknown characters to ensure no infinite loop.
+        /// </summary>
+        private Token HandleUnknown(string s, ref int idx)
+        {
+            idx += 1;
+            return new Token(s, TokenType.UNKNOWN);
         }
 
         /// <summary>

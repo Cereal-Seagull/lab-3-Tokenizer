@@ -49,7 +49,10 @@ namespace Parser
             AST.BlockStmt Block = new AST.BlockStmt(st);
 
             // If only one scope, don't check for brackets
-            if (st.Parent != null)
+            if (st.Parent != null ||
+               (st.Parent == null &&
+                    (lines[0] == TokenConstants.LEFT_CURLY ||
+                    lines[lines.Count - 1] == TokenConstants.RIGHT_CURLY)))
             {
                 // Check if program starts with { and ends with }
                 // Throw parse exception if it doesn't
@@ -133,9 +136,9 @@ namespace Parser
             // Second token is ':='; hand to ParseAssignmentStatement
             else if (tokens[1].Type.Equals(TokenType.ASSIGNMENT)) return ParseAssignmentStmt(tokens, st);
 
-            // No condititons met, throw exception
-            else throw new ParseException($"Statement syntax invalid;" +
-                                "must either be a return or assignment statement. \n {tokens}");
+            // No conditions met, throw exception
+            else throw new ParseException("Statement syntax invalid;" +
+                                $"must either be a return or assignment statement. \n {tokens}");
         }
 
 
@@ -289,6 +292,8 @@ namespace Parser
                 else l = HandleSingleToken(tokens[0]);
 
                 ExpressionNode r;
+                // check if there is an right expression here
+                if (opIdx + 1 >= tokens.Count) throw new ParseException($"Invalid syntax: missing right-hand size of operator: {tokens}");
                 // Right operand is another expression
                 if (tokens[opIdx + 1].Type == TokenType.LEFT_PAREN)
                     r = ParseExpression(tokens[(opIdx + 1)..tokens.Count]);
