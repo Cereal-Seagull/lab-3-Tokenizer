@@ -297,20 +297,21 @@ namespace AST
             {
                 str.Append(GeneralUtils.GetIndentation(level - 1));
                 str.Append(TokenConstants.LEFT_CURLY);
-                str.Append("\n");
+
+                // Don't new line if Block statement is empty
+                if (Statements.Count != 0) str.Append("\n");
             }
 
             // Call Unparse() on child nodes
             for (int i = 0; i < Statements.Count; i++)
             {
                 // If block statement, increase their statement indent by 1
-                if (Statements[i].GetType().Equals(typeof(BlockStmt))) 
+                if (Statements[i].GetType().Equals(typeof(BlockStmt)))
                     str.Append(Statements[i].Unparse(level + 1));
                 else str.Append(Statements[i].Unparse(level));
 
                 // New line unless it is last statement
                 if (i != Statements.Count - 1) str.Append("\n");
-
             }
 
             // Add curly brace if block is nested

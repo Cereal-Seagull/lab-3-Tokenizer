@@ -144,7 +144,7 @@ namespace AST.Tests
             string result = plusNode.Unparse(0);
 
             // Assert
-            Assert.Equal("5 + 3", result);
+            Assert.Equal("(5 + 3)", result);
         }
 
         [Fact]
@@ -154,7 +154,7 @@ namespace AST.Tests
             var right = new LiteralNode(4);
             var plus = new PlusNode(left, right);
 
-            Assert.Equal("3 + 4", plus.Unparse(0));
+            Assert.Equal("(3 + 4)", plus.Unparse(0));
         }
 
         /// <summary>
@@ -174,7 +174,7 @@ namespace AST.Tests
             string result = minusNode.Unparse(0);
 
             // Assert
-            Assert.Equal("10 - 4", result);
+            Assert.Equal("(10 - 4)", result);
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace AST.Tests
             string result = timesNode.Unparse(0);
 
             // Assert
-            Assert.Equal("6 * 7", result);
+            Assert.Equal("(6 * 7)", result);
         }
 
         /// <summary>
@@ -210,7 +210,7 @@ namespace AST.Tests
             string result = divNode.Unparse(0);
 
             // Assert
-            Assert.Equal("15 / 3", result);
+            Assert.Equal("(15 / 3)", result);
         }
 
         /// <summary>
@@ -228,7 +228,7 @@ namespace AST.Tests
             string result = divNode.Unparse(0);
 
             // Assert
-            Assert.Equal("17 // 5", result);
+            Assert.Equal("(17 // 5)", result);
         }
 
         /// <summary>
@@ -246,7 +246,7 @@ namespace AST.Tests
             string result = modNode.Unparse(0);
 
             // Assert
-            Assert.Equal("20 % 6", result);
+            Assert.Equal("(20 % 6)", result);
         }
 
         /// <summary>
@@ -264,7 +264,7 @@ namespace AST.Tests
             string result = expNode.Unparse(0);
 
             // Assert
-            Assert.Equal("2 ** 8", result);
+            Assert.Equal("(2 ** 8)", result);
         }
 
         /// <summary>
@@ -282,7 +282,7 @@ namespace AST.Tests
             string result = plusNode.Unparse(0);
 
             // Assert
-            Assert.Equal("x + y", result);
+            Assert.Equal("(x + y)", result);
         }
 
         /// <summary>
@@ -303,7 +303,7 @@ namespace AST.Tests
             string result = outerTimes.Unparse(0);
 
             // Assert
-            Assert.Equal("2 + 3 * 4", result);
+            Assert.Equal("((2 + 3) * 4)", result);
         }
 
         #endregion
@@ -345,7 +345,7 @@ namespace AST.Tests
             string result = assignment.Unparse(0);
 
             // Assert
-            Assert.Equal("result := 10 + 5", result);
+            Assert.Equal("result := (10 + 5)", result);
         }
 
         /// <summary>
@@ -416,7 +416,7 @@ namespace AST.Tests
             string result = returnStmt.Unparse(0);
 
             // Assert
-            Assert.Equal("return a + b", result);
+            Assert.Equal("return (a + b)", result);
         }
 
         /// <summary>
@@ -522,7 +522,7 @@ namespace AST.Tests
 
             // Assert
             Assert.NotNull(node);
-            Assert.Equal("1 + 2", node.Unparse(0));
+            Assert.Equal("(1 + 2)", node.Unparse(0));
         }
 
         /// <summary>
@@ -726,7 +726,7 @@ namespace AST.Tests
 
                 // Assert
                 Assert.NotNull(node);
-                Assert.Equal("5 + 3", node.Unparse(0));
+                Assert.Equal("(5 + 3)", node.Unparse(0));
                 Assert.Contains("Plus node created", output);
             }
         }
@@ -787,7 +787,7 @@ namespace AST.Tests
 
                 // Assert
                 Assert.NotNull(assignment);
-                Assert.Equal("result := 10 + 5", assignment.Unparse(0));
+                Assert.Equal("result := (10 + 5)", assignment.Unparse(0));
             }
         }
 
@@ -1323,7 +1323,7 @@ namespace AST.Tests
             string unparsed = plus.Unparse(0);
             
             // Assert
-            Assert.Equal("5 + 10", unparsed);
+            Assert.Equal("(5 + 10)", unparsed);
         }
 
         /// <summary>
