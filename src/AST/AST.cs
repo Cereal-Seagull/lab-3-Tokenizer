@@ -292,19 +292,34 @@ namespace AST
         {
             StringBuilder str = new StringBuilder();
 
-            str.Append(GeneralUtils.GetIndentation(level));
-            str.Append(TokenConstants.LEFT_CURLY);
-            str.Append("\n");
-
-            // Call Unparse() on child nodes
-            for (int i = 0; i < Statements.Count(); i++)
+            // Add curly brace if block is nested
+            if (level != 0)
             {
-                str.Append(Statements[i].Unparse(level + 1));
+                str.Append(GeneralUtils.GetIndentation(level - 1));
+                str.Append(TokenConstants.LEFT_CURLY);
                 str.Append("\n");
             }
 
-            str.Append(GeneralUtils.GetIndentation(level));
-            str.Append(TokenConstants.RIGHT_CURLY);
+            // Call Unparse() on child nodes
+            for (int i = 0; i < Statements.Count; i++)
+            {
+                // If block statement, increase their statement indent by 1
+                if (Statements[i].GetType().Equals(typeof(BlockStmt))) 
+                    str.Append(Statements[i].Unparse(level + 1));
+                else str.Append(Statements[i].Unparse(level));
+
+                // New line unless it is last statement
+                if (i != Statements.Count - 1) str.Append("\n");
+
+            }
+
+            // Add curly brace if block is nested
+            if (level != 0)
+            {
+                str.Append("\n");
+                str.Append(GeneralUtils.GetIndentation(level - 1));
+                str.Append(TokenConstants.RIGHT_CURLY);
+            }
 
             return str.ToString();
         }

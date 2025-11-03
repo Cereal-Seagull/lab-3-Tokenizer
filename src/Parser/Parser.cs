@@ -48,14 +48,15 @@ namespace Parser
             // Create returning block statement
             AST.BlockStmt Block = new AST.BlockStmt(st);
 
-            // If only one scope, don't check for brackets
-            if (st.Parent != null)
+            // If no parent (only one scope), don't check for brackets
+            if (st.Parent != null || (st.Parent == null && (lines[0] == TokenConstants.LEFT_CURLY ||
+                                                lines[lines.Count - 1] == TokenConstants.RIGHT_CURLY)))
             {
                 // Check if program starts with { and ends with }
                 // Throw parse exception if it doesn't
-                if (lines[0] != "{") throw new ParseException(
+                if (lines[0] != TokenConstants.LEFT_CURLY) throw new ParseException(
                                     "Syntax error: block must begin with single '{'");
-                if (lines[lines.Count - 1] != "}") throw new ParseException(
+                if (lines[lines.Count - 1] != TokenConstants.RIGHT_CURLY) throw new ParseException(
                                     "Syntax error: block must end with single '}'");
 
                 // Parse through lines of code (not including beginning & ending {} )

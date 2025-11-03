@@ -26,7 +26,7 @@ namespace Parser.Tests
             Assert.Equal(5, literal.Value);
 
             // Verify unparsing works correctly
-            Assert.Equal(program, assignStmt.Unparse());
+            Assert.Equal(program, result.Unparse());
         }
 
         [Fact]
@@ -45,7 +45,7 @@ namespace Parser.Tests
             Assert.IsType<ExponentiationNode>(assignStmt.Expression);
 
             // Verify unparsing works correctly
-            Assert.Equal(program, assignStmt.Unparse());
+            Assert.Equal(program, result.Unparse());
         }
 
         [Fact]
@@ -64,7 +64,7 @@ namespace Parser.Tests
             Assert.IsType<PlusNode>(assignStmt.Expression);
 
             // Verify unparsing works correctly
-            Assert.Equal(program, assignStmt.Unparse());
+            Assert.Equal(program, result.Unparse());
         }
 
         [Fact]
@@ -82,7 +82,7 @@ namespace Parser.Tests
             Assert.IsType<MinusNode>(returnStmt.Expression);
 
             // Verify unparsing works correctly
-            Assert.Equal(program, returnStmt.Unparse());
+            Assert.Equal(program, result.Unparse());
         }
 
         [Fact]

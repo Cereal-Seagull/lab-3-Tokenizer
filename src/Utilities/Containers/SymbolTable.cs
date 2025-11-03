@@ -419,9 +419,11 @@ public class SymbolTable<TKey, TValue> : IDictionary<TKey, TValue>
         //     var kvp = new KeyValuePair<TKey, TValue>(_keys[i], _values[i]);
         //     yield return kvp;
         // }
-        foreach ((TKey key, TValue value) in this) {
+        
+
+        foreach (TKey key in _keys) {
             // is this O(1)?
-            yield return new KeyValuePair<TKey, TValue>(key, value);
+            yield return new KeyValuePair<TKey, TValue>(key, this[key]);
         }
     }
 
