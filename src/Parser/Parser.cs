@@ -1,19 +1,57 @@
-using System.Reflection.Metadata;
+/**
+* ParseException class creates a custom exception type thrown when parsing errors occur.
+*
+* Parser class provides a Parse method to parse through DEC code using several private methods
+* to separate pieces of tokenized code into individual AST nodes contained in expression and
+* block statements.
+*
+* Bugs: Unknown format for unparsing parent block statements and where their curly braces should
+* lie.
+*
+* @author Charlie Moss
+* @author Will Zoeller
+* @date 11/02/25
+*/
 using AST;
 using Tokenizer;
 
 namespace Parser
 {
+    /// <summary>
+    /// Exception thrown when parsing errors occur.
+    /// </summary>
     public class ParseException : Exception
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ParseException"/> class.
+        /// </summary>
         public ParseException() { }
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ParseException"/> class with a specified error message.
+        /// </summary>
+        /// <param name="err">The error message that explains the reason for the exception.</param>
         public ParseException(string err) : base(err) { }
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ParseException"/> class with a specified error message and a reference to the inner exception.
+        /// </summary>
+        /// <param name="err">The error message that explains the reason for the exception.</param>
+        /// <param name="inner">The exception that is the cause of the current exception.</param>
         public ParseException(string err, Exception inner) : base(err, inner) { }
     }
 
+    /// <summary>
+    /// Provides methods for parsing source code into an abstract syntax tree (AST).
+    /// </summary>
     public static class Parser
     {
         #region Blocks
+        /// <summary>
+        /// Parses a program string into a block statement AST.
+        /// </summary>
+        /// <param name="program">The source code to parse.</param>
+        /// <returns>A <see cref="BlockStmt"/> representing the parsed program.</returns>
         public static AST.BlockStmt Parse(string program)
         {
             
@@ -39,16 +77,20 @@ namespace Parser
         }
 
 
-        // Initiates parsing of a block. Should be called recursively as needed.
-        // Consumes { and eventually }.
-        //
-        // ParseException if the block does not begin with { and end with }.
+        /// <summary>
+        /// Initiates parsing of a block statement. Should be called recursively as needed.
+        /// Consumes opening and closing curly braces.
+        /// </summary>
+        /// <param name="lines">The list of code lines to parse.</param>
+        /// <param name="st">The symbol table for the current scope.</param>
+        /// <returns>A <see cref="BlockStmt"/> representing the parsed block.</returns>
+        /// <exception cref="ParseException">Thrown if the block does not begin with '{' and end with '}'.</exception>
         private static AST.BlockStmt ParseBlockStmt(List<string> lines, SymbolTable<string, object> st)
         {
             // Create returning block statement
             AST.BlockStmt Block = new AST.BlockStmt(st);
 
-            // If no parent (only one scope), don't check for brackets
+            // If not parent scope (or is parent scope with brackets), check brackets
             if (st.Parent != null || (st.Parent == null && (lines[0] == TokenConstants.LEFT_CURLY ||
                                                 lines[lines.Count - 1] == TokenConstants.RIGHT_CURLY)))
             {
@@ -63,18 +105,21 @@ namespace Parser
                 ParseStmtList(lines[1..(lines.Count - 1)], Block);
             }
 
-            // If only one scope, parse entire expression
+            // If only one scope, parse entire expression (don't check brackets)
             else ParseStmtList(lines, Block);
             
             return Block;
         }
 
 
-        // Parses a list of statements within a block. 
-        // The list of statements may include a new block that should be handled recursively.
-        // Consumes all statements until an end to the block: }.
-        // 
-        // ParseException if the program ends unexpectedly or invalid character is encountered.
+        /// <summary>
+        /// Parses a list of statements within a block.
+        /// The list of statements may include a new block that should be handled recursively.
+        /// Consumes all statements until an end to the block.
+        /// </summary>
+        /// <param name="lines">The list of code lines to parse.</param>
+        /// <param name="Block">The block statement to add parsed statements to.</param>
+        /// <exception cref="ParseException">Thrown if the program ends unexpectedly or an invalid character is encountered.</exception>
         private static void ParseStmtList(List<string> lines, AST.BlockStmt Block)
         {
             // Iterate through every line of code
@@ -121,10 +166,13 @@ namespace Parser
         #endregion
 
         #region Individual Statements
-        // Determines the type of statement and delegates 
-        // to the appropriate parsing method: assignment or return.
-        //
-        // ParseException if an unknown statement is encountered.
+        /// <summary>
+        /// Determines the type of statement and delegates to the appropriate parsing method.
+        /// </summary>
+        /// <param name="tokens">The list of tokens representing the statement.</param>
+        /// <param name="st">The symbol table for the current scope.</param>
+        /// <returns>A <see cref="Statement"/> representing the parsed statement.</returns>
+        /// <exception cref="ParseException">Thrown if an unknown statement is encountered.</exception>
         private static AST.Statement ParseStatement(List<Token> tokens, SymbolTable<string,object> st)
         {
             // First token is 'return'; hand to ParseReturnStatement
@@ -140,10 +188,13 @@ namespace Parser
         }
 
 
-        // Parses an assignment statement and adds the variable 
-        // as a key to the symbol table (with a null value).
-        //
-        // ParseException if the assignment operator is invalid.
+        /// <summary>
+        /// Parses an assignment statement and adds the variable as a key to the symbol table.
+        /// </summary>
+        /// <param name="tokens">The list of tokens representing the assignment statement.</param>
+        /// <param name="st">The symbol table for the current scope.</param>
+        /// <returns>An <see cref="AssignmentStmt"/> representing the parsed assignment.</returns>
+        /// <exception cref="ParseException">Thrown if the assignment operator or syntax is invalid.</exception>
         private static AST.AssignmentStmt ParseAssignmentStmt(List<Token> tokens,
                                                                     SymbolTable<string, object> st)
         {
@@ -165,9 +216,12 @@ namespace Parser
         }
 
 
-        // Parses a return statement.
-        // 
-        // ParseException if the return statement contains an empty expression.
+        /// <summary>
+        /// Parses a return statement.
+        /// </summary>
+        /// <param name="tokens">The list of tokens representing the return statement.</param>
+        /// <returns>A <see cref="ReturnStmt"/> representing the parsed return statement.</returns>
+        /// <exception cref="ParseException">Thrown if the return statement contains an empty expression.</exception>
         private static AST.ReturnStmt ParseReturnStatement(List<Token> tokens)
         {
             // 'return' is the only token given; throw exception
@@ -180,10 +234,13 @@ namespace Parser
         #endregion
 
         #region Expressions
-        // Parses an expression enclosed in parentheses.
-        // Consumes ( and eventually ).
-        //
-        // Throws ParseException if the expression syntax is invalid: starts with a ( and ends with a ).
+        /// <summary>
+        /// Parses an expression enclosed in parentheses.
+        /// Consumes opening and closing parentheses.
+        /// </summary>
+        /// <param name="tokens">The list of tokens representing the expression.</param>
+        /// <returns>An <see cref="ExpressionNode"/> representing the parsed expression.</returns>
+        /// <exception cref="ParseException">Thrown if the expression syntax is invalid or does not start with '(' and end with ')'.</exception>
         private static AST.ExpressionNode ParseExpression(List<Token> tokens)
         {
             // If just a variable or literal, hand off to HandleSingleToken
@@ -201,10 +258,13 @@ namespace Parser
             return ParseExpressionContent(tokens[1..(tokens.Count - 1)]);
         }
 
-        // Parses the content of an expression.
-        // Consumes the expression one token at a time.
-        //
-        // Throws ParseException if the expression syntax is invalid.
+        /// <summary>
+        /// Parses the content of an expression.
+        /// Consumes the expression one token at a time.
+        /// </summary>
+        /// <param name="tokens">The list of tokens representing the expression content.</param>
+        /// <returns>An <see cref="ExpressionNode"/> representing the parsed expression content.</returns>
+        /// <exception cref="ParseException">Thrown if the expression syntax is invalid.</exception>
         private static AST.ExpressionNode ParseExpressionContent(List<Token> tokens)
         {
             if (tokens.Count == 0) throw new ParseException("Syntax error: empty expression");
@@ -303,9 +363,12 @@ namespace Parser
             }
         }
 
-        // Handles a single token expression (variable or int / float literal).
-        //
-        // Throws ParseException if the token is invalid.
+        /// <summary>
+        /// Handles a single token expression (variable or numeric literal).
+        /// </summary>
+        /// <param name="token">The token to handle.</param>
+        /// <returns>An <see cref="ExpressionNode"/> representing the variable or literal.</returns>
+        /// <exception cref="ParseException">Thrown if the token is invalid.</exception>
         private static AST.ExpressionNode HandleSingleToken(Token token)
         {
             // If variable, pass to ParseVariableNode
@@ -322,9 +385,14 @@ namespace Parser
         }
 
 
-        // Creates the appropriate binary operator node based on the operator
-        //
-        // ParseException if the operator is invalid.
+        /// <summary>
+        /// Creates the appropriate binary operator node based on the operator string.
+        /// </summary>
+        /// <param name="op">The operator string.</param>
+        /// <param name="l">The left operand expression node.</param>
+        /// <param name="r">The right operand expression node.</param>
+        /// <returns>An <see cref="ExpressionNode"/> representing the binary operation.</returns>
+        /// <exception cref="ParseException">Thrown if the operator is invalid.</exception>
         private static AST.ExpressionNode CreateBinaryOperatorNode(string op, AST.ExpressionNode l,
                                                                    AST.ExpressionNode r)
         {
@@ -339,9 +407,12 @@ namespace Parser
         }
 
 
-        // Validates and creates a variable node.
-        //
-        // Returns ParseException if the variable name is invalid.
+        /// <summary>
+        /// Validates and creates a variable node.
+        /// </summary>
+        /// <param name="v">The variable name string.</param>
+        /// <returns>A <see cref="VariableNode"/> representing the variable.</returns>
+        /// <exception cref="ParseException">Thrown if the variable name is invalid.</exception>
         private static AST.VariableNode ParseVariableNode(string v)
         {
             if (GeneralUtils.IsValidVariable(v)) return new AST.VariableNode(v);

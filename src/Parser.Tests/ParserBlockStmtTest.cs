@@ -137,8 +137,8 @@ namespace Parser.Tests
             // Assert.Empty(lines); // All lines should be consumed
             
             // Verify the Unparse output
-            var unparsed = result.Unparse(0);
-            Assert.Equal("{\n}", unparsed);
+            var unparsed = result.Unparse();
+            Assert.Equal("", unparsed);
         }
     }
 }

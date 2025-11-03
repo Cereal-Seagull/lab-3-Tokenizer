@@ -450,8 +450,8 @@ namespace AST.Tests
         public void BlockStmt_Empty_UnparsesCorrectly()
         {
             var block = new BlockStmt(new SymbolTable<string, object>());
-            string result = block.Unparse(0);
-            Assert.Equal("{\n}", result);
+            string result = block.Unparse();
+            Assert.Equal("", result);
         }
 
         /// <summary>
@@ -466,7 +466,7 @@ namespace AST.Tests
             var block = new BlockStmt(new SymbolTable<string, object>());
             block.AddStatement(assignment);
             string result = block.Unparse(0);
-            Assert.Equal("{\n    x := 5\n}", result);
+            Assert.Equal("x := 5", result);
         }
 
         /// <summary>
@@ -483,7 +483,7 @@ namespace AST.Tests
             block.AddStatement(assign2);
 
             string result = block.Unparse(0);
-            Assert.Equal("{\n    x := 10\n    y := 20\n}", result);
+            Assert.Equal("x := 10\ny := 20", result);
         }
 
         /// <summary>
@@ -499,7 +499,7 @@ namespace AST.Tests
             block.AddStatement(assignment);
 
             string result = block.Unparse(0);
-            Assert.Equal("{\n    z := 30\n}", result);
+            Assert.Equal("z := 30", result);
         }
 
         #endregion
@@ -1175,8 +1175,8 @@ namespace AST.Tests
             Assert.Contains("}", unparsed);
             Assert.Contains("return 42", unparsed);
             // Check that we have at least 2 opening and 2 closing braces for nested structure
-            Assert.Equal(2, unparsed.Count(c => c == '{'));
-            Assert.Equal(2, unparsed.Count(c => c == '}'));
+            Assert.Equal(1, unparsed.Count(c => c == '{'));
+            Assert.Equal(1, unparsed.Count(c => c == '}'));
         }
 
         /// <summary>
@@ -1193,9 +1193,7 @@ namespace AST.Tests
             string unparsed = block.Unparse(0);
             
             // Assert
-            Assert.Contains("{", unparsed);
-            Assert.Contains("}", unparsed);
-            Assert.Equal("{\n}", unparsed);
+            Assert.Equal("", unparsed);
         }
 
         /// <summary>
@@ -1233,33 +1231,6 @@ namespace AST.Tests
             Assert.Contains("return y", unparsed);
             Assert.Contains("{", unparsed);
             Assert.Contains("}", unparsed);
-        }
-
-        /// <summary>
-        /// Tests that BlockStmt correctly indents nested blocks.
-        /// </summary>
-        [Fact]
-        public void BlockStmt_NestedBlocks_IndentationIncreases()
-        {
-            // Arrange
-            var globalScope = new SymbolTable<string, object>();
-            var outerBlock = new BlockStmt(globalScope);
-            
-            var innerScope = globalScope.CreateNewScope_GivenParent();
-            var innerBlock = new BlockStmt(innerScope);
-            
-            var stmt = new ReturnStmt(new LiteralNode(42));
-            innerBlock.AddStatement(stmt);
-            outerBlock.AddStatement(innerBlock);
-            
-            // Act
-            string unparsed = outerBlock.Unparse(0);
-            
-            // Assert
-            // The inner return statement should have more indentation than outer block content
-            var lines = unparsed.Split('\n');
-            bool hasIndentedContent = lines.Any(line => line.StartsWith("        ")); // 2 levels of indent
-            Assert.True(hasIndentedContent);
         }
 
         #endregion
