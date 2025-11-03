@@ -299,7 +299,7 @@ namespace AST
                 str.Append(TokenConstants.LEFT_CURLY);
 
                 // Don't new line if Block statement is empty
-                if (Statements.Count != 0) str.Append("\n");
+                if (Statements.Count != 0) str.Append(Environment.NewLine);
             }
 
             // Call Unparse() on child nodes
@@ -311,13 +311,13 @@ namespace AST
                 else str.Append(Statements[i].Unparse(level));
 
                 // New line unless it is last statement
-                if (i != Statements.Count - 1) str.Append("\n");
+                if (i != Statements.Count - 1) str.Append(Environment.NewLine);
             }
 
             // Add curly brace if block is nested
             if (level != 0)
             {
-                str.Append("\n");
+                str.Append(Environment.NewLine);
                 str.Append(GeneralUtils.GetIndentation(level - 1));
                 str.Append(TokenConstants.RIGHT_CURLY);
             }
