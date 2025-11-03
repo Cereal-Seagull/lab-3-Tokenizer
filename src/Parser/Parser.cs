@@ -33,7 +33,7 @@ namespace Parser
             }
             // Add last line of code
             lines.Add(program[startIdx..program.Length].Trim());
-            
+
             // Parse parent block statement
             return ParseBlockStmt(lines, parentSymbolTable);
         }
@@ -45,17 +45,26 @@ namespace Parser
         // ParseException if the block does not begin with { and end with }.
         private static AST.BlockStmt ParseBlockStmt(List<string> lines, SymbolTable<string, object> st)
         {
-            // Check if program starts with { and ends with }
-            // Throw parse exception if it doesn't
-            if (lines[0] != "{") throw new ParseException("Syntax error: block must begin with single '{'");
-            if (lines[lines.Count - 1] != "}") throw new ParseException(
-                                "Syntax error: block must end with single '}'");
-        
-            // Create returning block statmenet
+            // Create returning block statement
             AST.BlockStmt Block = new AST.BlockStmt(st);
-            // Parse through lines of code (not including beginning & ending {} )
-            ParseStmtList(lines[1..(lines.Count - 1)], Block);
 
+            // If only one scope, don't check for brackets
+            if (st.Parent != null)
+            {
+                // Check if program starts with { and ends with }
+                // Throw parse exception if it doesn't
+                if (lines[0] != "{") throw new ParseException(
+                                    "Syntax error: block must begin with single '{'");
+                if (lines[lines.Count - 1] != "}") throw new ParseException(
+                                    "Syntax error: block must end with single '}'");
+
+                // Parse through lines of code (not including beginning & ending {} )
+                ParseStmtList(lines[1..(lines.Count - 1)], Block);
+            }
+
+            // If only one scope, parse entire expression
+            else ParseStmtList(lines, Block);
+            
             return Block;
         }
 
@@ -176,6 +185,9 @@ namespace Parser
         // Throws ParseException if the expression syntax is invalid: starts with a ( and ends with a ).
         private static AST.ExpressionNode ParseExpression(List<Token> tokens)
         {
+            // If just a variable or literal, hand off to HandleSingleToken
+            if (tokens.Count == 1) return HandleSingleToken(tokens[0]);
+
             // First token is not "(", throw exception
             if (!tokens[0].Type.Equals(TokenType.LEFT_PAREN))
                 throw new ParseException($"Expression syntax invalid; must begin with a (. \n {tokens}");
