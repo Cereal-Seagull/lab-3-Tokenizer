@@ -170,9 +170,6 @@ namespace AST
 
             return str.ToString();
         }
-
-        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) 
-        { throw new NotImplementedException(); }
     }
 
     /// <summary>
