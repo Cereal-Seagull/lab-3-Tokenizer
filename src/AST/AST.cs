@@ -73,7 +73,8 @@ namespace AST
             return GeneralUtils.GetIndentation(level) + Value.ToString();
         }
 
-        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) { throw new NotImplementedException(); }
+        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) 
+        { throw new NotImplementedException(); }
     }
     
     /// <summary>
@@ -103,7 +104,8 @@ namespace AST
             return GeneralUtils.GetIndentation(level) + Name;
         }
 
-        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) { throw new NotImplementedException(); }
+        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) 
+        { throw new NotImplementedException(); }
     }
 
     #endregion
@@ -169,7 +171,8 @@ namespace AST
             return str.ToString();
         }
 
-        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) { throw new NotImplementedException(); }
+        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) 
+        { throw new NotImplementedException(); }
     }
 
     /// <summary>
@@ -184,7 +187,8 @@ namespace AST
         /// </summary>
         public PlusNode(ExpressionNode l, ExpressionNode r) : base(l, TokenConstants.PLUS, r) { }
 
-        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) { throw new NotImplementedException(); }
+        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) 
+        { throw new NotImplementedException(); }
     }
 
     /// <summary>
@@ -199,7 +203,8 @@ namespace AST
         /// </summary>
         public MinusNode(ExpressionNode l, ExpressionNode r) : base(l, TokenConstants.SUBTRACTION, r) { }
 
-        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) { throw new NotImplementedException(); }
+        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) 
+        { throw new NotImplementedException(); }
     }
 
     /// <summary>
@@ -214,7 +219,8 @@ namespace AST
         /// </summary>
         public TimesNode(ExpressionNode l, ExpressionNode r) : base(l, TokenConstants.TIMES, r) { }
 
-        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) { throw new NotImplementedException(); }
+        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) 
+        { throw new NotImplementedException(); }
     }
 
     /// <summary>
@@ -229,7 +235,8 @@ namespace AST
         /// </summary>
         public FloatDivNode(ExpressionNode l, ExpressionNode r) : base(l, TokenConstants.FLOAT_DIVISION, r) { }
 
-        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) { throw new NotImplementedException(); }
+        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) 
+        { throw new NotImplementedException(); }
     }
 
     /// <summary>
@@ -244,7 +251,8 @@ namespace AST
         /// </summary>
         public IntDivNode(ExpressionNode l, ExpressionNode r) : base(l, TokenConstants.INT_DIVISION, r) { }
 
-        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) { throw new NotImplementedException(); }
+        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) 
+        { throw new NotImplementedException(); }
     }
 
     /// <summary>
@@ -258,7 +266,8 @@ namespace AST
         /// Operands initialized to given left and right expression nodes.
         /// </summary>
         public ModulusNode(ExpressionNode l, ExpressionNode r) : base(l, TokenConstants.MODULUS, r) { }
-        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) { throw new NotImplementedException(); }
+        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) 
+        { throw new NotImplementedException(); }
     }
 
     /// <summary>
@@ -272,7 +281,8 @@ namespace AST
         /// Operands initialized to given left and right expression nodes.
         /// </summary>
         public ExponentiationNode(ExpressionNode l, ExpressionNode r) : base(l, TokenConstants.EXPONENTIATE, r) { }
-        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) { throw new NotImplementedException(); }
+        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) 
+        { throw new NotImplementedException(); }
     }
 
     #endregion
@@ -369,7 +379,8 @@ namespace AST
             return str.ToString();
         }
     
-        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) { throw new NotImplementedException(); }
+        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) 
+        { throw new NotImplementedException(); }
     }
 
     /// <summary>
@@ -415,7 +426,8 @@ namespace AST
                                                       + " " + Expression.Unparse(0);
         }
         
-        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) { throw new NotImplementedException(); }
+        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) 
+        { throw new NotImplementedException(); }
     }
 
     /// <summary>
@@ -453,7 +465,8 @@ namespace AST
             return GeneralUtils.GetIndentation(level) + SIGN + " " + Expression.Unparse(0);
         }
 
-        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) { throw new NotImplementedException(); }
+        public override TResult Accept<TParam, TResult>(IVisitor<TParam, TResult> visitor, TParam param) 
+        { throw new NotImplementedException(); }
     }
     
     #endregion    
