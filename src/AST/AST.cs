@@ -3,6 +3,30 @@ using Tokenizer;
 
 namespace AST
 {
+
+    #region IVisitor
+    
+    public interface IVisitor<TParam, TResult>
+    {
+        // Expression nodes
+        TResult Visit(PlusNode node, TParam param);
+        TResult Visit(MinusNode node, TParam param);
+        TResult Visit(TimesNode node, TParam param);
+        TResult Visit(FloatDivNode node, TParam param);
+        TResult Visit(IntDivNode node, TParam param);
+        TResult Visit(ModulusNode node, TParam param);
+        TResult Visit(ExponentiationNode node, TParam param);
+        TResult Visit(LiteralNode node, TParam param);
+        TResult Visit(VariableNode node, TParam param);
+
+        // Statement nodes
+        TResult Visit(AssignmentStmt node, TParam param);
+        TResult Visit(ReturnStmt node, TParam param);
+        TResult Visit(BlockStmt node, TParam param);
+    }
+
+    #endregion
+
     #region Nodes
 
     /// <summary>
