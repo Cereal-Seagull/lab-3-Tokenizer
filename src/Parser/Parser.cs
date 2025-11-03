@@ -26,13 +26,13 @@ namespace Parser
         /// Initializes a new instance of the <see cref="ParseException"/> class.
         /// </summary>
         public ParseException() { }
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ParseException"/> class with a specified error message.
         /// </summary>
         /// <param name="err">The error message that explains the reason for the exception.</param>
         public ParseException(string err) : base(err) { }
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ParseException"/> class with a specified error message and a reference to the inner exception.
         /// </summary>
@@ -54,7 +54,7 @@ namespace Parser
         /// <returns>A <see cref="BlockStmt"/> representing the parsed program.</returns>
         public static AST.BlockStmt Parse(string program)
         {
-            
+
             var lines = new List<string>();
             var parentSymbolTable = new SymbolTable<string, object>();
 
@@ -90,24 +90,16 @@ namespace Parser
             // Create returning block statement
             AST.BlockStmt Block = new AST.BlockStmt(st);
 
-            // If not parent scope (or is parent scope with brackets), check brackets
-            if (st.Parent != null || (st.Parent == null && (lines[0] == TokenConstants.LEFT_CURLY ||
-                                                lines[lines.Count - 1] == TokenConstants.RIGHT_CURLY)))
-            {
-                // Check if program starts with { and ends with }
-                // Throw parse exception if it doesn't
-                if (lines[0] != TokenConstants.LEFT_CURLY) throw new ParseException(
-                                    "Syntax error: block must begin with single '{'");
-                if (lines[lines.Count - 1] != TokenConstants.RIGHT_CURLY) throw new ParseException(
-                                    "Syntax error: block must end with single '}'");
+            // Check if program starts with { and ends with }
+            // Throw parse exception if it doesn't
+            if (lines[0] != TokenConstants.LEFT_CURLY) throw new ParseException(
+                                "Syntax error: block must begin with single '{'");
+            if (lines[lines.Count - 1] != TokenConstants.RIGHT_CURLY) throw new ParseException(
+                                "Syntax error: block must end with single '}'");
 
-                // Parse through lines of code (not including beginning & ending {} )
-                ParseStmtList(lines[1..(lines.Count - 1)], Block);
-            }
+            // Parse through lines of code
+            ParseStmtList(lines[1..(lines.Count - 1)], Block);
 
-            // If only one scope, parse entire expression (don't check brackets)
-            else ParseStmtList(lines, Block);
-            
             return Block;
         }
 
@@ -155,11 +147,11 @@ namespace Parser
                     // Tokenize current line of code
                     var t = new TokenizerImpl();
                     List<Token> line = t.Tokenize(lines[i]);
-                    
+
                     // Add parsed statement to block stmt
                     Block.AddStatement(ParseStatement(line, Block.SymbolTable));
                 }
-                
+
             }
         }
 
@@ -173,7 +165,7 @@ namespace Parser
         /// <param name="st">The symbol table for the current scope.</param>
         /// <returns>A <see cref="Statement"/> representing the parsed statement.</returns>
         /// <exception cref="ParseException">Thrown if an unknown statement is encountered.</exception>
-        private static AST.Statement ParseStatement(List<Token> tokens, SymbolTable<string,object> st)
+        private static AST.Statement ParseStatement(List<Token> tokens, SymbolTable<string, object> st)
         {
             // First token is 'return'; hand to ParseReturnStatement
             if (tokens[0].Type.Equals(TokenType.RETURN))
@@ -204,9 +196,9 @@ namespace Parser
             if (!tokens[0].Type.Equals(TokenType.VARIABLE))
                 throw new ParseException($"Invalid variable name: {tokens[0]}");
             // Second token must be := ; throw exception
-            if (!tokens[1].Type.Equals(TokenType.ASSIGNMENT)) 
+            if (!tokens[1].Type.Equals(TokenType.ASSIGNMENT))
                 throw new ParseException($"Expected assignment operator; Got {tokens[1]}");
-            
+
             // Add variable to symbol table (first token)
             st.Add(tokens[0].Value, null); // may add right side of assignment stmt instead of null
 
@@ -419,6 +411,6 @@ namespace Parser
             else throw new ParseException($"Variable name is invalid: {v}");
         }
     }
-    
+
     #endregion
 }
