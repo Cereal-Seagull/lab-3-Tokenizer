@@ -25,8 +25,7 @@ namespace Parser.Tests
             // Arrange
             var lines = new List<string> { "{", "}" };
             var parentSymbolTable = new SymbolTable<string, object>();
-            parentSymbolTable.Add("x", 10);
-            // parentSymbolTable["x"] = 10;
+            parentSymbolTable["x"] = 10;
             
             // Act
             var result = InvokeParseBlockStmt(lines, parentSymbolTable);

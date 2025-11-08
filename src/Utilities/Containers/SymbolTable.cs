@@ -160,8 +160,9 @@ public class SymbolTable<TKey, TValue> : IDictionary<TKey, TValue>
         set
         {
             int idx = _keys.IndexOf(key);
-            if (idx == -1) throw new ArgumentOutOfRangeException("Cannot set value for index out of range.");
-            _values[idx] = value;
+            // if (idx == -1) throw new ArgumentOutOfRangeException("Cannot set value for index out of range.");
+            if (idx == -1) this.Add(key, value);
+            else _values[idx] = value;
         }
     }
 

@@ -110,11 +110,16 @@ namespace AST
             return GetVariableValue(node.Name, st);
         }
 
+        private object GetVariableValue(string n, SymbolTable<string, object> st)
+        {
+            object? val;
+            st.TryGetValue(n, out val);
+            return val;
+        }
+
         #endregion
 
         #region Statement nodes
-
-
 
         public object Visit(AssignmentStmt stmt, SymbolTable<string, object> st)
         {
