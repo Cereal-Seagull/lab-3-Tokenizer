@@ -68,7 +68,13 @@ public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, S
 
     public bool Visit(BlockStmt n, Tuple<SymbolTable<string, object>, Statement> p)
     {
-        throw new NotImplementedException();
+        foreach (Statement stmt in n.Statements)
+        {
+            bool curr = stmt.Accept(this, p);
+
+            if (curr == false) Console.WriteLine($"ERROR: undefined variable in {stmt}");
+        }
+        return true;
     }
 
     public bool Visit(ReturnStmt n, Tuple<SymbolTable<string, object>, Statement> p)
