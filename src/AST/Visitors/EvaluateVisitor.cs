@@ -1,97 +1,149 @@
-using System.Xml;
-using AST;
-
-public class EvaluateVisitor : IVisitor<SymbolTable<string,object>, object>
+namespace AST
 {
-    #region Binary Operator nodes
-
-    private void NumberCaster(object node)
+    /// <summary>
+    /// Exception thrown when an evaluation error occurs
+    /// </summary>
+    public class EvaluationException : Exception
     {
-        node = (int)node;        
-    }
-    
-    public object Visit(PlusNode node, SymbolTable<string,object> st)
-    {
-        return (int)node.Left.Accept(this, st) - (int)node.Right.Accept(this, st);
-    }
-
-    public object Visit(MinusNode node, SymbolTable<string,object> st)
-    {
-        return (int)node.Left.Accept(this, st) - (int)node.Right.Accept(this, st);
-    }
-
-    public object Visit(TimesNode node, SymbolTable<string,object> st)
-    {
-        return (int)node.Left.Accept(this, st) * (int)node.Right.Accept(this, st);
-    }
-
-    public object Visit(FloatDivNode node, SymbolTable<string,object> st)
-    {
-        var right = (float)node.Right.Accept(this, st);
-        if (right.Equals(0)) throw new DivideByZeroException();
-        float exp = (float)node.Left.Accept(this, st) / right;
-        return exp;
-    }
-
-    public object Visit(IntDivNode node, SymbolTable<string,object> st)
-    {
-        var right = (int)node.Right.Accept(this, st);
-        if (right.Equals(0)) throw new DivideByZeroException();
-        int exp = (int)node.Left.Accept(this, st) / right;
-        return exp;
-    }
-
-    public object Visit(ModulusNode node, SymbolTable<string,object> st)
-    {
-        return (int)node.Left.Accept(this, st) % (int)node.Right.Accept(this, st);
-    }
-
-    public object Visit(ExponentiationNode node, SymbolTable<string, object> st)
-    {
-        return Math.Pow((int)node.Left.Accept(this, st), (int)node.Right.Accept(this, st));
-    }
-
-    #endregion
-    
-    #region Singleton Expression nodes
-
-    public object Visit(LiteralNode node, SymbolTable<string, object> st)
-    {
-        return node.Value;
-    }
-
-    public object Visit(VariableNode node, SymbolTable<string,object> st)
-    {
-        return st[node.Name];
-    }
-
-    #endregion
-
-    #region Statement nodes
-
-    public object Visit(AssignmentStmt stmt, SymbolTable<string,object> st)
-    {
-        st[stmt.Variable.Name] = stmt.Expression.Accept(this, st);
-        return st[stmt.Variable.Name];
-    }
-
-    public object Visit(ReturnStmt stmt, SymbolTable<string,object> st)
-    {
-        return stmt.Expression.Accept(this, st);
-    }
-
-    public object Visit(BlockStmt node, SymbolTable<string, object> st)
-    {
-        int i = 0;
-        while (i < node.Statements.Count)
+        public EvaluationException(string message) : base(message)
         {
-            Statement stmt = node.Statements[i];
-            if (stmt is ReturnStmt) break;
-            stmt.Accept(this, st);
-            i++;
         }
-        // otherwise, return last known value
-        return node.Statements[i].Accept(this, st);
     }
-    #endregion
+
+    public class EvaluateVisitor : IVisitor<SymbolTable<string, object>, object>
+    {
+        // Flag to indicate if a return statement has been encountered
+        private bool _returnEncountered;
+
+        // Value from the return statement
+        private object _returnValue;
+
+        /// <summary>
+        /// Initializes a new instance of the EvaluateVisitor class
+        /// </summary>
+        public EvaluateVisitor()
+        {
+            _returnEncountered = false;
+            _returnValue = null;
+        }
+
+        /// <summary>
+        /// Evaluates the given AST and returns the result
+        /// </summary>
+        /// <param name="ast">The AST to evaluate</param>
+        /// <returns>The result of the evaluation (typically from a return statement)</returns>
+        public object Evaluate(Statement ast)
+        {
+            _returnEncountered = false;
+            _returnValue = null;
+
+            // Execute the AST with a null initial scope
+            // (the BlockStmt will use its own symbol table)
+            ast.Accept(this, null);
+
+            return _returnValue;
+        }
+
+        #region Binary Operator nodes
+
+        private dynamic Convert(object node)
+        {
+            if (node.GetType() == typeof(float)) return (float)node;
+            else if (node.GetType() == typeof(int)) return (int)node;
+            else throw new ArgumentException($"Node is an unknown type (not float or int): {node.GetType()}");
+        }
+
+        public object Visit(PlusNode node, SymbolTable<string, object> st)
+        {
+            return Convert(node.Left.Accept(this, st)) + Convert(node.Right.Accept(this, st));
+        }
+
+        public object Visit(MinusNode node, SymbolTable<string, object> st)
+        {
+            return Convert(node.Left.Accept(this, st)) - Convert(node.Right.Accept(this, st));
+        }
+
+        public object Visit(TimesNode node, SymbolTable<string, object> st)
+        {
+            return Convert(node.Left.Accept(this, st)) * Convert(node.Right.Accept(this, st));
+        }
+
+        // Always a float? don't know
+        public object Visit(FloatDivNode node, SymbolTable<string, object> st)
+        {
+            var right = (float)node.Right.Accept(this, st);
+            if (right.Equals(0)) throw new DivideByZeroException();
+            float exp = (float)node.Left.Accept(this, st) / right;
+            return exp;
+        }
+
+        public object Visit(IntDivNode node, SymbolTable<string, object> st)
+        {
+            var right = (int)node.Right.Accept(this, st);
+            if (right.Equals(0)) throw new DivideByZeroException();
+            int exp = (int)node.Left.Accept(this, st) / right;
+            return exp;
+        }
+
+        public object Visit(ModulusNode node, SymbolTable<string, object> st)
+        {
+            return Convert(node.Left.Accept(this, st)) % Convert(node.Right.Accept(this, st));
+        }
+
+        public object Visit(ExponentiationNode node, SymbolTable<string, object> st)
+        {
+            return Math.Pow(Convert(node.Left.Accept(this, st)), Convert(node.Right.Accept(this, st)));
+        }
+
+        #endregion
+
+        #region Singleton Expression nodes
+
+        public object Visit(LiteralNode node, SymbolTable<string, object> st)
+        {
+            return node.Value;
+        }
+
+        public object Visit(VariableNode node, SymbolTable<string, object> st)
+        {
+            // Variables return their value from the symbol table
+            return GetVariableValue(node.Name, st);
+        }
+
+        #endregion
+
+        #region Statement nodes
+
+
+
+        public object Visit(AssignmentStmt stmt, SymbolTable<string, object> st)
+        {
+            st[stmt.Variable.Name] = stmt.Expression.Accept(this, st);
+            return st[stmt.Variable.Name];
+        }
+
+        public object Visit(ReturnStmt stmt, SymbolTable<string, object> st)
+        {
+            return stmt.Expression.Accept(this, st);
+        }
+
+        public object Visit(BlockStmt node, SymbolTable<string, object> st)
+        {
+            // Use this block's symbol table, which is already linked to its parent
+            SymbolTable<string, object> currentScope = node.SymbolTable;
+
+
+            int i = 0;
+            while (i < node.Statements.Count)
+            {
+                Statement stmt = node.Statements[i];
+                if (stmt is ReturnStmt) break;
+                stmt.Accept(this, st);
+                i++;
+            }
+            // otherwise, return last known value
+            return node.Statements[i].Accept(this, st);
+        }
+        #endregion
+    }
 }

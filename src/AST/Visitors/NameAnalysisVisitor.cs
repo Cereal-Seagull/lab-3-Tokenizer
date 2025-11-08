@@ -2,6 +2,10 @@ using AST;
 
 public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, Statement>, bool>
 {
+
+    // WILL USE EXCEPTIONS!!!!
+    // Analyzes ENTIRE tree regardless of errors or returns
+    
     #region Binary Operator nodes
 
     public bool Visit(PlusNode n, Tuple<SymbolTable<string, object>, Statement> p)
