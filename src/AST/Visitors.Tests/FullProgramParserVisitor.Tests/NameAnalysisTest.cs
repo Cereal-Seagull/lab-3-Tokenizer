@@ -27,12 +27,19 @@ namespace AST.Tests
         public void Analyze_SimpleAssignment_NoErrors()
         {
             // x := 5
-            var block = new BlockStmt(new SymbolTable<string, object>());
-            var assignment = new AssignmentStmt(
-                new VariableNode("x"),
-                new LiteralNode(5)
-            );
-            block.AddStatement(assignment);
+            string program =
+            @"{
+                x := (5)
+            }";
+
+            var block = Parser.Parser.Parse(program);
+            
+            // var block = new BlockStmt(new SymbolTable<string, object>());
+            // var assignment = new AssignmentStmt(
+            //     new VariableNode("x"),
+            //     new LiteralNode(5)
+            // );
+            // block.AddStatement(assignment);
 
             var visitor = new NameAnalysisVisitor();
             var output = CaptureConsoleOutput(() => visitor.Analyze(block));
@@ -47,10 +54,19 @@ namespace AST.Tests
             // x := 5
             // y := 10
             // z := 15
-            var block = new BlockStmt(new SymbolTable<string, object>());
-            block.AddStatement(new AssignmentStmt(new VariableNode("x"), new LiteralNode(5)));
-            block.AddStatement(new AssignmentStmt(new VariableNode("y"), new LiteralNode(10)));
-            block.AddStatement(new AssignmentStmt(new VariableNode("z"), new LiteralNode(15)));
+            string program =
+            @"{
+                x := (5)
+                y := (10)
+                z := (15)
+            }";
+            
+            var block = Parser.Parser.Parse(program);
+            
+            // var block = new BlockStmt(new SymbolTable<string, object>());
+            // block.AddStatement(new AssignmentStmt(new VariableNode("x"), new LiteralNode(5)));
+            // block.AddStatement(new AssignmentStmt(new VariableNode("y"), new LiteralNode(10)));
+            // block.AddStatement(new AssignmentStmt(new VariableNode("z"), new LiteralNode(15)));
 
             var visitor = new NameAnalysisVisitor();
             var output = CaptureConsoleOutput(() => visitor.Analyze(block));
@@ -63,12 +79,20 @@ namespace AST.Tests
         {
             // x := 5
             // y := x + 10
-            var block = new BlockStmt(new SymbolTable<string, object>());
-            block.AddStatement(new AssignmentStmt(new VariableNode("x"), new LiteralNode(5)));
-            block.AddStatement(new AssignmentStmt(
-                new VariableNode("y"),
-                new PlusNode(new VariableNode("x"), new LiteralNode(10))
-            ));
+            string program =
+            @"{
+                x := (5)
+                y := (x + 10)
+            }";
+
+            var block = Parser.Parser.Parse(program);
+            
+            // var block = new BlockStmt(new SymbolTable<string, object>());
+            // block.AddStatement(new AssignmentStmt(new VariableNode("x"), new LiteralNode(5)));
+            // block.AddStatement(new AssignmentStmt(
+            //     new VariableNode("y"),
+            //     new PlusNode(new VariableNode("x"), new LiteralNode(10))
+            // ));
 
             var visitor = new NameAnalysisVisitor();
             var output = CaptureConsoleOutput(() => visitor.Analyze(block));
@@ -81,9 +105,17 @@ namespace AST.Tests
         {
             // x := 5
             // return x
-            var block = new BlockStmt(new SymbolTable<string, object>());
-            block.AddStatement(new AssignmentStmt(new VariableNode("x"), new LiteralNode(5)));
-            block.AddStatement(new ReturnStmt(new VariableNode("x")));
+            string program =
+            @"{
+                x := (5)
+                return (x)
+            }";
+
+            var block = Parser.Parser.Parse(program);
+
+            // var block = new BlockStmt(new SymbolTable<string, object>());
+            // block.AddStatement(new AssignmentStmt(new VariableNode("x"), new LiteralNode(5)));
+            // block.AddStatement(new ReturnStmt(new VariableNode("x")));
 
             var visitor = new NameAnalysisVisitor();
             var output = CaptureConsoleOutput(() => visitor.Analyze(block));
@@ -102,21 +134,30 @@ namespace AST.Tests
             // x := 5
             // y := 10
             // z := x op y
-            var block = new BlockStmt(new SymbolTable<string, object>());
-            block.AddStatement(new AssignmentStmt(new VariableNode("x"), new LiteralNode(5)));
-            block.AddStatement(new AssignmentStmt(new VariableNode("y"), new LiteralNode(10)));
+            string program =
+            $@"{{
+                x := (5)
+                y := (10)
+                z := (x {operation} y)
+            }}";
 
-            ExpressionNode expr = operation switch
-            {
-                "+" => new PlusNode(new VariableNode("x"), new VariableNode("y")),
-                "-" => new MinusNode(new VariableNode("x"), new VariableNode("y")),
-                "*" => new TimesNode(new VariableNode("x"), new VariableNode("y")),
-                "/" => new FloatDivNode(new VariableNode("x"), new VariableNode("y")),
-                "%" => new ModulusNode(new VariableNode("x"), new VariableNode("y")),
-                _ => throw new ArgumentException("Invalid operation")
-            };
+            var block = Parser.Parser.Parse(program);
 
-            block.AddStatement(new AssignmentStmt(new VariableNode("z"), expr));
+            // var block = new BlockStmt(new SymbolTable<string, object>());
+            // block.AddStatement(new AssignmentStmt(new VariableNode("x"), new LiteralNode(5)));
+            // block.AddStatement(new AssignmentStmt(new VariableNode("y"), new LiteralNode(10)));
+
+            // ExpressionNode expr = operation switch
+            // {
+            //     "+" => new PlusNode(new VariableNode("x"), new VariableNode("y")),
+            //     "-" => new MinusNode(new VariableNode("x"), new VariableNode("y")),
+            //     "*" => new TimesNode(new VariableNode("x"), new VariableNode("y")),
+            //     "/" => new FloatDivNode(new VariableNode("x"), new VariableNode("y")),
+            //     "%" => new ModulusNode(new VariableNode("x"), new VariableNode("y")),
+            //     _ => throw new ArgumentException("Invalid operation")
+            // };
+
+            // block.AddStatement(new AssignmentStmt(new VariableNode("z"), expr));
 
             var visitor = new NameAnalysisVisitor();
             var output = CaptureConsoleOutput(() => visitor.Analyze(block));
@@ -129,12 +170,20 @@ namespace AST.Tests
         {
             // x := 5
             // x := x + 1
-            var block = new BlockStmt(new SymbolTable<string, object>());
-            block.AddStatement(new AssignmentStmt(new VariableNode("x"), new LiteralNode(5)));
-            block.AddStatement(new AssignmentStmt(
-                new VariableNode("x"),
-                new PlusNode(new VariableNode("x"), new LiteralNode(1))
-            ));
+            string program =
+            @"{
+                x := (5)
+                y := (x + 1)
+            }";
+
+            var block = Parser.Parser.Parse(program);
+            
+            // var block = new BlockStmt(new SymbolTable<string, object>());
+            // block.AddStatement(new AssignmentStmt(new VariableNode("x"), new LiteralNode(5)));
+            // block.AddStatement(new AssignmentStmt(
+            //     new VariableNode("x"),
+            //     new PlusNode(new VariableNode("x"), new LiteralNode(1))
+            // ));
 
             var visitor = new NameAnalysisVisitor();
             var output = CaptureConsoleOutput(() => visitor.Analyze(block));
@@ -150,11 +199,18 @@ namespace AST.Tests
         public void Analyze_UndefinedVariableInAssignment_ReportsError()
         {
             // x := y + 5  (y is undefined)
-            var block = new BlockStmt(new SymbolTable<string, object>());
-            block.AddStatement(new AssignmentStmt(
-                new VariableNode("x"),
-                new PlusNode(new VariableNode("y"), new LiteralNode(5))
-            ));
+            string program =
+            @"{
+                x := (y + 5)
+            }";
+
+            var block = Parser.Parser.Parse(program);
+
+            // var block = new BlockStmt(new SymbolTable<string, object>());
+            // block.AddStatement(new AssignmentStmt(
+            //     new VariableNode("x"),
+            //     new PlusNode(new VariableNode("y"), new LiteralNode(5))
+            // ));
 
             var visitor = new NameAnalysisVisitor();
             var output = CaptureConsoleOutput(() => visitor.Analyze(block));
@@ -167,8 +223,15 @@ namespace AST.Tests
         public void Analyze_UndefinedVariableInReturn_ReportsError()
         {
             // return x  (x is undefined)
-            var block = new BlockStmt(new SymbolTable<string, object>());
-            block.AddStatement(new ReturnStmt(new VariableNode("x")));
+            string program =
+            @"{
+                return (x)
+            }";
+
+            var block = Parser.Parser.Parse(program);
+            
+            // var block = new BlockStmt(new SymbolTable<string, object>());
+            // block.AddStatement(new ReturnStmt(new VariableNode("x")));
 
             var visitor = new NameAnalysisVisitor();
             var output = CaptureConsoleOutput(() => visitor.Analyze(block));
@@ -180,11 +243,18 @@ namespace AST.Tests
         public void Analyze_SelfReferencingAssignment_ReportsError()
         {
             // y := y + 1  (y is not defined before use)
-            var block = new BlockStmt(new SymbolTable<string, object>());
-            block.AddStatement(new AssignmentStmt(
-                new VariableNode("y"),
-                new PlusNode(new VariableNode("y"), new LiteralNode(1))
-            ));
+            string program =
+            @"{
+                y := (y + 1)
+            }";
+
+            var block = Parser.Parser.Parse(program);
+
+            // var block = new BlockStmt(new SymbolTable<string, object>());
+            // block.AddStatement(new AssignmentStmt(
+            //     new VariableNode("y"),
+            //     new PlusNode(new VariableNode("y"), new LiteralNode(1))
+            // ));
 
             var visitor = new NameAnalysisVisitor();
             var output = CaptureConsoleOutput(() => visitor.Analyze(block));
@@ -199,11 +269,18 @@ namespace AST.Tests
         public void Analyze_MultipleUndefinedVariables_ReportsErrors(string varName)
         {
             // x := varName + 10  (varName is undefined)
-            var block = new BlockStmt(new SymbolTable<string, object>());
-            block.AddStatement(new AssignmentStmt(
-                new VariableNode("x"),
-                new PlusNode(new VariableNode(varName), new LiteralNode(10))
-            ));
+            string program =
+            $@"{{
+                x := ({varName} + 10)
+            }}";
+
+            var block = Parser.Parser.Parse(program);
+            
+            // var block = new BlockStmt(new SymbolTable<string, object>());
+            // block.AddStatement(new AssignmentStmt(
+            //     new VariableNode("x"),
+            //     new PlusNode(new VariableNode(varName), new LiteralNode(10))
+            // ));
 
             var visitor = new NameAnalysisVisitor();
             var output = CaptureConsoleOutput(() => visitor.Analyze(block));
@@ -216,15 +293,23 @@ namespace AST.Tests
         {
             // x := 5
             // y := (x + z) * 2  (z is undefined)
-            var block = new BlockStmt(new SymbolTable<string, object>());
-            block.AddStatement(new AssignmentStmt(new VariableNode("x"), new LiteralNode(5)));
-            block.AddStatement(new AssignmentStmt(
-                new VariableNode("y"),
-                new TimesNode(
-                    new PlusNode(new VariableNode("x"), new VariableNode("z")),
-                    new LiteralNode(2)
-                )
-            ));
+            string program =
+            @"{
+                x := (5)
+                y := ((x + z) * 2)
+            }";
+
+            var block = Parser.Parser.Parse(program);
+
+            // var block = new BlockStmt(new SymbolTable<string, object>());
+            // block.AddStatement(new AssignmentStmt(new VariableNode("x"), new LiteralNode(5)));
+            // block.AddStatement(new AssignmentStmt(
+            //     new VariableNode("y"),
+            //     new TimesNode(
+            //         new PlusNode(new VariableNode("x"), new VariableNode("z")),
+            //         new LiteralNode(2)
+            //     )
+            // ));
 
             var visitor = new NameAnalysisVisitor();
             var output = CaptureConsoleOutput(() => visitor.Analyze(block));
@@ -239,22 +324,31 @@ namespace AST.Tests
             // x := a + 5  (a undefined)
             // y := b * 2  (b undefined)
             // return c    (c undefined)
-            var block = new BlockStmt(new SymbolTable<string, object>());
-            block.AddStatement(new AssignmentStmt(
-                new VariableNode("x"),
-                new PlusNode(new VariableNode("a"), new LiteralNode(5))
-            ));
-            block.AddStatement(new AssignmentStmt(
-                new VariableNode("y"),
-                new TimesNode(new VariableNode("b"), new LiteralNode(2))
-            ));
-            block.AddStatement(new ReturnStmt(new VariableNode("c")));
+            string program =
+            @"{
+                x := (a + 5)
+                y := (b * 2)
+                return (c)
+            }";
+
+            var block = Parser.Parser.Parse(program);
+
+            // var block = new BlockStmt(new SymbolTable<string, object>());
+            // block.AddStatement(new AssignmentStmt(
+            //     new VariableNode("x"),
+            //     new PlusNode(new VariableNode("a"), new LiteralNode(5))
+            // ));
+            // block.AddStatement(new AssignmentStmt(
+            //     new VariableNode("y"),
+            //     new TimesNode(new VariableNode("b"), new LiteralNode(2))
+            // ));
+            // block.AddStatement(new ReturnStmt(new VariableNode("c")));
 
             var visitor = new NameAnalysisVisitor();
             var output = CaptureConsoleOutput(() => visitor.Analyze(block));
 
             // Should report multiple errors (at least 3)
-            var errorCount = output.Split(new[] { "\n" }, StringSplitOptions.None).Length - 1;
+            var errorCount = output.Split(new[] { Environment.NewLine }, StringSplitOptions.None).Length - 1;
             Assert.True(errorCount >= 3, $"Expected at least 3 errors, found {errorCount}");
         }
 
@@ -266,7 +360,13 @@ namespace AST.Tests
         public void Analyze_EmptyBlock_NoErrors()
         {
             // Empty program
-            var block = new BlockStmt(new SymbolTable<string, object>());
+            string program =
+            @"{
+            }";
+
+            var block = Parser.Parser.Parse(program);
+
+            // var block = new BlockStmt(new SymbolTable<string, object>());
 
             var visitor = new NameAnalysisVisitor();
             var output = CaptureConsoleOutput(() => visitor.Analyze(block));
@@ -280,10 +380,19 @@ namespace AST.Tests
             // x := 5
             // y := 10
             // return 15
-            var block = new BlockStmt(new SymbolTable<string, object>());
-            block.AddStatement(new AssignmentStmt(new VariableNode("x"), new LiteralNode(5)));
-            block.AddStatement(new AssignmentStmt(new VariableNode("y"), new LiteralNode(10)));
-            block.AddStatement(new ReturnStmt(new LiteralNode(15)));
+            string program =
+            @"{
+                x := (5)
+                y := (10)
+                return (15)
+            }";
+
+            var block = Parser.Parser.Parse(program);
+
+            // var block = new BlockStmt(new SymbolTable<string, object>());
+            // block.AddStatement(new AssignmentStmt(new VariableNode("x"), new LiteralNode(5)));
+            // block.AddStatement(new AssignmentStmt(new VariableNode("y"), new LiteralNode(10)));
+            // block.AddStatement(new ReturnStmt(new LiteralNode(15)));
 
             var visitor = new NameAnalysisVisitor();
             var output = CaptureConsoleOutput(() => visitor.Analyze(block));
@@ -297,19 +406,28 @@ namespace AST.Tests
             // x := 1
             // y := 2
             // z := ((x + y) * (x - y)) / (x + 1)
-            var block = new BlockStmt(new SymbolTable<string, object>());
-            block.AddStatement(new AssignmentStmt(new VariableNode("x"), new LiteralNode(1)));
-            block.AddStatement(new AssignmentStmt(new VariableNode("y"), new LiteralNode(2)));
+            string program =
+            @"{
+                x := (1)
+                y := (2)
+                z := (((x + y) * (x - y)) / (x + 1))
+            }";
+
+            var block = Parser.Parser.Parse(program);
+
+            // var block = new BlockStmt(new SymbolTable<string, object>());
+            // block.AddStatement(new AssignmentStmt(new VariableNode("x"), new LiteralNode(1)));
+            // block.AddStatement(new AssignmentStmt(new VariableNode("y"), new LiteralNode(2)));
             
-            var expr = new FloatDivNode(
-                new TimesNode(
-                    new PlusNode(new VariableNode("x"), new VariableNode("y")),
-                    new MinusNode(new VariableNode("x"), new VariableNode("y"))
-                ),
-                new PlusNode(new VariableNode("x"), new LiteralNode(1))
-            );
+            // var expr = new FloatDivNode(
+            //     new TimesNode(
+            //         new PlusNode(new VariableNode("x"), new VariableNode("y")),
+            //         new MinusNode(new VariableNode("x"), new VariableNode("y"))
+            //     ),
+            //     new PlusNode(new VariableNode("x"), new LiteralNode(1))
+            // );
             
-            block.AddStatement(new AssignmentStmt(new VariableNode("z"), expr));
+            // block.AddStatement(new AssignmentStmt(new VariableNode("z"), expr));
 
             var visitor = new NameAnalysisVisitor();
             var output = CaptureConsoleOutput(() => visitor.Analyze(block));
@@ -322,18 +440,26 @@ namespace AST.Tests
         {
             // x := 1
             // z := ((x + undefined_var) * (x - 5)) / 2
-            var block = new BlockStmt(new SymbolTable<string, object>());
-            block.AddStatement(new AssignmentStmt(new VariableNode("x"), new LiteralNode(1)));
+            string program =
+            @"{
+                x := (1)
+                y := (((x + undefined) * (x - 5)) / 2)
+            }";
+
+            var block = Parser.Parser.Parse(program);
+
+            // var block = new BlockStmt(new SymbolTable<string, object>());
+            // block.AddStatement(new AssignmentStmt(new VariableNode("x"), new LiteralNode(1)));
             
-            var expr = new FloatDivNode(
-                new TimesNode(
-                    new PlusNode(new VariableNode("x"), new VariableNode("undefined_var")),
-                    new MinusNode(new VariableNode("x"), new LiteralNode(5))
-                ),
-                new LiteralNode(2)
-            );
+            // var expr = new FloatDivNode(
+            //     new TimesNode(
+            //         new PlusNode(new VariableNode("x"), new VariableNode("undefined")),
+            //         new MinusNode(new VariableNode("x"), new LiteralNode(5))
+            //     ),
+            //     new LiteralNode(2)
+            // );
             
-            block.AddStatement(new AssignmentStmt(new VariableNode("z"), expr));
+            // block.AddStatement(new AssignmentStmt(new VariableNode("z"), expr));
 
             var visitor = new NameAnalysisVisitor();
             var output = CaptureConsoleOutput(() => visitor.Analyze(block));
@@ -351,13 +477,22 @@ namespace AST.Tests
             // x := 2
             // y := 3
             // z := x ** y
-            var block = new BlockStmt(new SymbolTable<string, object>());
-            block.AddStatement(new AssignmentStmt(new VariableNode("x"), new LiteralNode(2)));
-            block.AddStatement(new AssignmentStmt(new VariableNode("y"), new LiteralNode(3)));
-            block.AddStatement(new AssignmentStmt(
-                new VariableNode("z"),
-                new ExponentiationNode(new VariableNode("x"), new VariableNode("y"))
-            ));
+            string program =
+            @"{
+                x := (2)
+                y := (3)
+                z := (x ** y)
+            }";
+
+            var block = Parser.Parser.Parse(program);
+
+            // var block = new BlockStmt(new SymbolTable<string, object>());
+            // block.AddStatement(new AssignmentStmt(new VariableNode("x"), new LiteralNode(2)));
+            // block.AddStatement(new AssignmentStmt(new VariableNode("y"), new LiteralNode(3)));
+            // block.AddStatement(new AssignmentStmt(
+            //     new VariableNode("z"),
+            //     new ExponentiationNode(new VariableNode("x"), new VariableNode("y"))
+            // ));
 
             var visitor = new NameAnalysisVisitor();
             var output = CaptureConsoleOutput(() => visitor.Analyze(block));
@@ -371,13 +506,22 @@ namespace AST.Tests
             // x := 10
             // y := 3
             // z := x // y
-            var block = new BlockStmt(new SymbolTable<string, object>());
-            block.AddStatement(new AssignmentStmt(new VariableNode("x"), new LiteralNode(10)));
-            block.AddStatement(new AssignmentStmt(new VariableNode("y"), new LiteralNode(3)));
-            block.AddStatement(new AssignmentStmt(
-                new VariableNode("z"),
-                new IntDivNode(new VariableNode("x"), new VariableNode("y"))
-            ));
+            string program =
+            @"{
+                x := (10)
+                y := (3)
+                z := (x // y)
+            }";
+
+            var block = Parser.Parser.Parse(program);
+            
+            // var block = new BlockStmt(new SymbolTable<string, object>());
+            // block.AddStatement(new AssignmentStmt(new VariableNode("x"), new LiteralNode(10)));
+            // block.AddStatement(new AssignmentStmt(new VariableNode("y"), new LiteralNode(3)));
+            // block.AddStatement(new AssignmentStmt(
+            //     new VariableNode("z"),
+            //     new IntDivNode(new VariableNode("x"), new VariableNode("y"))
+            // ));
 
             var visitor = new NameAnalysisVisitor();
             var output = CaptureConsoleOutput(() => visitor.Analyze(block));

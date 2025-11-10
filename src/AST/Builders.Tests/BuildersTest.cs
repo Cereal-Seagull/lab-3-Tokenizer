@@ -483,7 +483,7 @@ namespace AST.Tests
             block.AddStatement(assign2);
 
             string result = block.Unparse(0);
-            Assert.Equal("x := 10\ny := 20", result);
+            Assert.Equal("x := 10" + Environment.NewLine + "y := 20", result);
         }
 
         /// <summary>
