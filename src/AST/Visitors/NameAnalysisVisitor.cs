@@ -1,11 +1,16 @@
 using AST;
 
 public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, Statement>, bool>
-{   
+{
 
-    public void Analyze()
+    private List<string> errorList = new List<string>();
+
+    public void Analyze(Statement stmt)
     {
-        List<string> errorList = new List<string>();
+        var st = new SymbolTable<string, object>();
+        var tup = new Tuple<SymbolTable<string, object>, Statement>(st, stmt);
+        stmt.Accept(this, tup);
+        Console.WriteLine(errorList);
     }
 
     #region Binary Operator nodes
@@ -79,6 +84,8 @@ public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, S
 
     public bool Visit(AssignmentStmt n, Tuple<SymbolTable<string, object>, Statement> p)
     {
+        var exp = n.Expression.Accept(this, p);
+        p.Item1[n.Variable.Name] = exp;
         return n.Variable.Accept(this, p) && n.Expression.Accept(this, p);
     }
 
@@ -91,11 +98,22 @@ public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, S
     {
         foreach (Statement stmt in n.Statements)
         {
+            // if (stmt.GetType() == typeof(BlockStmt))
+            // {
+            //     var childTup = new Tuple<SymbolTable<string, object>, Statement>(new SymbolTable<string, object>(p.Item1), stmt);
+                
+            //     stmt.Accept(this, childTup);
+            // }
+            
             bool curr = stmt.Accept(this, p);
 
-            if (curr == false) Console.WriteLine($"ERROR: undefined variable in {stmt}");
+            if (curr == false)
+            {
+                errorList.Add($"ERROR: undefined variable in {stmt}");
+            }
         }
-        return true;
+        if (errorList.Count > 0) return false;
+        else return true;
     }
     
     #endregion
