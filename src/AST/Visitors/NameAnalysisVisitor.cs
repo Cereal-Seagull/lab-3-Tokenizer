@@ -223,7 +223,7 @@ public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, S
             bool curr = stmt.Accept(this, p);
 
             // If variable undefined, add error to error list
-            if (curr == false) errorList.Add($"Undefined variable in {stmt.GetType()} {stmt}\n");
+            if (curr == false) errorList.Add($"Undefined variable in {stmt.GetType()} {stmt}" + Environment.NewLine);
         }
 
         // If error list is not empty, return false
