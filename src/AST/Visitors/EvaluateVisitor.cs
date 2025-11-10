@@ -48,54 +48,79 @@ namespace AST
 
         private dynamic Convert(object node)
         {
+            // If float or double, return type float
             if (node.GetType() == typeof(float)) return (float)node;
+            // If int, return int type
             else if (node.GetType() == typeof(int)) return (int)node;
 
+            // Unknown type (not float or int);
             else throw new EvaluationException($"Node is an unknown type (not float or int): {node.GetType()}");
         }
 
         public object Visit(PlusNode node, SymbolTable<string, object> st)
         {
-            return Convert(node.Left.Accept(this, st)) + Convert(node.Right.Accept(this, st));
+            var left = Convert(node.Left.Accept(this, st));
+            var right = Convert(node.Right.Accept(this, st));
+
+            return left + right;
         }
 
         public object Visit(MinusNode node, SymbolTable<string, object> st)
         {
-            return Convert(node.Left.Accept(this, st)) - Convert(node.Right.Accept(this, st));
+            var left = Convert(node.Left.Accept(this, st));
+            var right = Convert(node.Right.Accept(this, st));
+
+            return left - right;
         }
 
         public object Visit(TimesNode node, SymbolTable<string, object> st)
         {
-            return Convert(node.Left.Accept(this, st)) * Convert(node.Right.Accept(this, st));
+            var left = Convert(node.Left.Accept(this, st));
+            var right = Convert(node.Right.Accept(this, st));
+
+            return left * right;
         }
 
-        // Always a float? don't know
         public object Visit(FloatDivNode node, SymbolTable<string, object> st)
         {
-            var right = (float)node.Right.Accept(this, st);
+            float right = Convert(node.Right.Accept(this, st));
             if (right.Equals(0)) throw new EvaluationException("Float div cannot divide by 0");
 
-            float exp = (float)node.Left.Accept(this, st) / right;
+            float left = Convert(node.Left.Accept(this, st));
+
+            float exp = left / right;
             return exp;
         }
 
         public object Visit(IntDivNode node, SymbolTable<string, object> st)
         {
-            var right = (int)node.Right.Accept(this, st);
+            int right = System.Convert.ToInt32(node.Right.Accept(this, st));
             if (right.Equals(0)) throw new EvaluationException("Int div cannot divide by 0");
 
-            int exp = (int)node.Left.Accept(this, st) / right;
-            return exp;
+            int left = System.Convert.ToInt32(node.Left.Accept(this, st));
+
+            var exp = left / right;
+            return System.Convert.ToInt32(exp);
         }
 
         public object Visit(ModulusNode node, SymbolTable<string, object> st)
         {
-            return Convert(node.Left.Accept(this, st)) % Convert(node.Right.Accept(this, st));
+            // Convert left & right expressions to ints/floats
+            var left = Convert(node.Left.Accept(this, st));
+            var right = Convert(node.Right.Accept(this, st));
+
+            // Throw exception when % 0
+            if (right.Equals(0)) throw new EvaluationException("Cannot mod by 0");
+
+            return left % right;
         }
 
         public object Visit(ExponentiationNode node, SymbolTable<string, object> st)
         {
-            return Math.Pow(Convert(node.Left.Accept(this, st)), Convert(node.Right.Accept(this, st)));
+            var left = Convert(node.Left.Accept(this, st));
+            var right = Convert(node.Right.Accept(this, st));
+
+            return Math.Pow(left, right);
         }
 
         #endregion
@@ -126,10 +151,14 @@ namespace AST
 
         public object Visit(AssignmentStmt stmt, SymbolTable<string, object> st)
         {
-            // Adds the expression value to variable in symbol table
-            st[stmt.Variable.Name] = stmt.Expression.Accept(this, st);
+            // Check right 
+            object right = stmt.Expression.Accept(this, st);
 
-            return st[stmt.Variable.Name];
+            if (right == null) throw new EvaluationException("Undefined variable in assignment statement");
+            st[stmt.Variable.Name] = right;
+
+            _returnValue = right;
+            return right;
         }
 
         public object Visit(ReturnStmt stmt, SymbolTable<string, object> st)
@@ -142,6 +171,9 @@ namespace AST
 
         public object Visit(BlockStmt node, SymbolTable<string, object> st)
         {
+            // If BlockStmt is empty, return nothing
+            if (node.Statements.Count == 0) return null;
+
             // Use this block's symbol table, which is already linked to its parent
             SymbolTable<string, object> currentScope = node.SymbolTable;
 
@@ -153,8 +185,9 @@ namespace AST
                 if (_returnEncountered) return _returnValue;
             }
 
-            // otherwise, return last known value
-            return node.Statements[node.Statements.Count - 1].Accept(this, currentScope);
+            // otherwise, return last known value'
+            // _returnValue = node.Statements[node.Statements.Count - 1].Accept(this, currentScope);
+            return _returnValue;
         }
         #endregion
     }

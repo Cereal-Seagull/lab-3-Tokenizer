@@ -101,12 +101,18 @@ public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, S
         // Passes in current symbol table; Statement becomes current assignment stmt
         p = new Tuple<SymbolTable<string, object>, Statement>(p.Item1, n);
 
-        // Adds variable to symbol table
-        bool exp = n.Expression.Accept(this, p);
-        p.Item1[n.Variable.Name] = exp;
+        // Checks right expression
+        bool right = n.Expression.Accept(this, p);
 
-        // Checks if variable and expression are valid
-        return n.Variable.Accept(this, p) && exp;
+        // Only add left side to symboltable if exp is valid
+        // Example: (y := y + 1) only works if y already previously defined
+        if (right) p.Item1[n.Variable.Name] = right;
+
+        // Check left side
+        bool left = n.Variable.Accept(this, p);
+
+        // Return validity of both expressions
+        return left && right;
     }
 
     public bool Visit(ReturnStmt n, Tuple<SymbolTable<string, object>, Statement> p)
