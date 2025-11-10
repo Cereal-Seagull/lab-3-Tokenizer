@@ -50,7 +50,8 @@ namespace AST
         {
             if (node.GetType() == typeof(float)) return (float)node;
             else if (node.GetType() == typeof(int)) return (int)node;
-            else throw new ArgumentException($"Node is an unknown type (not float or int): {node.GetType()}");
+
+            else throw new EvaluationException($"Node is an unknown type (not float or int): {node.GetType()}");
         }
 
         public object Visit(PlusNode node, SymbolTable<string, object> st)
@@ -72,7 +73,8 @@ namespace AST
         public object Visit(FloatDivNode node, SymbolTable<string, object> st)
         {
             var right = (float)node.Right.Accept(this, st);
-            if (right.Equals(0)) throw new DivideByZeroException();
+            if (right.Equals(0)) throw new EvaluationException("Float div cannot divide by 0");
+
             float exp = (float)node.Left.Accept(this, st) / right;
             return exp;
         }
@@ -80,7 +82,8 @@ namespace AST
         public object Visit(IntDivNode node, SymbolTable<string, object> st)
         {
             var right = (int)node.Right.Accept(this, st);
-            if (right.Equals(0)) throw new DivideByZeroException();
+            if (right.Equals(0)) throw new EvaluationException("Int div cannot divide by 0");
+
             int exp = (int)node.Left.Accept(this, st) / right;
             return exp;
         }
@@ -123,13 +126,18 @@ namespace AST
 
         public object Visit(AssignmentStmt stmt, SymbolTable<string, object> st)
         {
+            // Adds the expression value to variable in symbol table
             st[stmt.Variable.Name] = stmt.Expression.Accept(this, st);
+
             return st[stmt.Variable.Name];
         }
 
         public object Visit(ReturnStmt stmt, SymbolTable<string, object> st)
         {
-            return stmt.Expression.Accept(this, st);
+            _returnEncountered = true;
+            _returnValue = stmt.Expression.Accept(this, st);
+
+            return _returnValue;
         }
 
         public object Visit(BlockStmt node, SymbolTable<string, object> st)
@@ -137,17 +145,16 @@ namespace AST
             // Use this block's symbol table, which is already linked to its parent
             SymbolTable<string, object> currentScope = node.SymbolTable;
 
-
-            int i = 0;
-            while (i < node.Statements.Count)
+            for (int i = 0; i < node.Statements.Count; i++)
             {
-                Statement stmt = node.Statements[i];
-                if (stmt is ReturnStmt) break;
-                stmt.Accept(this, st);
-                i++;
+                node.Statements[i].Accept(this, currentScope);
+
+                // If return stmt encountered, stop evaluating and return
+                if (_returnEncountered) return _returnValue;
             }
+
             // otherwise, return last known value
-            return node.Statements[i].Accept(this, st);
+            return node.Statements[node.Statements.Count - 1].Accept(this, currentScope);
         }
         #endregion
     }

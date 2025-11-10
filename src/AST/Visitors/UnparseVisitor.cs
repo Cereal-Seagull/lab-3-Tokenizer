@@ -74,12 +74,12 @@ namespace AST
 
         public string Visit(LiteralNode node, int level = 0)
         {
-            return GeneralUtils.GetIndentation(level) + node.Value.ToString();
+            return node.Value.ToString();
         }
 
         public string Visit(VariableNode node, int level = 0)
         {
-            return GeneralUtils.GetIndentation(level) + node.Name;
+            return node.Name;
         }
 
         #endregion
@@ -99,14 +99,17 @@ namespace AST
 
         public string Visit(AssignmentStmt stmt, int level = 0)
         {
-            return GeneralUtils.GetIndentation(level) + stmt.Variable.Accept(this, 0) +
-                TokenConstants.ASSIGNMENT + stmt.Expression.Accept(this, 0);
+            string v = stmt.Variable.Accept(this, 0);
+            string exp = stmt.Expression.Accept(this, 0);
+
+            return $"{GeneralUtils.GetIndentation(level)}{v} {TokenConstants.ASSIGNMENT} {exp}";
         }
 
         public string Visit(ReturnStmt stmt, int level = 0)
         {
-            return GeneralUtils.GetIndentation(level) + TokenConstants.RETURN + " " +
-                stmt.Expression.Accept(this, 0);
+            string exp = stmt.Expression.Accept(this, 0);
+            
+            return $"{GeneralUtils.GetIndentation(level)}{TokenConstants.RETURN} {exp}";
         }
 
         public string Visit(BlockStmt node, int level = 0)

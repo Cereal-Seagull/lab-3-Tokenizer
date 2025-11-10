@@ -1,11 +1,13 @@
 using AST;
 
 public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, Statement>, bool>
-{   
+{
 
-    public void Analyze()
+    public void Analyze(Statement ast)
     {
         List<string> errorList = new List<string>();
+
+        ast.Accept(this, null);
     }
 
     #region Binary Operator nodes
@@ -89,8 +91,11 @@ public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, S
     
     public bool Visit(BlockStmt n, Tuple<SymbolTable<string, object>, Statement> p)
     {
+        var st = new SymbolTable<string, object>();
+        var s = new BlockStmt(new SymbolTable<string, object>());
         foreach (Statement stmt in n.Statements)
         {
+            p = new Tuple<SymbolTable<string, object>, Statement>(st, s);
             bool curr = stmt.Accept(this, p);
 
             if (curr == false) Console.WriteLine($"ERROR: undefined variable in {stmt}");
