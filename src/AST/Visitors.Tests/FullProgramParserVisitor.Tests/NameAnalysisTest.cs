@@ -180,8 +180,6 @@ namespace AST.Tests
         public void Analyze_SelfReferencingAssignment_ReportsError()
         {
             // y := y + 1  (y is not defined before use)
-            // BUG NOTE: Current implementation may incorrectly allow this
-            // because it adds y to symbol table before checking right side
             var block = new BlockStmt(new SymbolTable<string, object>());
             block.AddStatement(new AssignmentStmt(
                 new VariableNode("y"),
@@ -191,8 +189,6 @@ namespace AST.Tests
             var visitor = new NameAnalysisVisitor();
             var output = CaptureConsoleOutput(() => visitor.Analyze(block));
 
-            // EXPECTED: Should report error since y is undefined on right side
-            // BUG: Implementation may incorrectly pass this test due to ordering
             Assert.Contains("undefined", output.ToLower());
         }
 
