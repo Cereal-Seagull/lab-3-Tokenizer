@@ -31,8 +31,8 @@ public class DiGraph<T> where T : notnull
             throw new ArgumentException("Source vertex not in adjacency list");
         if (!_adjacencyList.ContainsKey(destination))
             throw new ArgumentException("Destination vertex not in adjacency list");
-        
-        
+        throw new NotImplementedException();
+
 
     }
 
