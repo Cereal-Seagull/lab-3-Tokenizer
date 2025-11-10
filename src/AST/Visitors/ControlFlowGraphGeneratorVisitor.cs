@@ -67,15 +67,11 @@ namespace AST
 
         public Statement Visit(LiteralNode node, Statement prev)
         {
+            // return 
             throw new NotImplementedException();
         }
 
         public Statement Visit(VariableNode node, Statement prev)
-        {
-            throw new NotImplementedException();
-        }
-
-        private Statement GetVariableValue(string n, Statement prev)
         {
             throw new NotImplementedException();
         }
