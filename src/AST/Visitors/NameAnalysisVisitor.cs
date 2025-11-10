@@ -1,8 +1,13 @@
-using System.Drawing;
 using AST;
 
 public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, Statement>, bool>
 {   
+
+    public void Analyze()
+    {
+        List<string> errorList = new List<string>();
+    }
+
     #region Binary Operator nodes
 
     public bool Visit(PlusNode n, Tuple<SymbolTable<string, object>, Statement> p)
