@@ -19,6 +19,12 @@ namespace AST
 
         #region Binary Operator nodes
 
+        /// <summary>
+        /// Visits a PlusNode and returns its string representation with operands
+        /// </summary>
+        /// <param name="node">The PlusNode to unparse</param>
+        /// <param name="level">The indentation level (default 0)</param>
+        /// <returns>String representation in the form "(left + right)"</returns>
         public string Visit(PlusNode node, int level = 0)
         {
             // Visit left and right expressions
@@ -28,6 +34,12 @@ namespace AST
             return $"({left} {TokenConstants.PLUS} {right})";
         }
 
+        /// <summary>
+        /// Visits a MinusNode and returns its string representation with operands
+        /// </summary>
+        /// <param name="node">The MinusNode to unparse</param>
+        /// <param name="level">The indentation level (default 0)</param>
+        /// <returns>String representation in the form "(left - right)"</returns>
         public string Visit(MinusNode node, int level = 0)
         {
             // Visit left and right expressions
@@ -37,6 +49,12 @@ namespace AST
             return $"({left} {TokenConstants.SUBTRACTION} {right})";
         }
 
+        /// <summary>
+        /// Visits a TimesNode and returns its string representation with operands
+        /// </summary>
+        /// <param name="node">The TimesNode to unparse</param>
+        /// <param name="level">The indentation level (default 0)</param>
+        /// <returns>String representation in the form "(left * right)"</returns>
         public string Visit(TimesNode node, int level = 0)
         {
             // Visit left and right expressions
@@ -46,6 +64,12 @@ namespace AST
             return $"({left} {TokenConstants.TIMES} {right})";
         }
 
+        /// <summary>
+        /// Visits a FloatDivNode and returns its string representation with operands
+        /// </summary>
+        /// <param name="node">The FloatDivNode to unparse</param>
+        /// <param name="level">The indentation level (default 0)</param>
+        /// <returns>String representation in the form "(left / right)"</returns>
         public string Visit(FloatDivNode node, int level = 0)
         {
             // Visit left and right expressions
@@ -55,6 +79,12 @@ namespace AST
             return $"({left} {TokenConstants.FLOAT_DIVISION} {right})";
         }
 
+        /// <summary>
+        /// Visits an IntDivNode and returns its string representation with operands
+        /// </summary>
+        /// <param name="node">The IntDivNode to unparse</param>
+        /// <param name="level">The indentation level (default 0)</param>
+        /// <returns>String representation in the form "(left div right)"</returns>
         public string Visit(IntDivNode node, int level = 0)
         {
             // Visit left and right expressions
@@ -64,6 +94,12 @@ namespace AST
             return $"({left} {TokenConstants.INT_DIVISION} {right})";
         }
 
+        /// <summary>
+        /// Visits a ModulusNode and returns its string representation with operands
+        /// </summary>
+        /// <param name="node">The ModulusNode to unparse</param>
+        /// <param name="level">The indentation level (default 0)</param>
+        /// <returns>String representation in the form "(left % right)"</returns>
         public string Visit(ModulusNode node, int level = 0)
         {
             // Visit left and right expressions
@@ -73,6 +109,12 @@ namespace AST
             return $"({left} {TokenConstants.MODULUS} {right})";
         }
 
+        /// <summary>
+        /// Visits an ExponentiationNode and returns its string representation with operands
+        /// </summary>
+        /// <param name="node">The ExponentiationNode to unparse</param>
+        /// <param name="level">The indentation level (default 0)</param>
+        /// <returns>String representation in the form "(left ^ right)"</returns>
         public string Visit(ExponentiationNode node, int level = 0)
         {
             // Visit left and right expressions
@@ -86,12 +128,24 @@ namespace AST
 
         #region Singleton Expression nodes
 
+        /// <summary>
+        /// Visits a LiteralNode and returns its string representation
+        /// </summary>
+        /// <param name="node">The LiteralNode to unparse</param>
+        /// <param name="level">The indentation level (default 0)</param>
+        /// <returns>String representation of the literal value</returns>
         public string Visit(LiteralNode node, int level = 0)
         {
             // Return literal value as string
             return node.Value.ToString();
         }
 
+        /// <summary>
+        /// Visits a VariableNode and returns its string representation
+        /// </summary>
+        /// <param name="node">The VariableNode to unparse</param>
+        /// <param name="level">The indentation level (default 0)</param>
+        /// <returns>String representation of the variable name</returns>
         public string Visit(VariableNode node, int level = 0)
         {
             // Return variable name
@@ -113,6 +167,12 @@ namespace AST
             return stmt.Accept(this, level);
         }
 
+        /// <summary>
+        /// Visits an AssignmentStmt and returns its string representation
+        /// </summary>
+        /// <param name="stmt">The AssignmentStmt to unparse</param>
+        /// <param name="level">The indentation level (default 0)</param>
+        /// <returns>String representation in the form "variable := expression" with appropriate indentation</returns>
         public string Visit(AssignmentStmt stmt, int level = 0)
         {
             // Visit both sides of statement
@@ -122,6 +182,12 @@ namespace AST
             return $"{GeneralUtils.GetIndentation(level)}{v} {TokenConstants.ASSIGNMENT} {exp}";
         }
 
+        /// <summary>
+        /// Visits a ReturnStmt and returns its string representation
+        /// </summary>
+        /// <param name="stmt">The ReturnStmt to unparse</param>
+        /// <param name="level">The indentation level (default 0)</param>
+        /// <returns>String representation in the form "return expression" with appropriate indentation</returns>
         public string Visit(ReturnStmt stmt, int level = 0)
         {
             // Visit right side of return stmt
@@ -130,6 +196,12 @@ namespace AST
             return $"{GeneralUtils.GetIndentation(level)}{TokenConstants.RETURN} {exp}";
         }
 
+        /// <summary>
+        /// Visits a BlockStmt and returns its string representation with all nested statements
+        /// </summary>
+        /// <param name="node">The BlockStmt to unparse</param>
+        /// <param name="level">The indentation level (default 0)</param>
+        /// <returns>String representation of the block with curly braces and indented statements</returns>
         public string Visit(BlockStmt node, int level = 0)
         {
             StringBuilder str = new StringBuilder();

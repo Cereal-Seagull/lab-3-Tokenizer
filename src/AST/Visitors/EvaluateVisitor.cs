@@ -46,6 +46,12 @@ namespace AST
 
         #region Binary Operator nodes
 
+        /// <summary>
+        /// Converts a node value to a dynamic type (float or int)
+        /// </summary>
+        /// <param name="node">The node value to convert</param>
+        /// <returns>The converted value as dynamic</returns>
+        /// <exception cref="EvaluationException">Thrown when node type is neither float nor int</exception>
         private dynamic Convert(object node)
         {
             // If float or double, return type float
@@ -57,6 +63,12 @@ namespace AST
             else throw new EvaluationException($"Node is an unknown type (not float or int): {node.GetType()}");
         }
 
+        /// <summary>
+        /// Visits a PlusNode and performs addition on its operands
+        /// </summary>
+        /// <param name="node">The PlusNode to evaluate</param>
+        /// <param name="st">The symbol table containing variable values</param>
+        /// <returns>The sum of left and right operands</returns>
         public object Visit(PlusNode node, SymbolTable<string, object> st)
         {
             // Visit left and right expressions
@@ -66,6 +78,12 @@ namespace AST
             return left + right;
         }
 
+        /// <summary>
+        /// Visits a MinusNode and performs subtraction on its operands
+        /// </summary>
+        /// <param name="node">The MinusNode to evaluate</param>
+        /// <param name="st">The symbol table containing variable values</param>
+        /// <returns>The difference of left and right operands</returns>
         public object Visit(MinusNode node, SymbolTable<string, object> st)
         {
             // Visit left and right expressions
@@ -75,6 +93,12 @@ namespace AST
             return left - right;
         }
 
+        /// <summary>
+        /// Visits a TimesNode and performs multiplication on its operands
+        /// </summary>
+        /// <param name="node">The TimesNode to evaluate</param>
+        /// <param name="st">The symbol table containing variable values</param>
+        /// <returns>The product of left and right operands</returns>
         public object Visit(TimesNode node, SymbolTable<string, object> st)
         {
             // Visit left and right expressions
@@ -84,6 +108,13 @@ namespace AST
             return left * right;
         }
 
+        /// <summary>
+        /// Visits a FloatDivNode and performs floating-point division on its operands
+        /// </summary>
+        /// <param name="node">The FloatDivNode to evaluate</param>
+        /// <param name="st">The symbol table containing variable values</param>
+        /// <returns>The quotient of left and right operands as a float</returns>
+        /// <exception cref="EvaluationException">Thrown when attempting to divide by zero</exception>
         public object Visit(FloatDivNode node, SymbolTable<string, object> st)
         {
             // Visit right expression
@@ -98,6 +129,13 @@ namespace AST
             return exp;
         }
 
+        /// <summary>
+        /// Visits an IntDivNode and performs integer division on its operands
+        /// </summary>
+        /// <param name="node">The IntDivNode to evaluate</param>
+        /// <param name="st">The symbol table containing variable values</param>
+        /// <returns>The quotient of left and right operands as an integer</returns>
+        /// <exception cref="EvaluationException">Thrown when attempting to divide by zero</exception>
         public object Visit(IntDivNode node, SymbolTable<string, object> st)
         {
             // Visit right expression
@@ -112,6 +150,13 @@ namespace AST
             return exp;
         }
 
+        /// <summary>
+        /// Visits a ModulusNode and performs modulo operation on its operands
+        /// </summary>
+        /// <param name="node">The ModulusNode to evaluate</param>
+        /// <param name="st">The symbol table containing variable values</param>
+        /// <returns>The remainder of left divided by right</returns>
+        /// <exception cref="EvaluationException">Thrown when attempting to mod by zero</exception>
         public object Visit(ModulusNode node, SymbolTable<string, object> st)
         {
             // Visit left and right expressions
@@ -124,6 +169,12 @@ namespace AST
             return left % right;
         }
 
+        /// <summary>
+        /// Visits an ExponentiationNode and raises left operand to the power of right operand
+        /// </summary>
+        /// <param name="node">The ExponentiationNode to evaluate</param>
+        /// <param name="st">The symbol table containing variable values</param>
+        /// <returns>The result of left raised to the power of right</returns>
         public object Visit(ExponentiationNode node, SymbolTable<string, object> st)
         {
             // Visit left and right expressions
@@ -137,18 +188,36 @@ namespace AST
 
         #region Singleton Expression nodes
 
+        /// <summary>
+        /// Visits a LiteralNode and returns its value
+        /// </summary>
+        /// <param name="node">The LiteralNode to evaluate</param>
+        /// <param name="st">The symbol table (unused for literals)</param>
+        /// <returns>The literal value</returns>
         public object Visit(LiteralNode node, SymbolTable<string, object> st)
         {
             // Return the literal value
             return node.Value;
         }
 
+        /// <summary>
+        /// Visits a VariableNode and retrieves its value from the symbol table
+        /// </summary>
+        /// <param name="node">The VariableNode to evaluate</param>
+        /// <param name="st">The symbol table containing variable values</param>
+        /// <returns>The value of the variable from the symbol table</returns>
         public object Visit(VariableNode node, SymbolTable<string, object> st)
         {
             // Variables return their value from the symbol table
             return GetVariableValue(node.Name, st);
         }
 
+        /// <summary>
+        /// Retrieves the value of a variable from the symbol table
+        /// </summary>
+        /// <param name="n">The name of the variable</param>
+        /// <param name="st">The symbol table to search</param>
+        /// <returns>The value of the variable, or null if not found</returns>
         private object GetVariableValue(string n, SymbolTable<string, object> st)
         {
             // Get the specified key's value from symbol table
@@ -161,6 +230,13 @@ namespace AST
 
         #region Statement nodes
 
+        /// <summary>
+        /// Visits an AssignmentStmt and assigns the expression value to the variable
+        /// </summary>
+        /// <param name="stmt">The AssignmentStmt to evaluate</param>
+        /// <param name="st">The symbol table to update with the assignment</param>
+        /// <returns>The value that was assigned</returns>
+        /// <exception cref="EvaluationException">Thrown when the expression evaluates to null</exception>
         public object Visit(AssignmentStmt stmt, SymbolTable<string, object> st)
         {
             // Check right 
@@ -176,6 +252,12 @@ namespace AST
             return right;
         }
 
+        /// <summary>
+        /// Visits a ReturnStmt and sets the return value for the evaluation
+        /// </summary>
+        /// <param name="stmt">The ReturnStmt to evaluate</param>
+        /// <param name="st">The symbol table containing variable values</param>
+        /// <returns>The value of the return expression</returns>
         public object Visit(ReturnStmt stmt, SymbolTable<string, object> st)
         {
             // Update variables tracking return states
@@ -187,6 +269,12 @@ namespace AST
             return _returnValue;
         }
 
+        /// <summary>
+        /// Visits a BlockStmt and evaluates all statements within the block
+        /// </summary>
+        /// <param name="node">The BlockStmt to evaluate</param>
+        /// <param name="st">The parent symbol table (unused, as block has its own)</param>
+        /// <returns>The return value if a return statement was encountered, otherwise the last known value</returns>
         public object Visit(BlockStmt node, SymbolTable<string, object> st)
         {
             // If BlockStmt is empty, return nothing
