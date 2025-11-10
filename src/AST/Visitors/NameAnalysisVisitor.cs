@@ -2,14 +2,19 @@ using AST;
 
 public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, Statement>, bool>
 {
-
+    // List of encountered errors that can be accessed by any method in class
     private List<string> errorList = new List<string>();
 
     public void Analyze(Statement ast)
     {
+        // New symbol table and tuple for parent block stmt
         var st = new SymbolTable<string, object>();
         var tup = new Tuple<SymbolTable<string, object>, Statement>(st, ast);
+
+        // Visits entire block stmt
         ast.Accept(this, tup);
+
+        // Prints all errors encountered
         Console.WriteLine(errorList);
     }
 
@@ -19,6 +24,7 @@ public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, S
     {
         bool left = n.Left.Accept(this, p);
         bool right = n.Right.Accept(this, p);
+
         return left && right;
     }
 
@@ -26,6 +32,7 @@ public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, S
     {
         bool left = n.Left.Accept(this, p);
         bool right = n.Right.Accept(this, p);
+
         return left && right;
     }
 
@@ -33,6 +40,7 @@ public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, S
     {
         bool left = n.Left.Accept(this, p);
         bool right = n.Right.Accept(this, p);
+
         return left && right;
     }
 
@@ -40,6 +48,7 @@ public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, S
     {
         bool left = n.Left.Accept(this, p);
         bool right = n.Right.Accept(this, p);
+
         return left && right;
     }
 
@@ -47,6 +56,7 @@ public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, S
     {
         bool left = n.Left.Accept(this, p);
         bool right = n.Right.Accept(this, p);
+
         return left && right;
     }
 
@@ -54,6 +64,7 @@ public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, S
     {
         bool left = n.Left.Accept(this, p);
         bool right = n.Right.Accept(this, p);
+
         return left && right;
     }
     
@@ -61,6 +72,7 @@ public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, S
     {
         bool left = n.Left.Accept(this, p);
         bool right = n.Right.Accept(this, p);
+
         return left && right;
     }
 
@@ -70,11 +82,13 @@ public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, S
 
     public bool Visit(LiteralNode n, Tuple<SymbolTable<string, object>, Statement> p)
     {
+        // Literals are not variables; vacuously true
         return true;
     }
 
     public bool Visit(VariableNode n, Tuple<SymbolTable<string, object>, Statement> p)
     {
+        // Returns whether variable exists in symbol table
         return p.Item1.ContainsKey(n.Name);
     }
 
@@ -84,39 +98,50 @@ public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, S
 
     public bool Visit(AssignmentStmt n, Tuple<SymbolTable<string, object>, Statement> p)
     {
-        var exp = n.Expression.Accept(this, p);
+        // Passes in current symbol table; Statement becomes current assignment stmt
+        p = new Tuple<SymbolTable<string, object>, Statement>(p.Item1, n);
+
+        // Adds variable to symbol table
+        bool exp = n.Expression.Accept(this, p);
         p.Item1[n.Variable.Name] = exp;
-        return n.Variable.Accept(this, p) && n.Expression.Accept(this, p);
+
+        // Checks if variable and expression are valid
+        return n.Variable.Accept(this, p) && exp;
     }
 
     public bool Visit(ReturnStmt n, Tuple<SymbolTable<string, object>, Statement> p)
     {
+        // Passes in current symbol table; Statement becomes current return stmt
+        p = new Tuple<SymbolTable<string, object>, Statement>(p.Item1, n);
+
         return n.Expression.Accept(this, p);
     }
-    
+
     public bool Visit(BlockStmt n, Tuple<SymbolTable<string, object>, Statement> p)
     {
         var st = new SymbolTable<string, object>();
         var s = new BlockStmt(new SymbolTable<string, object>());
+
+
         foreach (Statement stmt in n.Statements)
         {
             // if (stmt.GetType() == typeof(BlockStmt))
             // {
             //     var childTup = new Tuple<SymbolTable<string, object>, Statement>(new SymbolTable<string, object>(p.Item1), stmt);
-                
+
             //     stmt.Accept(this, childTup);
             // }
-            
-            p = new Tuple<SymbolTable<string, object>, Statement>(st, s);
+
+            // Visits and analyzes current statement
             bool curr = stmt.Accept(this, p);
 
-            if (curr == false)
-            {
-                errorList.Add($"ERROR: undefined variable in {stmt}");
-            }
+            // If variable undefined, add error to error list
+            if (curr == false) errorList.Add($"ERROR: undefined variable in {stmt}");
         }
-        if (errorList.Count > 0) return false;
-        else return true;
+
+        // If error list is not empty, return false
+        return errorList.Count == 0;
+
     }
     
     #endregion
