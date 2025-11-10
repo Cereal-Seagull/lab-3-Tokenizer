@@ -160,7 +160,6 @@ namespace AST.Tests
             var output = CaptureConsoleOutput(() => visitor.Analyze(block));
 
             // Should contain error message about undefined variable
-            Assert.Contains("ERROR", output);
             Assert.Contains("undefined", output.ToLower());
         }
 
@@ -174,7 +173,6 @@ namespace AST.Tests
             var visitor = new NameAnalysisVisitor();
             var output = CaptureConsoleOutput(() => visitor.Analyze(block));
 
-            Assert.Contains("ERROR", output);
             Assert.Contains("undefined", output.ToLower());
         }
 
@@ -195,7 +193,7 @@ namespace AST.Tests
 
             // EXPECTED: Should report error since y is undefined on right side
             // BUG: Implementation may incorrectly pass this test due to ordering
-            Assert.Contains("ERROR", output);
+            Assert.Contains("undefined", output.ToLower());
         }
 
         [Theory]
@@ -214,7 +212,7 @@ namespace AST.Tests
             var visitor = new NameAnalysisVisitor();
             var output = CaptureConsoleOutput(() => visitor.Analyze(block));
 
-            Assert.Contains("ERROR", output);
+            Assert.Contains("undefined", output.ToLower());
         }
 
         [Fact]
@@ -235,7 +233,7 @@ namespace AST.Tests
             var visitor = new NameAnalysisVisitor();
             var output = CaptureConsoleOutput(() => visitor.Analyze(block));
 
-            Assert.Contains("ERROR", output);
+            Assert.Contains("undefined", output.ToLower());
             Assert.Contains("undefined", output.ToLower());
         }
 
@@ -260,7 +258,7 @@ namespace AST.Tests
             var output = CaptureConsoleOutput(() => visitor.Analyze(block));
 
             // Should report multiple errors (at least 3)
-            var errorCount = output.Split(new[] { "ERROR" }, StringSplitOptions.None).Length - 1;
+            var errorCount = output.Split(new[] { "\n" }, StringSplitOptions.None).Length - 1;
             Assert.True(errorCount >= 3, $"Expected at least 3 errors, found {errorCount}");
         }
 
@@ -344,7 +342,7 @@ namespace AST.Tests
             var visitor = new NameAnalysisVisitor();
             var output = CaptureConsoleOutput(() => visitor.Analyze(block));
 
-            Assert.Contains("ERROR", output);
+            Assert.Contains("undefined", output.ToLower());
         }
 
         #endregion

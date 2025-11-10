@@ -59,6 +59,7 @@ namespace AST
 
         public object Visit(PlusNode node, SymbolTable<string, object> st)
         {
+            // Visit left and right expressions
             var left = Convert(node.Left.Accept(this, st));
             var right = Convert(node.Right.Accept(this, st));
 
@@ -67,6 +68,7 @@ namespace AST
 
         public object Visit(MinusNode node, SymbolTable<string, object> st)
         {
+            // Visit left and right expressions
             var left = Convert(node.Left.Accept(this, st));
             var right = Convert(node.Right.Accept(this, st));
 
@@ -75,6 +77,7 @@ namespace AST
 
         public object Visit(TimesNode node, SymbolTable<string, object> st)
         {
+            // Visit left and right expressions
             var left = Convert(node.Left.Accept(this, st));
             var right = Convert(node.Right.Accept(this, st));
 
@@ -83,29 +86,35 @@ namespace AST
 
         public object Visit(FloatDivNode node, SymbolTable<string, object> st)
         {
+            // Visit right expression
             float right = Convert(node.Right.Accept(this, st));
+            // Throw exception if divide by 0
             if (right.Equals(0)) throw new EvaluationException("Float div cannot divide by 0");
 
+            // Visit left expression & divide both sides
             float left = Convert(node.Left.Accept(this, st));
-
             float exp = left / right;
+
             return exp;
         }
 
         public object Visit(IntDivNode node, SymbolTable<string, object> st)
         {
-            int right = System.Convert.ToInt32(node.Right.Accept(this, st));
+            // Visit right expression
+            int right = Convert(node.Right.Accept(this, st));
+            // Throw exception if divide by 0
             if (right.Equals(0)) throw new EvaluationException("Int div cannot divide by 0");
 
-            int left = System.Convert.ToInt32(node.Left.Accept(this, st));
+            // Visit left expression & divide both sides
+            int left = Convert(node.Left.Accept(this, st));
+            int exp = left / right;
 
-            var exp = left / right;
-            return System.Convert.ToInt32(exp);
+            return exp;
         }
 
         public object Visit(ModulusNode node, SymbolTable<string, object> st)
         {
-            // Convert left & right expressions to ints/floats
+            // Visit left and right expressions
             var left = Convert(node.Left.Accept(this, st));
             var right = Convert(node.Right.Accept(this, st));
 
@@ -117,6 +126,7 @@ namespace AST
 
         public object Visit(ExponentiationNode node, SymbolTable<string, object> st)
         {
+            // Visit left and right expressions
             var left = Convert(node.Left.Accept(this, st));
             var right = Convert(node.Right.Accept(this, st));
 
@@ -129,6 +139,7 @@ namespace AST
 
         public object Visit(LiteralNode node, SymbolTable<string, object> st)
         {
+            // Return the literal value
             return node.Value;
         }
 
@@ -140,8 +151,9 @@ namespace AST
 
         private object GetVariableValue(string n, SymbolTable<string, object> st)
         {
-            object? val;
-            st.TryGetValue(n, out val);
+            // Get the specified key's value from symbol table
+            // Default value is null (if not found)
+            st.TryGetValue(n, out object? val);
             return val;
         }
 
@@ -154,7 +166,10 @@ namespace AST
             // Check right 
             object right = stmt.Expression.Accept(this, st);
 
+            // Throw exception if variable's value not found
             if (right == null) throw new EvaluationException("Undefined variable in assignment statement");
+
+            // Set variable's value to expression
             st[stmt.Variable.Name] = right;
 
             _returnValue = right;
@@ -163,7 +178,10 @@ namespace AST
 
         public object Visit(ReturnStmt stmt, SymbolTable<string, object> st)
         {
+            // Update variables tracking return states
             _returnEncountered = true;
+
+            // Set return value to return stmt expression
             _returnValue = stmt.Expression.Accept(this, st);
 
             return _returnValue;
@@ -177,16 +195,17 @@ namespace AST
             // Use this block's symbol table, which is already linked to its parent
             SymbolTable<string, object> currentScope = node.SymbolTable;
 
+            // Iterate through list of statements in block
             for (int i = 0; i < node.Statements.Count; i++)
             {
+                // Visit statement
                 node.Statements[i].Accept(this, currentScope);
 
                 // If return stmt encountered, stop evaluating and return
                 if (_returnEncountered) return _returnValue;
             }
 
-            // otherwise, return last known value'
-            // _returnValue = node.Statements[node.Statements.Count - 1].Accept(this, currentScope);
+            // otherwise, return last known value
             return _returnValue;
         }
         #endregion

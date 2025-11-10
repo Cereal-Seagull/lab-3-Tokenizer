@@ -21,50 +21,64 @@ namespace AST
 
         public string Visit(PlusNode node, int level = 0)
         {
+            // Visit left and right expressions
             string left = node.Left.Accept(this, level);
             string right = node.Right.Accept(this, level);
+
             return $"({left} {TokenConstants.PLUS} {right})";
         }
 
         public string Visit(MinusNode node, int level = 0)
         {
+            // Visit left and right expressions
             string left = node.Left.Accept(this, level);
             string right = node.Right.Accept(this, level);
+
             return $"({left} {TokenConstants.SUBTRACTION} {right})";
         }
 
         public string Visit(TimesNode node, int level = 0)
         {
+            // Visit left and right expressions
             string left = node.Left.Accept(this, level);
             string right = node.Right.Accept(this, level);
+
             return $"({left} {TokenConstants.TIMES} {right})";
         }
 
         public string Visit(FloatDivNode node, int level = 0)
         {
+            // Visit left and right expressions
             string left = node.Left.Accept(this, level);
             string right = node.Right.Accept(this, level);
+
             return $"({left} {TokenConstants.FLOAT_DIVISION} {right})";
         }
 
         public string Visit(IntDivNode node, int level = 0)
         {
+            // Visit left and right expressions
             string left = node.Left.Accept(this, level);
             string right = node.Right.Accept(this, level);
+
             return $"({left} {TokenConstants.INT_DIVISION} {right})";
         }
 
         public string Visit(ModulusNode node, int level = 0)
         {
+            // Visit left and right expressions
             string left = node.Left.Accept(this, level);
             string right = node.Right.Accept(this, level);
+
             return $"({left} {TokenConstants.MODULUS} {right})";
         }
 
         public string Visit(ExponentiationNode node, int level = 0)
         {
+            // Visit left and right expressions
             string left = node.Left.Accept(this, level);
             string right = node.Right.Accept(this, level);
+            
             return $"({left} {TokenConstants.EXPONENTIATE} {right})";
         }
 
@@ -74,11 +88,13 @@ namespace AST
 
         public string Visit(LiteralNode node, int level = 0)
         {
+            // Return literal value as string
             return node.Value.ToString();
         }
 
         public string Visit(VariableNode node, int level = 0)
         {
+            // Return variable name
             return node.Name;
         }
 
@@ -99,6 +115,7 @@ namespace AST
 
         public string Visit(AssignmentStmt stmt, int level = 0)
         {
+            // Visit both sides of statement
             string v = stmt.Variable.Accept(this, 0);
             string exp = stmt.Expression.Accept(this, 0);
 
@@ -107,6 +124,7 @@ namespace AST
 
         public string Visit(ReturnStmt stmt, int level = 0)
         {
+            // Visit right side of return stmt
             string exp = stmt.Expression.Accept(this, 0);
             
             return $"{GeneralUtils.GetIndentation(level)}{TokenConstants.RETURN} {exp}";

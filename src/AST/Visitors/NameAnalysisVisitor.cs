@@ -12,17 +12,25 @@ public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, S
         var tup = new Tuple<SymbolTable<string, object>, Statement>(st, ast);
 
         // Visits entire block stmt
-        bool succAnalysis = ast.Accept(this, tup);
+        bool analyze = ast.Accept(this, tup);
 
-        if (succAnalysis) Console.WriteLine("0 errors encountered!");
+        if (analyze) Console.WriteLine("0 errors encountered!");
         // Prints all errors encountered
-        else Console.WriteLine(errorList);
+        else
+        {
+            foreach (string err in errorList)
+            {
+                Console.WriteLine(err);
+            }
+        }
+        
     }
 
     #region Binary Operator nodes
 
     public bool Visit(PlusNode n, Tuple<SymbolTable<string, object>, Statement> p)
     {
+        // Check left and right expressions
         bool left = n.Left.Accept(this, p);
         bool right = n.Right.Accept(this, p);
 
@@ -31,6 +39,7 @@ public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, S
 
     public bool Visit(MinusNode n, Tuple<SymbolTable<string, object>, Statement> p)
     {
+        // Check left and right expressions
         bool left = n.Left.Accept(this, p);
         bool right = n.Right.Accept(this, p);
 
@@ -39,6 +48,7 @@ public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, S
 
     public bool Visit(TimesNode n, Tuple<SymbolTable<string, object>, Statement> p)
     {
+        // Check left and right expressions
         bool left = n.Left.Accept(this, p);
         bool right = n.Right.Accept(this, p);
 
@@ -47,6 +57,7 @@ public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, S
 
     public bool Visit(FloatDivNode n, Tuple<SymbolTable<string, object>, Statement> p)
     {
+        // Check left and right expressions
         bool left = n.Left.Accept(this, p);
         bool right = n.Right.Accept(this, p);
 
@@ -55,6 +66,7 @@ public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, S
 
     public bool Visit(IntDivNode n, Tuple<SymbolTable<string, object>, Statement> p)
     {
+        // Check left and right expressions
         bool left = n.Left.Accept(this, p);
         bool right = n.Right.Accept(this, p);
 
@@ -63,6 +75,7 @@ public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, S
 
     public bool Visit(ExponentiationNode n, Tuple<SymbolTable<string, object>, Statement> p)
     {
+        // Check left and right expressions
         bool left = n.Left.Accept(this, p);
         bool right = n.Right.Accept(this, p);
 
@@ -71,6 +84,7 @@ public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, S
     
     public bool Visit(ModulusNode n, Tuple<SymbolTable<string, object>, Statement> p)
     {
+        // Check left and right expressions
         bool left = n.Left.Accept(this, p);
         bool right = n.Right.Accept(this, p);
 
@@ -126,29 +140,18 @@ public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, S
 
     public bool Visit(BlockStmt n, Tuple<SymbolTable<string, object>, Statement> p)
     {
-        var st = new SymbolTable<string, object>();
-        var s = new BlockStmt(new SymbolTable<string, object>());
-
-
+        // Iterates through each statement in the block
         foreach (Statement stmt in n.Statements)
         {
-            // if (stmt.GetType() == typeof(BlockStmt))
-            // {
-            //     var childTup = new Tuple<SymbolTable<string, object>, Statement>(new SymbolTable<string, object>(p.Item1), stmt);
-
-            //     stmt.Accept(this, childTup);
-            // }
-
             // Visits and analyzes current statement
             bool curr = stmt.Accept(this, p);
 
             // If variable undefined, add error to error list
-            if (curr == false) errorList.Add($"ERROR: undefined variable in {stmt}");
+            if (curr == false) errorList.Add($"Undefined variable in {stmt.GetType()} {stmt}\n");
         }
 
         // If error list is not empty, return false
         return errorList.Count == 0;
-
     }
     
     #endregion
