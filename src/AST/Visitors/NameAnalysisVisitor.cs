@@ -3,7 +3,7 @@ using AST;
 public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, Statement>, bool>
 {
     // List of encountered errors that can be accessed by any method in class
-    private List<string> errorList = new List<string>();
+    private List<string> errorList;
 
     /// <summary>
     /// Analyzes the given AST for name resolution errors and reports any issues found
@@ -11,6 +11,7 @@ public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, S
     /// <param name="ast">The AST statement to analyze</param>
     public void Analyze(Statement ast)
     {
+        errorList = new List<string>();
         // New symbol table and tuple for parent block stmt
         var st = new SymbolTable<string, object>();
         var tup = new Tuple<SymbolTable<string, object>, Statement>(st, ast);
