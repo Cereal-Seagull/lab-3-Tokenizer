@@ -1,3 +1,5 @@
+using System.Text;
+
 public class DiGraph<T> where T : notnull
 {
     protected Dictionary<T, DLL<T>> _adjacencyList;
@@ -31,14 +33,16 @@ public class DiGraph<T> where T : notnull
             throw new ArgumentException("Source vertex not in adjacency list");
         if (!_adjacencyList.ContainsKey(destination))
             throw new ArgumentException("Destination vertex not in adjacency list");
-        throw new NotImplementedException();
 
-
+        // Go to key (vertex), add destination value to DLL
+        _adjacencyList[source].Add(destination);
+        return true;
     }
 
     // Removes a vertex and all edges connected to it.
     public bool RemoveVertex(T vertex)
     {
+        // Remove vertex key from list
         _adjacencyList.Remove(vertex);
         return true;
     }
@@ -47,44 +51,96 @@ public class DiGraph<T> where T : notnull
     // ArgumentException when either vertex does not exist in the graph
     public bool RemoveEdge(T source, T destination)
     {
-        throw new NotImplementedException();
+        // Throws exceptions if either vertex not in graph
+        if (!_adjacencyList.ContainsKey(source))
+            throw new ArgumentException("Source vertex not in adjacency list");
+        if (!_adjacencyList.ContainsKey(destination))
+            throw new ArgumentException("Destination vertex not in adjacency list");
+
+        // Go to key (vertex), remove destination value from DLL
+        _adjacencyList[source].Remove(destination);
+        return true;
     }
 
     // Checks if an edge exists from source to destination.
     public bool HasEdge(T source, T destination)
     {
-        throw new NotImplementedException();
+        // Return whether key (vertex) contains destination vertex in its DLL
+        return _adjacencyList[source].Contains(destination);
     }
 
     // Returns all vertices adjacent to the specified vertex.
     // ArgumentException when the vertex does not exist in the graph
     public List<T> GetNeighbors(T vertex)
     {
-        throw new NotImplementedException();
+        if (!_adjacencyList.ContainsKey(vertex))
+            throw new ArgumentException("Vertex does not exist in graph");
+
+        // Create & initialize return list
+        var neighbors = new List<T>();
+
+        // Add all values of DLL (neighbors) to return list
+        for (int i = 0; i < _adjacencyList[vertex].Count; i++)
+        {
+            neighbors.Add(_adjacencyList[vertex][i]);
+        }
+
+        return neighbors;
     }
 
     // Returns all vertices in the graph as an iterable container.
     public IEnumerable<T> GetVertices()
     {
-        throw new NotImplementedException();
+        // Yield returns each key (vertex) in list of keys (vertexes)
+        foreach (T vertex in _adjacencyList.Keys)
+        {
+            yield return vertex;
+        }
     }
 
     // Returns the number of vertices in the graph.
     public int VertexCount()
     {
-        throw new NotImplementedException();
+        return _adjacencyList.Keys.Count;
     }
 
     // Returns the number of edges in the graph.
     public int EdgeCount()
     {
-        throw new NotImplementedException();
+        int edgeCount = 0;
+
+        // Add DLL length to return count for each DLL in graph
+        foreach (DLL<T> destination in _adjacencyList.Values)
+        {
+            edgeCount += destination.Count;
+        }
+
+        return edgeCount;
     }
     
     // Returns a string representation of the graph.
     public override string ToString()
     {
-        throw new NotImplementedException();
+        StringBuilder str = new StringBuilder();
+
+        // Add each vertex to string
+        foreach (T vertex in _adjacencyList.Keys)
+        {
+            str.Append(vertex);
+            str.Append(" - > ");
+
+            // Add each neighbor to string in respective vertex
+            foreach (T neighbor in _adjacencyList[vertex])
+            {
+                str.Append(neighbor);
+                str.Append(" - > ");
+            }
+
+            // New line
+            str.Append("\n");
+        }
+
+        return str.ToString();
     }
 
 }
