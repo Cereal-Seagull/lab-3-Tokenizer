@@ -12,10 +12,11 @@ public class NameAnalysisVisitor : IVisitor<Tuple<SymbolTable<string, object>, S
         var tup = new Tuple<SymbolTable<string, object>, Statement>(st, ast);
 
         // Visits entire block stmt
-        ast.Accept(this, tup);
+        bool succAnalysis = ast.Accept(this, tup);
 
+        if (succAnalysis) Console.WriteLine("0 errors encountered!");
         // Prints all errors encountered
-        Console.WriteLine(errorList);
+        else Console.WriteLine(errorList);
     }
 
     #region Binary Operator nodes
