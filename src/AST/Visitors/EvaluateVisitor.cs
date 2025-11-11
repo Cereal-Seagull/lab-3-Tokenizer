@@ -223,6 +223,12 @@ namespace AST
             // Get the specified key's value from symbol table
             // Default value is null (if not found)
             st.TryGetValue(n, out object? val);
+            if (val == null)
+            {
+                if (st.Parent == null) throw new EvaluationException($"variable node null ${n}");
+                return GetVariableValue(n, st.Parent);
+            }
+            
             return val;
         }
 

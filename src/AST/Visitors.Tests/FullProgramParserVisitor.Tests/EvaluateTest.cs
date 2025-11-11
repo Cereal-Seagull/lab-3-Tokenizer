@@ -707,7 +707,7 @@ namespace AST.Tests
             }";
 
             var block = Parser.Parser.Parse(program);
-            
+
             // var block = new BlockStmt(new SymbolTable<string, object>());
             // var assignment = new AssignmentStmt(
             //     new VariableNode("x"),
@@ -720,6 +720,56 @@ namespace AST.Tests
             Assert.Equal((float)10.0, result);
         }
 
+        #endregion
+        
+        #region Dr. Alvin's Complexity
+        [Fact]
+        public void TestComplexProgram()
+        {
+            // Test a more complex program that calculates factorial
+            string program =
+            @"{
+                n := (5)
+                result := (1)
+                counter := (1)
+                {
+                    result := (result * counter)
+                    counter := (counter + 1)
+                    {
+                        temp := (counter)
+                    }
+                    result := (result * counter)
+                    counter := (counter + 1)
+                    result := (result * counter)
+                    counter := (counter + 1)
+                    result := (result * counter)
+                    counter := (counter + 1)
+                    result := (result * counter)
+                    counter := (counter + 1)
+                    return (result)
+                }
+            }";
+
+            BlockStmt ast = Parser.Parser.Parse(program);
+            object result = visitor.Evaluate(ast);
+
+            // This calculates 5! = 5*4*3*2*1 = 120
+            Assert.Equal(120, result);
+        }
+
+        [Fact]
+        public void TestDivisionByZero()
+        {
+            // Test division by zero exception
+            string program = @"{
+                return (10 / 0)
+            }";
+
+            BlockStmt ast = Parser.Parser.Parse(program);
+        
+            var exception = Assert.Throws<EvaluationException>(() => visitor.Evaluate(ast));
+            Assert.Contains("cannot divide by 0", exception.Message);
+        }
         #endregion
     }
 }
