@@ -1,3 +1,5 @@
+using Optimizer;
+
 namespace AST
 {
     /// <summary>
@@ -19,7 +21,7 @@ namespace AST
         public CFG GenerateCFG(Statement ast)
         {
             // Begin scanning AST empty CFG (no statements exist yet) 
-            ast.Accept(this, null);
+            ast.Accept(this, ast);
 
             return _cfg;
         }
@@ -97,7 +99,7 @@ namespace AST
             _cfg.AddVertex(stmt.Accept(this, prev));
             if (_cfg.AddVertex(prev)) _cfg.AddEdge(prev, stmt);
 
-            Statement empty = null ; 
+            Statement empty = null;
             _cfg.AddVertex(empty);
             _cfg.AddEdge(stmt, empty);
 

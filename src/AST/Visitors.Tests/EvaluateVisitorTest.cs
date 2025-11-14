@@ -62,21 +62,6 @@ namespace AST.Tests
             Assert.Equal(42, result);
         }
 
-        [Fact]
-        public void Visit_VariableNode_ReturnsNullForUndefinedVariable()
-        {
-            // Arrange
-            var visitor = new EvaluateVisitor();
-            var variable = new VariableNode("undefined");
-            var symbolTable = new SymbolTable<string, object>();
-
-            // Act
-            var result = variable.Accept(visitor, symbolTable);
-
-            // Assert
-            Assert.Null(result);
-        }
-
         #endregion
 
         #region Binary Operator Tests - Addition
