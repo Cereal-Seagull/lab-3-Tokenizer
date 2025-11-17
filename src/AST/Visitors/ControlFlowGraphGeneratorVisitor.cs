@@ -24,37 +24,37 @@ namespace AST
         public Statement Visit(PlusNode node, Statement prev)
         {
             // implement constant propogation in these methods?
-            throw new NotImplementedException();
+            return prev;
         }
 
         public Statement Visit(MinusNode node, Statement prev)
         {
-            throw new NotImplementedException();
+            return prev;
         }
 
         public Statement Visit(TimesNode node, Statement prev)
         {
-            throw new NotImplementedException();
+            return prev;
         }
 
         public Statement Visit(FloatDivNode node, Statement prev)
         {
-            throw new NotImplementedException();
+            return prev;
         }
 
         public Statement Visit(IntDivNode node, Statement prev)
         {
-            throw new NotImplementedException();
+            return prev;
         }
 
         public Statement Visit(ModulusNode node, Statement prev)
         {
-            throw new NotImplementedException();
+            return prev;
         }
 
         public Statement Visit(ExponentiationNode node, Statement prev)
         {
-            throw new NotImplementedException();
+            return prev;
         }
 
         #endregion
@@ -63,12 +63,12 @@ namespace AST
 
         public Statement Visit(LiteralNode node, Statement prev)
         {
-            throw new NotImplementedException();
+            return prev;
         }
 
         public Statement Visit(VariableNode node, Statement prev)
         {
-            throw new NotImplementedException();
+            return prev;
         }
 
         #endregion
@@ -105,6 +105,9 @@ namespace AST
                 if (i == 0) node.Statements[i].Accept(this, null);
                 // Visit current statement, pass prev stmt as parameter
                 else node.Statements[i].Accept(this, node.Statements[i-1]);
+
+                // what do we return? also, how do we handle block statements? do we have an edge going to and around it?
+                // what about non-statements?
             }
 
             return node; // ? What do we return
