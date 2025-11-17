@@ -16,7 +16,10 @@ namespace AST
     {
         public CFG _cfg;
 
-        public ControlFlowGraphGeneratorVisitor() { }
+        public ControlFlowGraphGeneratorVisitor()
+        {
+            _cfg = new CFG();
+        }
 
         public CFG GenerateCFG(Statement ast)
         {
@@ -30,6 +33,7 @@ namespace AST
 
         public Statement Visit(PlusNode node, Statement prev)
         {
+            // implement constant propogation in these methods?
             throw new NotImplementedException();
         }
 
@@ -69,7 +73,6 @@ namespace AST
 
         public Statement Visit(LiteralNode node, Statement prev)
         {
-            // return 
             throw new NotImplementedException();
         }
 
@@ -84,33 +87,40 @@ namespace AST
 
         public Statement Visit(AssignmentStmt stmt, Statement prev)
         {
+            // Add current statement as a vertex (or node)
             _cfg.AddVertex(stmt);
-            // something like this idk
-            _cfg.AddVertex(stmt);
-            if (_cfg.AddVertex(prev)) _cfg.AddEdge(prev, stmt);
-            throw new NotImplementedException();
+
+            // If previous stmt exists, add it as an edge
+            if (prev != null) _cfg.AddEdge(prev, stmt);
+
+            return stmt; // ? What do we return
         }
 
         public Statement Visit(ReturnStmt stmt, Statement prev)
         {
-            // bro this is absolute caca. Somone should fix this
-            Statement left = stmt.Expression.Accept(this, prev);
-            // something like this idk
-            _cfg.AddVertex(stmt.Accept(this, prev));
-            if (_cfg.AddVertex(prev)) _cfg.AddEdge(prev, stmt);
+            // Add current statement as vertex (or node)
+            _cfg.AddVertex(stmt);
 
-            Statement empty = null;
-            _cfg.AddVertex(empty);
-            _cfg.AddEdge(stmt, empty);
+            // If previous stmt exists, add it as an edge
+            if (prev != null) _cfg.AddEdge(prev, stmt);
 
-            return stmt;
-
-            throw new NotImplementedException();
+            return stmt; // ? What do we return
         }
 
         public Statement Visit(BlockStmt node, Statement prev)
         {
-            throw new NotImplementedException();
+            // Iterates through each statement in block
+            for (int i = 0; i < node.Statements.Count; i++)
+            {
+                // could lead to a indexing error
+                node.Statements[i].Accept(this, node.Statements[i - 1]);
+            }
+
+            foreach (Statement curr in node.Statements)
+            {
+                // Visit current statement
+                curr.Accept(this, curr);
+            }
         }
         #endregion
     }

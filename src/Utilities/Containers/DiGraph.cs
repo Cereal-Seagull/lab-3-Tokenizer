@@ -7,12 +7,19 @@ public class DiGraph<T> where T : notnull
     // Constructor initializing _adjacencyList
     public DiGraph() 
     {
+        // T cannot be null, throw exception
+        if (typeof(T) == null) 
+            throw new NullReferenceException("Error creating DiGraph: type cannot be null");
+
         _adjacencyList = new Dictionary<T, DLL<T>>();
     }
 
     // Adds a vertex to the graph if it does not already exist.
     public bool AddVertex(T vertex)
     {
+        // Return false if null
+        if (vertex == null) return false;
+
         // If already in list, return true
         if (_adjacencyList.ContainsKey(vertex)) return true;
 
@@ -28,6 +35,9 @@ public class DiGraph<T> where T : notnull
     // Throws ArgumentException when either vertex does not exist in the graph
     public bool AddEdge(T source, T destination)
     {
+        // Return false if either input is null
+        if (source == null || destination == null) return false;
+
         // Throws exceptions if either vertex not in graph
         if (!_adjacencyList.ContainsKey(source))
             throw new ArgumentException("Source vertex not in adjacency list");
@@ -42,6 +52,9 @@ public class DiGraph<T> where T : notnull
     // Removes a vertex and all edges connected to it.
     public bool RemoveVertex(T vertex)
     {
+        // Return false if null
+        if (vertex == null) return false;
+
         // Remove vertex key from list
         _adjacencyList.Remove(vertex);
         return true;
@@ -51,6 +64,9 @@ public class DiGraph<T> where T : notnull
     // ArgumentException when either vertex does not exist in the graph
     public bool RemoveEdge(T source, T destination)
     {
+        // Return false if either input is null
+        if (source == null || destination == null) return false;
+
         // Throws exceptions if either vertex not in graph
         if (!_adjacencyList.ContainsKey(source))
             throw new ArgumentException("Source vertex not in adjacency list");
@@ -65,6 +81,9 @@ public class DiGraph<T> where T : notnull
     // Checks if an edge exists from source to destination.
     public bool HasEdge(T source, T destination)
     {
+        // Return false if either input is null
+        if (source == null || destination == null) return false;
+
         // Return whether key (vertex) contains destination vertex in its DLL
         return _adjacencyList[source].Contains(destination);
     }
@@ -73,6 +92,8 @@ public class DiGraph<T> where T : notnull
     // ArgumentException when the vertex does not exist in the graph
     public List<T> GetNeighbors(T vertex)
     {
+        // Throw exceptions if vertex is null or doesn't exist
+        if (vertex == null) throw new NullReferenceException("Cannot obtain edges of a null vertex");
         if (!_adjacencyList.ContainsKey(vertex))
             throw new ArgumentException("Vertex does not exist in graph");
 
