@@ -5,6 +5,7 @@ namespace AST
     public class ControlFlowGraphGeneratorVisitor : IVisitor<Statement, Statement>
     {
         public CFG _cfg;
+        public bool isStart;
 
         public ControlFlowGraphGeneratorVisitor()
         {
@@ -13,8 +14,12 @@ namespace AST
 
         public CFG GenerateCFG(Statement ast)
         {
+            // Generates new CFG in case of several calls
+            _cfg = new CFG();
+
+            isStart = false;
             // Begin scanning AST empty CFG (no statements exist yet) 
-            ast.Accept(this, ast);
+            ast.Accept(this, null);
 
             return _cfg;
         }
@@ -23,7 +28,6 @@ namespace AST
 
         public Statement Visit(PlusNode node, Statement prev)
         {
-            // implement constant propogation in these methods?
             return prev;
         }
 
@@ -80,10 +84,10 @@ namespace AST
             // Add current statement as vertex
             _cfg.AddVertex(stmt);
 
-            // If prev is not a return, add edge
-            if (prev.GetType() != typeof(ReturnStmt)) _cfg.AddEdge(prev, stmt);
+            // If prev is not null or a return, add edge
+            if (prev != null && prev.GetType() != typeof(ReturnStmt)) _cfg.AddEdge(prev, stmt);
 
-            return stmt; // ? What do we return
+            return stmt;
         }
 
         public Statement Visit(ReturnStmt stmt, Statement prev)
@@ -91,28 +95,42 @@ namespace AST
             // Add current statement as vertex (or node)
             _cfg.AddVertex(stmt);
 
-            // If prev is not a return, add edge
-            if (prev.GetType() != typeof(ReturnStmt)) _cfg.AddEdge(prev, stmt);
+            // If prev is not null or a return, add edge
+            if (prev != null && prev.GetType() != typeof(ReturnStmt)) _cfg.AddEdge(prev, stmt);
 
-            return stmt; // ? What do we return
+            return null;
         }
 
         public Statement Visit(BlockStmt node, Statement prev)
         {
+            // find a way to track what Start is
             for (int i = 0; i < node.Statements.Count; i++)
             {
-                // Pass prev as null (to avoid index range problems)
-                if (i == 0) node.Statements[i].Accept(this, null);
-                // Visit current statement, pass prev stmt as parameter
-                else node.Statements[i].Accept(this, node.Statements[i-1]);
+                // If not start and not a block stmt, set start to current stmt
+                if (!isStart && node.Statements[i].GetType() != typeof(BlockStmt)) 
+                {
+                    _cfg.Start = node.Statements[i];
+                    isStart = true;
+                }
 
-                // what do we return? also, how do we handle block statements? do we have an edge going to and around it?
-                // what about non-statements?
+                prev = node.Statements[i].Accept(this, prev);
             }
 
-            return node; // ? What do we return
+            return prev;
         }
 
         #endregion
     }
-}   
+}
+/*
+{
+    x := (2)
+    {
+        y := (2 * 4)
+        return (x+y)
+    }
+    z := (3)
+    return x
+}
+
+*/

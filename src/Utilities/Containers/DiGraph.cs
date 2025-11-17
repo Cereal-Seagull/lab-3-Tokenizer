@@ -55,6 +55,12 @@ public class DiGraph<T> where T : notnull
         // Return false if null
         if (vertex == null) return false;
 
+        // Removes each edge pointing to the vertex to be removed
+        foreach (DLL<T> edge in _adjacencyList.Values)
+        {
+            if (edge.Contains(vertex)) edge.Remove(vertex);
+        }
+
         // Remove vertex key from list
         _adjacencyList.Remove(vertex);
         return true;
