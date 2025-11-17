@@ -2,16 +2,6 @@ using Optimizer;
 
 namespace AST
 {
-    /// <summary>
-    /// Exception thrown when an evaluation error occurs
-    /// </summary>
-    // public class EvaluationException : Exception
-    // {
-    //     public EvaluationException(string message) : base(message)
-    //     {
-    //     }
-    // }
-
     public class ControlFlowGraphGeneratorVisitor : IVisitor<Statement, Statement>
     {
         public CFG _cfg;
@@ -90,8 +80,8 @@ namespace AST
             // Add current statement as vertex
             _cfg.AddVertex(stmt);
 
-            // Add prev stmt as edge if it exists
-            if (prev != null) _cfg.AddEdge(prev, stmt);
+            // If prev is not a return, add edge
+            if (prev.GetType() != typeof(ReturnStmt)) _cfg.AddEdge(prev, stmt);
 
             return stmt; // ? What do we return
         }
@@ -101,8 +91,8 @@ namespace AST
             // Add current statement as vertex (or node)
             _cfg.AddVertex(stmt);
 
-            // If previous stmt exists, add it as an edge
-            if (prev != null) _cfg.AddEdge(prev, stmt);
+            // If prev is not a return, add edge
+            if (prev.GetType() != typeof(ReturnStmt)) _cfg.AddEdge(prev, stmt);
 
             return stmt; // ? What do we return
         }
@@ -111,9 +101,9 @@ namespace AST
         {
             for (int i = 0; i < node.Statements.Count; i++)
             {
-                // Visit current statement, pass prev stmt as parameter
-                // Pass prev as null, avoid 
+                // Pass prev as null (to avoid index range problems)
                 if (i == 0) node.Statements[i].Accept(this, null);
+                // Visit current statement, pass prev stmt as parameter
                 else node.Statements[i].Accept(this, node.Statements[i-1]);
             }
 
@@ -122,4 +112,4 @@ namespace AST
 
         #endregion
     }
-}
+}   
