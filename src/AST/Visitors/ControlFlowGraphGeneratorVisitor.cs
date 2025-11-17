@@ -87,10 +87,10 @@ namespace AST
 
         public Statement Visit(AssignmentStmt stmt, Statement prev)
         {
-            // Add current statement as a vertex (or node)
+            // Add current statement as vertex
             _cfg.AddVertex(stmt);
 
-            // If previous stmt exists, add it as an edge
+            // Add prev stmt as edge if it exists
             if (prev != null) _cfg.AddEdge(prev, stmt);
 
             return stmt; // ? What do we return
@@ -109,19 +109,17 @@ namespace AST
 
         public Statement Visit(BlockStmt node, Statement prev)
         {
-            // Iterates through each statement in block
             for (int i = 0; i < node.Statements.Count; i++)
             {
-                // could lead to a indexing error
-                node.Statements[i].Accept(this, node.Statements[i - 1]);
+                // Visit current statement, pass prev stmt as parameter
+                // Pass prev as null, avoid 
+                if (i == 0) node.Statements[i].Accept(this, null);
+                else node.Statements[i].Accept(this, node.Statements[i-1]);
             }
 
-            foreach (Statement curr in node.Statements)
-            {
-                // Visit current statement
-                curr.Accept(this, curr);
-            }
+            return node; // ? What do we return
         }
+
         #endregion
     }
 }
