@@ -1,20 +1,33 @@
 using System.Text;
 
+/// <summary>
+/// Represents a directed graph (DiGraph) data structure using an adjacency list implementation.
+/// Supports vertices of any non-null type T and directed edges between them.
+/// </summary>
+/// <typeparam name="T">The type of vertices in the graph. Must be non-null.</typeparam>
 public class DiGraph<T> where T : notnull
 {
     protected Dictionary<T, DLL<T>> _adjacencyList;
 
-    // Constructor initializing _adjacencyList
+    /// <summary>
+    /// Initializes a new instance of the DiGraph class with an empty adjacency list.
+    /// </summary>
+    /// <exception cref="NullReferenceException">Thrown if type T is null.</exception>
     public DiGraph() 
     {
         // T cannot be null, throw exception
         if (typeof(T) == null) 
             throw new NullReferenceException("Error creating DiGraph: type cannot be null");
 
+        // Initialize adjacency list to a new dictionary with key type T and value type DLL<T>
         _adjacencyList = new Dictionary<T, DLL<T>>();
     }
 
-    // Adds a vertex to the graph if it does not already exist.
+    /// <summary>
+    /// Adds a vertex to the graph if it does not already exist.
+    /// </summary>
+    /// <param name="vertex">The vertex to add to the graph.</param>
+    /// <returns>True if the vertex was added or already exists; false if the vertex is null.</returns>
     public bool AddVertex(T vertex)
     {
         // Return false if null
@@ -31,8 +44,13 @@ public class DiGraph<T> where T : notnull
         }
     }
 
-    // Adds a directed edge from source to destination, if it does not already exist.
-    // Throws ArgumentException when either vertex does not exist in the graph
+    /// <summary>
+    /// Adds a directed edge from the source vertex to the destination vertex, if it does not already exist.
+    /// </summary>
+    /// <param name="source">The source vertex of the edge.</param>
+    /// <param name="destination">The destination vertex of the edge.</param>
+    /// <returns>True if the edge was added successfully; false if either vertex is null.</returns>
+    /// <exception cref="ArgumentException">Thrown when either the source or destination vertex does not exist in the graph.</exception>
     public bool AddEdge(T source, T destination)
     {
         // Return false if either input is null
@@ -49,7 +67,12 @@ public class DiGraph<T> where T : notnull
         return true;
     }
 
-    // Removes a vertex and all edges connected to it.
+    /// <summary>
+    /// Removes a vertex and all edges connected to it from the graph.
+    /// This includes all incoming edges from other vertices and all outgoing edges from this vertex.
+    /// </summary>
+    /// <param name="vertex">The vertex to remove from the graph.</param>
+    /// <returns>True if the vertex was removed successfully; false if the vertex is null.</returns>
     public bool RemoveVertex(T vertex)
     {
         // Return false if null
@@ -66,8 +89,13 @@ public class DiGraph<T> where T : notnull
         return true;
     }
 
-    // Removes a directed edge from source to destination.
-    // ArgumentException when either vertex does not exist in the graph
+    /// <summary>
+    /// Removes a directed edge from the source vertex to the destination vertex.
+    /// </summary>
+    /// <param name="source">The source vertex of the edge to remove.</param>
+    /// <param name="destination">The destination vertex of the edge to remove.</param>
+    /// <returns>True if the edge was removed successfully; false if either vertex is null.</returns>
+    /// <exception cref="ArgumentException">Thrown when either the source or destination vertex does not exist in the graph.</exception>
     public bool RemoveEdge(T source, T destination)
     {
         // Return false if either input is null
@@ -84,7 +112,12 @@ public class DiGraph<T> where T : notnull
         return true;
     }
 
-    // Checks if an edge exists from source to destination.
+    /// <summary>
+    /// Checks if a directed edge exists from the source vertex to the destination vertex.
+    /// </summary>
+    /// <param name="source">The source vertex of the edge.</param>
+    /// <param name="destination">The destination vertex of the edge.</param>
+    /// <returns>True if an edge exists from source to destination; false if either vertex is null or the edge does not exist.</returns>
     public bool HasEdge(T source, T destination)
     {
         // Return false if either input is null
@@ -94,8 +127,13 @@ public class DiGraph<T> where T : notnull
         return _adjacencyList[source].Contains(destination);
     }
 
-    // Returns all vertices adjacent to the specified vertex.
-    // ArgumentException when the vertex does not exist in the graph
+    /// <summary>
+    /// Returns all vertices adjacent to the specified vertex (i.e., all vertices that can be reached by following a single outgoing edge).
+    /// </summary>
+    /// <param name="vertex">The vertex whose neighbors should be returned.</param>
+    /// <returns>A list of all vertices adjacent to the specified vertex.</returns>
+    /// <exception cref="NullReferenceException">Thrown if the vertex is null.</exception>
+    /// <exception cref="ArgumentException">Thrown if the vertex does not exist in the graph.</exception>
     public List<T> GetNeighbors(T vertex)
     {
         // Throw exceptions if vertex is null or doesn't exist
@@ -115,7 +153,10 @@ public class DiGraph<T> where T : notnull
         return neighbors;
     }
 
-    // Returns all vertices in the graph as an iterable container.
+    /// <summary>
+    /// Returns all vertices in the graph as an enumerable collection.
+    /// </summary>
+    /// <returns>An IEnumerable containing all vertices in the graph.</returns>
     public IEnumerable<T> GetVertices()
     {
         // Yield returns each key (vertex) in list of keys (vertexes)
@@ -125,13 +166,19 @@ public class DiGraph<T> where T : notnull
         }
     }
 
-    // Returns the number of vertices in the graph.
+    /// <summary>
+    /// Returns the total number of vertices in the graph.
+    /// </summary>
+    /// <returns>The count of vertices in the graph.</returns>
     public int VertexCount()
     {
         return _adjacencyList.Keys.Count;
     }
 
-    // Returns the number of edges in the graph.
+    /// <summary>
+    /// Returns the total number of directed edges in the graph.
+    /// </summary>
+    /// <returns>The count of edges in the graph.</returns>
     public int EdgeCount()
     {
         int edgeCount = 0;
@@ -145,7 +192,11 @@ public class DiGraph<T> where T : notnull
         return edgeCount;
     }
     
-    // Returns a string representation of the graph.
+    /// <summary>
+    /// Returns a string representation of the graph showing all vertices and their adjacent neighbors.
+    /// Each vertex is displayed on a separate line followed by arrows pointing to its neighbors.
+    /// </summary>
+    /// <returns>A string representation of the graph in adjacency list format.</returns>
     public override string ToString()
     {
         StringBuilder str = new StringBuilder();
@@ -169,5 +220,4 @@ public class DiGraph<T> where T : notnull
 
         return str.ToString();
     }
-
 }
