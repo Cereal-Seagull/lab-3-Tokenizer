@@ -9,6 +9,8 @@ namespace AST
     public class ControlFlowGraphGeneratorVisitor : IVisitor<Statement, Statement>
     {
         public CFG _cfg;
+        
+        // is this a property (disable setting) - maybe make private?
         public bool isStart;
 
         /// <summary>
@@ -140,6 +142,8 @@ namespace AST
         /// <returns>The previous statement, unchanged.</returns>
         public Statement Visit(VariableNode node, Statement prev)
         {
+            // maybe return null? These shouldn't be visited
+            // maybe an exception?
             return prev;
         }
 
@@ -159,6 +163,7 @@ namespace AST
             _cfg.AddVertex(stmt);
 
             // If previous stmt exists and is not a return, add edge
+            // bit overkill, return already returns prev as null
             if (prev != null && prev.GetType() != typeof(ReturnStmt)) _cfg.AddEdge(prev, stmt);
 
             return stmt;

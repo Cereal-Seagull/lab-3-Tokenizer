@@ -230,6 +230,8 @@ namespace AST.Tests
             Assert.Equal(typeof(AssignmentStmt), cfg.Start.GetType());
             // Correct edge count
             Assert.Equal(3, cfg.EdgeCount());
+
+            // check edge (non-)existence, especially between return and z
         }
 
         [Fact]
@@ -255,6 +257,7 @@ namespace AST.Tests
             Assert.Equal(typeof(AssignmentStmt), block.Statements[0].GetType());
             Assert.Equal(typeof(AssignmentStmt), cfg.Start.GetType());
             
+            // Example: something like this but in multi-nest
             Assert.True(cfg.HasEdge(block.Statements[0], block.Statements[1]));
             Assert.False(cfg.HasEdge(block.Statements[1], block.Statements[2]));
         }

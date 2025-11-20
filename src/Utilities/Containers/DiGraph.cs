@@ -145,6 +145,8 @@ public class DiGraph<T> where T : notnull
         var neighbors = new List<T>();
 
         // Add all values of DLL (neighbors) to return list
+        // complexity: O(D^2), D = number nodes (degree). Def a better way. 
+            // Maybe use the List<T> constructor?
         for (int i = 0; i < _adjacencyList[vertex].Count; i++)
         {
             neighbors.Add(_adjacencyList[vertex][i]);
