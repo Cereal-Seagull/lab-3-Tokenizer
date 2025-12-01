@@ -222,4 +222,39 @@ public class DiGraph<T> where T : notnull
 
         return str.ToString();
     }
+
+    public Stack<T> DepthFirstSearch()
+    {
+        foreach (T curr in GetVertices())
+        {
+            
+        }
+    }
+
+    public DiGraph<T> Transpose()
+    {
+        throw new NotImplementedException();
+    }
+
+    public List<List<T>> FindStronglyConnectedComponenets()
+    {
+        throw new NotImplementedException();
+    }
+
+    protected Dictionary<T, Color> InitializeWhite()
+        {
+            var colors = new Dictionary<T, Color>();
+            foreach (T s in this.GetVertices())
+            {
+                colors.Add(s, Color.WHITE);
+            }
+            return colors;
+        }
+
+    public enum Color 
+        {
+            WHITE,
+            PURPLE,
+            BLACK,
+        }
 }

@@ -36,8 +36,10 @@ namespace Optimizer
             while (q.Count != 0)
             {
                 Statement curr = q.Dequeue();
+                reachable.Add(curr);
+                unreachable.Remove(curr);
                 colors[curr] = Color.PURPLE;
-                foreach (Statement adj in this.GetVertices())
+                foreach (Statement adj in GetNeighbors(curr))
                 {
                  if (colors[adj] == Color.WHITE)
                     {
@@ -49,7 +51,6 @@ namespace Optimizer
                 }
                 colors[curr] = Color.BLACK;
             }
-
 
             
             return (reachable, unreachable);
@@ -64,12 +65,6 @@ namespace Optimizer
             }
             return colors;
         }
-    }
-
-    public enum Color 
-    {
-        WHITE,
-        PURPLE,
-        BLACK,
+        
     }
 }
