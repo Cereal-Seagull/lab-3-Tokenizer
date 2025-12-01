@@ -72,7 +72,5 @@ namespace Optimizer
             }
             return unreachable;
         }
-
-        
     }
 }

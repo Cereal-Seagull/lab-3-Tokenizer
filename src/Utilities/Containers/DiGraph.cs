@@ -226,10 +226,12 @@ public class DiGraph<T> where T : notnull
     public Stack<T> DepthFirstSearch()
     {
         Dictionary<T, Color> colors = InitializeWhite();
+
         foreach (T curr in GetVertices())
         {
             if (colors[curr] == Color.WHITE) DFS_Visit(curr);
         }
+
         throw new NotImplementedException();
     }
 
@@ -240,10 +242,20 @@ public class DiGraph<T> where T : notnull
 
     public DiGraph<T> Transpose()
     {
+        DiGraph<T> transposedGraph = new DiGraph<T>();
+
+        foreach (DLL<T> edge in _adjacencyList.Values)
+        {
+            foreach (T val in edge)
+            {
+                transposedGraph.AddVertex(val);
+            }
+        }
+
         throw new NotImplementedException();
     }
 
-    public List<List<T>> FindStronglyConnectedComponenets()
+    public List<List<T>> FindStronglyConnectedComponents()
     {
         throw new NotImplementedException();
     }
