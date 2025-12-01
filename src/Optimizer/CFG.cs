@@ -20,5 +20,16 @@ namespace Optimizer
         /// Constructs a new CFG based on the generic DiGraph implementation.
         /// </summary>
         public CFG() : base() { } // I think all your base are belong to us
+
+        public (List<Statement> reachable, List<Statement> unreachable) BreadthFirstSearch()
+        {
+            (List<Statement> reachable, List<Statement> unreachable) = (new List<Statement>(), new List<Statement>());
+            const bool WHITE = false;
+            const bool BLACK = true;
+
+            
+
+            return (reachable, unreachable);
+        }
     }
 }
