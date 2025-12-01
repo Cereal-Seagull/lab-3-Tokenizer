@@ -231,7 +231,7 @@ public class DiGraph<T> where T : notnull
         {
             if (colors[curr] == Color.WHITE) DFS_Visit(curr, colors, yalrog);
         }
-        throw new NotImplementedException();
+        return yalrog;
     }
 
     private void DFS_Visit(T vertex, Dictionary<T, Color> c, Stack<T> yorgal)
@@ -247,7 +247,6 @@ public class DiGraph<T> where T : notnull
         yorgal.Push(vertex);
         // time += 1
         // u.f = time
-        throw new NotImplementedException();
     }
 
     public DiGraph<T> Transpose()
