@@ -361,7 +361,7 @@ namespace AST.Tests
             visitor._cfg.AddVertex(returnStmt);
 
             // Act
-            visitor.Visit(assignment, returnStmt);
+            visitor.Visit(assignment, null); // return stmt will return null in a normal setting
 
             // Assert
             Assert.Equal(2, visitor._cfg.VertexCount());
@@ -439,7 +439,7 @@ namespace AST.Tests
                 block.AddStatement(stmt);
             }
             visitor._cfg = new CFG();
-            visitor.isStart = false;
+            // visitor.isStart = false;
 
             // Act
             visitor.Visit(block, null);
@@ -459,14 +459,14 @@ namespace AST.Tests
             block.AddStatement(assignment);
 
             visitor._cfg = new CFG();
-            visitor.isStart = false;
+            // visitor.IsStart = false;
 
             // Act
             visitor.Visit(block, null);
 
             // Assert
             Assert.Equal(assignment, visitor._cfg.Start);
-            Assert.True(visitor.isStart);
+            Assert.True(visitor.IsStart);
         }
 
         [Fact]
@@ -482,7 +482,7 @@ namespace AST.Tests
             outerBlock.AddStatement(innerBlock);
 
             visitor._cfg = new CFG();
-            visitor.isStart = false;
+            // visitor.isStart = false;
 
             // Act
             visitor.Visit(outerBlock, null);

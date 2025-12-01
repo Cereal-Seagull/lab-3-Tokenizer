@@ -9,9 +9,8 @@ namespace AST
     public class ControlFlowGraphGeneratorVisitor : IVisitor<Statement, Statement>
     {
         public CFG _cfg;
-        
-        // is this a property (disable setting) - maybe make private?
-        public bool isStart;
+
+        public bool IsStart { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the ControlFlowGraphGeneratorVisitor class with an empty CFG.
@@ -32,7 +31,7 @@ namespace AST
             // Generates new CFG in case of several calls
             _cfg = new CFG();
             // Start statement is not set
-            isStart = false;
+            IsStart = false;
             // Begin scanning AST empty CFG (no statements exist yet) 
             ast.Accept(this, null);
 
@@ -163,8 +162,7 @@ namespace AST
             _cfg.AddVertex(stmt);
 
             // If previous stmt exists and is not a return, add edge
-            // bit overkill, return already returns prev as null
-            if (prev != null && prev.GetType() != typeof(ReturnStmt)) _cfg.AddEdge(prev, stmt);
+            if (prev != null) _cfg.AddEdge(prev, stmt);
 
             return stmt;
         }
@@ -182,7 +180,7 @@ namespace AST
             _cfg.AddVertex(stmt);
 
             // If previous stmt exists and is not a return, add edge
-            if (prev != null && prev.GetType() != typeof(ReturnStmt)) _cfg.AddEdge(prev, stmt);
+            if (prev != null) _cfg.AddEdge(prev, stmt);
 
             return null;
         }
@@ -200,11 +198,11 @@ namespace AST
             for (int i = 0; i < node.Statements.Count; i++)
             {
                 // If not start and not a block stmt, set Start to current stmt
-                if (!isStart && node.Statements[i].GetType() != typeof(BlockStmt)) 
+                if (!IsStart && node.Statements[i].GetType() != typeof(BlockStmt)) 
                 {
                     _cfg.Start = node.Statements[i];
                     // Start is set; cannot be any other stmt
-                    isStart = true;
+                    IsStart = true;
                 }
                 // Visit current node, then set prev to current node
                 prev = node.Statements[i].Accept(this, prev);
