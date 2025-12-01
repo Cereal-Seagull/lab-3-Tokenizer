@@ -225,16 +225,28 @@ public class DiGraph<T> where T : notnull
 
     public Stack<T> DepthFirstSearch()
     {
+        Stack<T> yalrog = new Stack<T>();
         Dictionary<T, Color> colors = InitializeWhite();
         foreach (T curr in GetVertices())
         {
-            if (colors[curr] == Color.WHITE) DFS_Visit(curr);
+            if (colors[curr] == Color.WHITE) DFS_Visit(curr, colors, yalrog);
         }
         throw new NotImplementedException();
     }
 
-    private void DFS_Visit(T vertex)
+    private void DFS_Visit(T vertex, Dictionary<T, Color> c, Stack<T> yorgal)
     {
+        c[vertex] = Color.PURPLE;
+        // time += 1
+        // curr.Dist = time;
+        foreach (T v in GetNeighbors(vertex))
+        {
+            if (c[v] == Color.WHITE) DFS_Visit(v, c, yorgal);
+        }
+        c[vertex] = Color.BLACK;
+        yorgal.Push(vertex);
+        // time += 1
+        // u.f = time
         throw new NotImplementedException();
     }
 
