@@ -20,5 +20,52 @@ namespace Optimizer
         /// Constructs a new CFG based on the generic DiGraph implementation.
         /// </summary>
         public CFG() : base() { } // I think all your base are belong to us
+    
+        public (List<Statement> reachable, List<Statement> unreachable) BreadthFirstSearch()
+        {
+            (var reachable, var unreachable) = (new List<Statement>(), new List<Statement>());
+            // int dist = 0;
+            // Statement? p = null;
+
+            Dictionary<Statement, Color> colors = InitializeWhite();
+            Queue<Statement> q = new Queue<Statement>();
+            if (Start != null) q.Enqueue(Start);
+
+            while (q.Count != 0)
+            {
+                Statement curr = q.Dequeue();
+                colors[curr] = Color.PURPLE;
+                foreach (Statement adj in this.GetVertices())
+                {
+                 if (colors[adj] == Color.WHITE)
+                    {
+                        colors[adj] = Color.PURPLE;
+                        // adj.Dist = dist + 1;
+                        // adj.p = curr;
+                        q.Enqueue(adj);
+                    }   
+                }
+                colors[curr] = Color.BLACK;
+            }
+
+            throw new NotImplementedException();
+        }
+
+        private Dictionary<Statement, Color> InitializeWhite()
+        {
+            var colors = new Dictionary<Statement, Color>();
+            foreach (Statement s in this.GetVertices())
+            {
+                colors.Add(s, Color.WHITE);
+            }
+            return colors;
+        }
+    }
+
+    public enum Color
+    {
+        WHITE,
+        BLACK,
+        PURPLE
     }
 }
