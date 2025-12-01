@@ -225,10 +225,17 @@ public class DiGraph<T> where T : notnull
 
     public Stack<T> DepthFirstSearch()
     {
+        Dictionary<T, Color> colors = InitializeWhite();
         foreach (T curr in GetVertices())
         {
-            
+            if (colors[curr] == Color.WHITE) DFS_Visit(curr);
         }
+        throw new NotImplementedException();
+    }
+
+    private void DFS_Visit(T vertex)
+    {
+        throw new NotImplementedException();
     }
 
     public DiGraph<T> Transpose()

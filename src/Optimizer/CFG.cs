@@ -23,48 +23,56 @@ namespace Optimizer
 
         public (List<Statement> reachable, List<Statement> unreachable) BreadthFirstSearch()
         {
-            // Create and initalize return tuple
+            // Create and initalize return tuple and queue
             (List<Statement> reachable, List<Statement> unreachable) = 
                 (new List<Statement>(), new List<Statement>());
-            // int dist = 0;
-            // Statement? p = null;
-
-            Dictionary<Statement, Color> colors = InitializeWhite();
+            InitializeUnreachableList(unreachable);
             Queue<Statement> q = new Queue<Statement>();
-            if (Start != null) q.Enqueue(Start);
+
+            // Create dictionary corresponding statements to their colors
+            Dictionary<Statement, Color> colors = InitializeWhite();
+            
+            // Put starting statement into queue
+            q.Enqueue(Start);
 
             while (q.Count != 0)
             {
+                // Current stmt is dequeued stmt
                 Statement curr = q.Dequeue();
-                reachable.Add(curr);
-                unreachable.Remove(curr);
+
+                // Set current color to purple; not unreachable
                 colors[curr] = Color.PURPLE;
+                unreachable.Remove(curr);
+
+                /// Set adjacent node colors to purple if unexplored & enqueue them
                 foreach (Statement adj in GetNeighbors(curr))
                 {
-                 if (colors[adj] == Color.WHITE)
-                    {
-                        colors[adj] = Color.PURPLE;
-                        // adj.Dist = dist + 1;
-                        // adj.p = curr;
-                        q.Enqueue(adj);
-                    }   
+                    if (colors[adj] == Color.WHITE)
+                        {
+                            colors[adj] = Color.PURPLE;
+                            q.Enqueue(adj);
+                        }   
                 }
+
+                // Current is fully explored; is reachable and set to black
                 colors[curr] = Color.BLACK;
+                reachable.Add(curr);
             }
 
-            
             return (reachable, unreachable);
         }
 
-        private Dictionary<Statement, Color> InitializeWhite()
+        // Helper method initializing the unreachable list in return tuple for BFS
+        private List<Statement> InitializeUnreachableList(List<Statement> unreachable)
         {
-            var colors = new Dictionary<Statement, Color>();
-            foreach (Statement s in this.GetVertices())
+            // Add every vertex to unreachable list
+            foreach (Statement vertex in _adjacencyList.Keys)
             {
-                colors.Add(s, Color.WHITE);
+                unreachable.Add(vertex);
             }
-            return colors;
+            return unreachable;
         }
+
         
     }
 }
