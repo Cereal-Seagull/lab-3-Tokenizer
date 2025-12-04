@@ -232,8 +232,7 @@ public class DiGraph<T> where T : notnull
         {
             if (colors[curr] == Color.WHITE) DFS_Visit(curr, colors, yalrog);
         }
-
-        throw new NotImplementedException();
+        return yalrog;
     }
 
     private void DFS_Visit(T vertex, Dictionary<T, Color> c, Stack<T> yorgal)
