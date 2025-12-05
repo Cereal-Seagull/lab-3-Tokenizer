@@ -21,6 +21,22 @@ namespace Optimizer
         /// </summary>
         public CFG() : base() { } // I think all your base are belong to us
 
+        #region BFS
+        /// <summary>
+        /// Performs a breadth-first search (BFS) starting from the Start statement to identify
+        /// reachable and unreachable statements in the control flow graph.
+        /// Explores the graph level by level, visiting all neighbors before moving to the next level.
+        /// </summary>
+        /// <returns>
+        /// A tuple containing two lists:
+        /// - reachable: List of Statement nodes that can be reached from the Start statement
+        /// - unreachable: List of Statement nodes that cannot be reached from the Start statement
+        /// </returns>
+        /// <remarks>
+        /// Uses a color-marking scheme where WHITE indicates unvisited, PURPLE indicates discovered,
+        /// and BLACK indicates fully explored. All statements begin in the unreachable list and are
+        /// moved to reachable as they are discovered during the traversal.
+        /// </remarks>
         public (List<Statement> reachable, List<Statement> unreachable) BreadthFirstSearch()
         {
             // Create and initalize return tuple and queue
@@ -62,7 +78,13 @@ namespace Optimizer
             return (reachable, unreachable);
         }
 
-        // Helper method initializing the unreachable list in return tuple for BFS
+        /// <summary>
+        /// Initializes the unreachable list by adding all vertices from the adjacency list.
+        /// This helper method is used by BreadthFirstSearch to establish the initial set of
+        /// potentially unreachable statements before the BFS traversal begins.
+        /// </summary>
+        /// <param name="unreachable">The list to populate with all statements in the graph.</param>
+        /// <returns>The populated unreachable list containing all vertices.</returns>
         private List<Statement> InitializeUnreachableList(List<Statement> unreachable)
         {
             // Add every vertex to unreachable list
@@ -72,5 +94,6 @@ namespace Optimizer
             }
             return unreachable;
         }
+        #endregion
     }
 }

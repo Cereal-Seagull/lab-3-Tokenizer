@@ -223,6 +223,22 @@ public class DiGraph<T> where T : notnull
         return str.ToString();
     }
 
+    #region Graph Analysis 
+    /// <summary>
+    /// Performs a depth-first search (DFS) on the entire graph, visiting all vertices
+    /// in the order they appear in the adjacency list. Explores each branch as deeply
+    /// as possible before backtracking.
+    /// </summary>
+    /// <returns>
+    /// A Stack containing all vertices in reverse finishing order (the last vertex to finish
+    /// is at the top of the stack). This ordering is useful for topological sorting and
+    /// computing strongly connected components.
+    /// </returns>
+    /// <remarks>
+    /// Uses a color-marking scheme: WHITE for unvisited, PURPLE for discovered, and BLACK
+    /// for finished vertices. The method ensures all vertices are visited, even if the graph
+    /// is disconnected.
+    /// </remarks>
     public Stack<T> DepthFirstSearch()
     {
         // Initialize stack and dictionary corresponding statements to their colors
@@ -238,7 +254,19 @@ public class DiGraph<T> where T : notnull
         return yalrog;
     }
 
+    /// Recursive helper method that performs a depth-first visit starting from a given vertex.
+    /// Colors the vertex PURPLE when discovered, recursively visits all white neighbors,
+    /// then colors it BLACK and pushes it onto the stack when finished.
+    /// </summary>
+    /// <param name="vertex">The vertex to visit.</param>
+    /// <param name="c">Dictionary mapping vertices to their current colors (WHITE, PURPLE, or BLACK).</param>
+    /// <param name="yingle">Stack to push vertices onto when they finish (used for topological ordering).</param>
+    /// <remarks>
+    /// This method is called by DepthFirstSearch and FindStronglyConnectedComponents.
+    /// The finishing order captured in the stack is critical for Kosaraju's algorithm.
+    /// </remarks>
     private void DFS_Visit(T vertex, Dictionary<T, Color> c, Stack<T> yingle)
+
     {
         // Node is discovered; color purple
         c[vertex] = Color.PURPLE;
@@ -254,6 +282,19 @@ public class DiGraph<T> where T : notnull
         yingle.Push(vertex);
     }
 
+    /// <summary>
+    /// Creates a transposed version of the directed graph by reversing all edges.
+    /// In the transposed graph, if there was an edge from vertex A to vertex B in the
+    /// original graph, there will be an edge from B to A in the transposed graph.
+    /// </summary>
+    /// <returns>
+    /// A new DiGraph where all edges have been reversed. All vertices from the original
+    /// graph are preserved.
+    /// </returns>
+    /// <remarks>
+    /// This method is essential for Kosaraju's algorithm for finding strongly connected components.
+    /// The transpose operation flips the relationship between source and sink SCCs.
+    /// </remarks>
     public DiGraph<T> Transpose()
     {
         // Create transposed digraph
@@ -275,7 +316,28 @@ public class DiGraph<T> where T : notnull
         return transposedGraph;
     }
 
-    public List<List<T>> FindStronglyConnectedComponents()
+    /// Computes the strongly connected components (SCCs) of the directed graph using
+    /// Kosaraju's algorithm. An SCC is a maximal set of vertices where every vertex
+    /// is reachable from every other vertex in the set.
+    /// </summary>
+    /// <returns>
+    /// A list of strongly connected components, where each component is represented as
+    /// a list of vertices. Each vertex appears in exactly one SCC.
+    /// </returns>
+    /// <remarks>
+    /// <para>
+    /// Kosaraju's algorithm works in three phases:
+    /// 1. Performs DFS on the original graph to determine finishing times
+    /// 2. Creates a transposed graph (reverses all edges)
+    /// 3. Performs DFS on the transposed graph in reverse finishing order
+    /// </para>
+    /// <para>
+    /// Each DFS traversal in phase 3 identifies one complete SCC. The algorithm exploits
+    /// the property that source SCCs in the original graph become sink SCCs in the transpose,
+    /// ensuring each traversal remains contained within a single component.
+    /// </para>
+    /// </remarks>
+public List<List<T>> FindStronglyConnectedComponents()
     {
         var scc = new List<List<T>>();
 
@@ -305,6 +367,17 @@ public class DiGraph<T> where T : notnull
         return scc;
     }
 
+    /// Initializes a color dictionary by setting all vertices in the graph to WHITE.
+    /// Used by graph traversal algorithms to track the visited state of vertices.
+    /// </summary>
+    /// <returns>
+    /// A Dictionary mapping each vertex to the Color WHITE, indicating that no vertices
+    /// have been visited yet.
+    /// </returns>
+    /// <remarks>
+    /// This helper method is used by both BFS and DFS implementations. The color scheme
+    /// follows the standard: WHITE (unvisited), PURPLE (discovered), BLACK (finished).
+    /// </remarks>
     protected Dictionary<T, Color> InitializeWhite()
         {
             var colors = new Dictionary<T, Color>();
@@ -315,10 +388,19 @@ public class DiGraph<T> where T : notnull
             return colors;
         }
 
-    public enum Color 
+    /// Enumeration representing the three states a vertex can be in during graph traversal.
+    /// </summary>
+    /// <remarks>
+    /// WHITE: The vertex has not been discovered yet (unvisited).
+    /// PURPLE: The vertex has been discovered but not yet finished (currently being explored).
+    /// BLACK: The vertex has been fully explored (all descendants have been visited).
+    /// </remarks>
+    public enum Color
         {
             WHITE,
             PURPLE,
             BLACK,
         }
+
+    #endregion
 }
