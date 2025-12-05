@@ -225,17 +225,20 @@ public class DiGraph<T> where T : notnull
 
     public Stack<T> DepthFirstSearch()
     {
+        // Initialize stack and dictionary corresponding statements to their colors
         Stack<T> yalrog = new Stack<T>();
         Dictionary<T, Color> colors = InitializeWhite();
 
+        // Run DFS !!!EVERYWHERE!!!
         foreach (T curr in GetVertices())
         {
             if (colors[curr] == Color.WHITE) DFS_Visit(curr, colors, yalrog);
         }
+        
         return yalrog;
     }
 
-    private void DFS_Visit(T vertex, Dictionary<T, Color> c, Stack<T> yorgal)
+    private void DFS_Visit(T vertex, Dictionary<T, Color> c, Stack<T> yingle)
     {
         // Node is discovered; color purple
         c[vertex] = Color.PURPLE;
@@ -243,38 +246,69 @@ public class DiGraph<T> where T : notnull
         // If neighbor vertex is white, visit it
         foreach (T v in GetNeighbors(vertex))
         {
-            if (c[v] == Color.WHITE) DFS_Visit(v, c, yorgal);
+            if (c[v] == Color.WHITE) DFS_Visit(v, c, yingle);
         }
 
         // When vertex finished, color is black and push onto stack
         c[vertex] = Color.BLACK;
-        yorgal.Push(vertex);
+        yingle.Push(vertex);
     }
 
     public DiGraph<T> Transpose()
     {
+        // Create transposed digraph
         DiGraph<T> transposedGraph = new DiGraph<T>();
 
-        foreach (DLL<T> edge in _adjacencyList.Values)
+        foreach (T vertex in _adjacencyList.Keys)
         {
-            foreach (T val in edge)
+            // Will add every vertex
+            transposedGraph.AddVertex(vertex);
+
+            foreach (T edge in GetNeighbors(vertex))
             {
-                transposedGraph.AddVertex(val);
+                // Add reversed edges
+                transposedGraph.AddVertex(edge);
+                transposedGraph.AddEdge(edge, vertex);
             }
         }
 
-        throw new NotImplementedException();
+        return transposedGraph;
     }
 
     public List<List<T>> FindStronglyConnectedComponents()
     {
-        throw new NotImplementedException();
+        var scc = new List<List<T>>();
+
+        // Run DFS on current digraph
+        Stack<T> zingle = DepthFirstSearch();
+
+        // Initialize transposed graph, set all vertices to white
+        DiGraph<T> tGraph = Transpose();
+        Dictionary<T, Color> tColors = tGraph.InitializeWhite();
+        
+        // Run DFS until all stack elements are popped
+        while (zingle.Count != 0)
+        {
+            // Current vertex is popped to run DFS on it
+            T curr = zingle.Pop();
+
+            // Creation of stack used in DFS
+            Stack<T> currStack = new Stack<T>();
+
+            // Run DFS on tGraph, starting from popped vertex
+            if (tColors[curr] == Color.WHITE) tGraph.DFS_Visit(curr, tColors, currStack);
+
+            // Add stack to scc
+            scc.Add(currStack.ToList());
+        }
+
+        return scc;
     }
 
     protected Dictionary<T, Color> InitializeWhite()
         {
             var colors = new Dictionary<T, Color>();
-            foreach (T s in this.GetVertices())
+            foreach (T s in GetVertices())
             {
                 colors.Add(s, Color.WHITE);
             }
